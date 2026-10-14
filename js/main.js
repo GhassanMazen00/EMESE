@@ -1,7 +1,22 @@
-/* EMESE: page interactions (theme, hero proof, reveal, steps, contact) */
+/* EMESE: page interactions (theme, language, reveal, marquee, steps, contact) */
+import { applyLang, setLang, lang, ui } from './i18n.js';
 
 // ⚠️ Replace with the real business WhatsApp number (country code, no "+" or spaces).
 const WHATSAPP_NUMBER = '201000000000';
+
+/* ---------- language: Arabic by default, English on request ---------- */
+if (lang() === 'en') applyLang('en');
+document.getElementById('langToggle')?.addEventListener('click', () => setLang(lang() === 'en' ? 'ar' : 'en'));
+
+/* ---------- marquee (rebuilt per language) ---------- */
+function buildMarquee() {
+  const track = document.getElementById('marqueeTrack');
+  if (!track) return;
+  const words = ui().marquee.map(w => `<span>${w}</span><i>✦</i>`).join('');
+  track.innerHTML = words + words;
+}
+buildMarquee();
+document.addEventListener('langchange', buildMarquee);
 
 /* ---------- light / dark toggle ---------- */
 (() => {
@@ -20,24 +35,6 @@ const WHATSAPP_NUMBER = '201000000000';
     try { localStorage.setItem('emese-theme', next); } catch (e) { /* storage blocked: still switches for this visit */ }
     sync();
   });
-})();
-
-/* ---------- hero proof card: slow cross-fade between products ---------- */
-(() => {
-  const items = [...document.querySelectorAll('.proof-item')];
-  const dots = [...document.querySelectorAll('#proofDots i')];
-  const label = document.getElementById('proofLabel');
-  const id = document.getElementById('proofId');
-  if (items.length < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  let i = 0;
-  setInterval(() => {
-    if (document.hidden || document.querySelector('.proof.is-3d')) return;
-    items[i].classList.remove('is-on'); dots[i]?.classList.remove('on');
-    i = (i + 1) % items.length;
-    items[i].classList.add('is-on'); dots[i]?.classList.add('on');
-    label.textContent = items[i].dataset.label;
-    id.textContent = `PROOF 0${i + 1}`;
-  }, 4200);
 })();
 
 /* ---------- reveal on scroll ---------- */
@@ -62,7 +59,6 @@ const WHATSAPP_NUMBER = '201000000000';
   if (!steps.length || !card) return;
 
   const tones = ['var(--c)', 'var(--y)', 'var(--m)', 'var(--paper)', 'var(--c)', 'var(--y)'];
-  const nums = ['٠١', '٠٢', '٠٣', '٠٤', '٠٥', '٠٦'];
 
   // Simple illustrations, one per step. They redraw each time a step becomes active.
   const svgs = [
@@ -119,11 +115,12 @@ const WHATSAPP_NUMBER = '201000000000';
     current = i;
     steps.forEach((s, j) => s.classList.toggle('active', j === i));
     card.style.setProperty('--tone', tones[i]);
-    num.textContent = nums[i];
+    num.textContent = ui().nums[i];
     art.innerHTML = svgs[i];
     bar.style.width = `${((i + 1) / steps.length) * 100}%`;
   }
   setStep(0);
+  document.addEventListener('langchange', () => { num.textContent = ui().nums[current]; });
 
   // The step whose centre is closest to the viewport's focus line wins.
   let ticking = false;
@@ -153,13 +150,16 @@ const WHATSAPP_NUMBER = '201000000000';
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const d = new FormData(form);
+    const w = ui().wa;
+    const sel = form.querySelector('select[name="product"]');
+    const product = sel ? sel.options[sel.selectedIndex].textContent : '';
     const lines = [
-      'أهلًا EMESE 👋',
-      `الاسم: ${d.get('name') || ''}`,
-      `المنتج: ${d.get('product') || ''}`,
-      d.get('qty') ? `الكمية: ${d.get('qty')}` : '',
-      d.get('details') ? `التفاصيل: ${d.get('details')}` : '',
-      window.__emeseMockup ? `من الاستوديو: ${window.__emeseMockup}` : ''
+      w.hi,
+      `${w.name}: ${d.get('name') || ''}`,
+      `${w.product}: ${product}`,
+      d.get('qty') ? `${w.qty}: ${d.get('qty')}` : '',
+      d.get('details') ? `${w.details}: ${d.get('details')}` : '',
+      window.__emeseMockup ? `${w.studio}: ${window.__emeseMockup}` : ''
     ].filter(Boolean);
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join('\n'))}`;
     window.open(url, '_blank', 'noopener');

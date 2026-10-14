@@ -1,133 +1,238 @@
-/* EMESE: 3D studio, live product mockups built with three.js */
-import {
-  THREE, TECHS, COLORS, INKS, PRODUCTS, FAMILY, reduceMotion,
-  engraveTone, drawArt, BUILDERS, applyTech, createStage, fontsReady
-} from './products3d.js';
-/* =========================================================
-   Scene
-   ========================================================= */
-const host = document.getElementById('stage');
-if (host) init().catch((err) => fail(err));
+/* EMESE: mockup studio. Real product renders + the visitor's own logo or text. */
+import { MockupView, loadProduct, designFromImage, designFromText } from './mockup.js';
+import { PRODUCTS, TECHS, COLOR_NAMES, INKS, FOILS, byId, luminance } from './catalog.js';
+import { lang, ui } from './i18n.js';
 
-function fail(err) {
-  console.warn('[EMESE studio]', err);
-  host.innerHTML = '<p class="stage-fallback">المعاينة الـ3D مش شغالة على الجهاز ده، بس ممكن تكلّمنا ونبعتلك موكب جاهز.</p>';
-}
+const canvas = document.getElementById('mockCanvas');
+if (canvas) init();
 
-async function init() {
-  let stage;
-  try { stage = createStage(host); } catch (e) { fail(e); return; }
-  const { renderer, scene, camera, floor, pivot } = stage;
-
-  /* ---------- state ---------- */
-  const state = { product: PRODUCTS[0], tech: PRODUCTS[0].techs[0], base: PRODUCTS[0].base, ink: PRODUCTS[0].ink, text: 'EMESE' };
-  const built = {};
-  let current = null;
-  let popT = 1;
-
-  function getBuilt(id) { return built[id] ||= BUILDERS[id](); }
-
-  function refreshArt() {
-    const p = current;
-    const ink = state.tech === 'laser' ? engraveTone(state.base) : state.ink;
-    drawArt(p.print.canvas, { layout: p.layout, text: state.text.trim(), ink, tech: state.tech, bg: p.fullBleed ? state.base : null });
-    p.print.tex.needsUpdate = true;
-  }
-  function refreshBase() {
-    current.baseMats.forEach(m => m.color.set(state.base));
-    if (current.fullBleed) refreshArt();
+function init() {
+  let view;
+  try { view = new MockupView(canvas); }
+  catch (e) {
+    canvas.insertAdjacentHTML('afterend', `<p class="stage-fallback">${ui().fallback}</p>`);
+    canvas.remove();
+    return;
   }
 
-  function showProduct(def) {
-    if (current) pivot.remove(current.group);
-    current = getBuilt(def.id);
-    pivot.add(current.group);
-    floor.position.y = current.floorY;
-    popT = reduceMotion ? 1 : 0;
-    refreshBase();
-    applyTech(current, state.tech);
-    refreshArt();
-    frame();
-  }
-
-  /* ---------- framing ---------- */
-  function frame() {
-    const w = host.clientWidth || 1, h = host.clientHeight || 1;
-    const aspect = w / h;
-    camera.aspect = aspect;
-    const d = state.product.dist * Math.max(1, 1.05 / aspect);
-    camera.position.set(0, 0.35, d);
-    camera.lookAt(0, -0.05, 0);
-    camera.updateProjectionMatrix();
-  }
-  function resize() {
-    const w = host.clientWidth, h = host.clientHeight;
-    if (!w || !h) return;
-    renderer.setSize(w, h, false);
-    frame();
-  }
-  new ResizeObserver(resize).observe(host);
-  resize();
-
-  /* ---------- drag to rotate ---------- */
-  let spin = 0, spinTarget = 0, tilt = 0, tiltTarget = 0, dragging = false, lastX = 0, lastY = 0, lastInput = -1e9;
-  const hint = document.querySelector('.stage-hint');
-  host.addEventListener('pointerdown', (e) => {
-    dragging = true; lastX = e.clientX; lastY = e.clientY;
-    host.setPointerCapture(e.pointerId);
-    hint?.classList.add('hide');
-  });
-  host.addEventListener('pointermove', (e) => {
-    if (!dragging) return;
-    spinTarget += (e.clientX - lastX) * 0.012;
-    tiltTarget = THREE.MathUtils.clamp(tiltTarget + (e.clientY - lastY) * 0.006, -0.5, 0.5);
-    lastX = e.clientX; lastY = e.clientY;
-    lastInput = performance.now();
-  });
-  const end = () => { dragging = false; lastInput = performance.now(); };
-  host.addEventListener('pointerup', end);
-  host.addEventListener('pointercancel', end);
-
-  /* ---------- loop (only while visible) ---------- */
-  const clock = new THREE.Clock();
-  let running = false, raf = 0;
-  function loop() {
-    raf = requestAnimationFrame(loop);
-    const t = clock.getElapsedTime();
-    const idle = !dragging && performance.now() - lastInput > 2500;
-    if (idle) {
-      // Drift back to the front, then sway gently.
-      spinTarget += (Math.round(spinTarget / (Math.PI * 2)) * Math.PI * 2 - spinTarget) * 0.03;
-      tiltTarget *= 0.95;
-    }
-    spin += (spinTarget - spin) * 0.12;
-    tilt += (tiltTarget - tilt) * 0.12;
-    const sway = reduceMotion ? 0 : Math.sin(t * 0.6) * 0.32;
-    pivot.rotation.y = spin + sway;
-    pivot.rotation.x = tilt;
-    pivot.position.y = reduceMotion ? 0 : Math.sin(t * 1.2) * 0.05;
-
-    if (popT < 1) {
-      popT = Math.min(1, popT + 0.045);
-      const e = 1 + 2.2 * Math.pow(popT - 1, 3) + 1.2 * Math.pow(popT - 1, 2); // easeOutBack
-      pivot.scale.setScalar(Math.max(0.001, e));
-    } else pivot.scale.setScalar(1);
-
-    current?.tick?.(reduceMotion ? 0.6 : t);
-    renderer.render(scene, camera);
-  }
-  const vis = new IntersectionObserver(([en]) => {
-    if (en.isIntersecting && !running) { running = true; clock.start(); loop(); }
-    else if (!en.isIntersecting && running) { running = false; cancelAnimationFrame(raf); }
-  }, { rootMargin: '100px' });
-  vis.observe(host);
-
-  /* =========================================================
-     UI
-     ========================================================= */
   const $ = (id) => document.getElementById(id);
-  const productPicker = $('productPicker'), techPicker = $('techPicker'), techNote = $('techNote');
-  const baseSw = $('baseSwatches'), inkSw = $('inkSwatches'), textInput = $('artText'), tag = $('stageTag');
+  const loading = $('stageLoading');
+  const FONTS = {
+    modern: { family: '"Alexandria", sans-serif', weight: 800 },
+    classic: { family: '"DM Serif Display", serif', weight: 400 },
+    light: { family: '"IBM Plex Sans Arabic", sans-serif', weight: 500 }
+  };
+
+  const state = {
+    pid: 'tee', tech: 'dtf', color: '#f2f1ee', ink: null, foil: FOILS[0],
+    source: 'logo', text: 'EMESE', font: 'modern', place: 'center',
+    u: 0.5, v: 0.5, w: 0.4, rot: 0, inkTouched: false, box: false
+  };
+  const designs = { logo: null, upload: null };
+  let prod = null;
+
+  /* ---------------- design texture ---------------- */
+  const logoImg = new Image();
+  logoImg.src = 'assets/logo.png';
+  logoImg.onload = () => { designs.logo = designFromImage(logoImg); refreshDesign(); };
+
+  function currentDesign() {
+    if (state.source === 'text') {
+      const f = FONTS[state.font];
+      return designFromText(state.text || 'EMESE', { font: f.family, weight: f.weight });
+    }
+    return designs[state.source] || designs.logo;
+  }
+  function refreshDesign() {
+    const d = currentDesign();
+    if (d) { view.setDesign(d); draw(); }
+  }
+
+  $('designFile').addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      // JPEGs have no transparency: drop a near-white background.
+      const src = /png|svg|webp/i.test(file.type) ? img : knockOutWhite(img);
+      designs.upload = designFromImage(src);
+      URL.revokeObjectURL(url);
+      state.source = 'upload';
+      state.ink = null;
+      refreshDesign();
+      renderUI();
+    };
+    img.src = url;
+  });
+
+  function knockOutWhite(img) {
+    const c = document.createElement('canvas');
+    c.width = img.naturalWidth; c.height = img.naturalHeight;
+    const x = c.getContext('2d');
+    x.drawImage(img, 0, 0);
+    const d = x.getImageData(0, 0, c.width, c.height);
+    for (let i = 0; i < d.data.length; i += 4) {
+      const m = Math.min(d.data[i], d.data[i + 1], d.data[i + 2]);
+      if (m > 235) d.data[i + 3] = Math.max(0, (255 - m) * 12);
+    }
+    x.putImageData(d, 0, 0);
+    return c;
+  }
+
+  /* ---------------- product loading ---------------- */
+  async function selectProduct(pid) {
+    const def = byId(pid);
+    state.pid = pid;
+    if (!def.techs.includes(state.tech)) state.tech = def.techs[0];
+    if (!def.colors.includes(state.color)) state.color = def.colors[0] || null;
+    loading.classList.add('on');
+    renderUI();
+    try {
+      const p = await loadProduct(pid);
+      if (state.pid !== pid) return; // another product was picked meanwhile
+      p.meta.widthM = def.widthM;
+      prod = p;
+      view.setProduct(p);
+      applyPlace(state.place in (p.meta.presets || {}) ? state.place : 'center');
+      autoInk();
+      refreshDesign();
+    } catch (e) {
+      console.warn('[EMESE studio]', e);
+    } finally {
+      if (state.pid === pid) loading.classList.remove('on');
+    }
+    renderUI();
+  }
+
+  function applyPlace(name) {
+    const presets = (prod && prod.meta.presets) || {};
+    const pr = presets[name] || prod.meta.default;
+    state.place = name;
+    Object.assign(state, { u: pr.u, v: pr.v, w: pr.w, rot: 0 });
+    draw();
+  }
+
+  // Keep the default logo readable: light ink on dark products unless the visitor chose one.
+  function autoInk() {
+    if (state.inkTouched || state.source === 'upload') return;
+    const dark = state.color && luminance(state.color) < 0.18;
+    state.ink = dark ? '#f6f4ef' : null;
+  }
+
+  /* ---------------- drawing ---------------- */
+  let raf = 0;
+  function draw() {
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      raf = 0;
+      if (!prod) return;
+      const def = byId(state.pid);
+      const t = TECHS[state.tech];
+      view.set({
+        tint: def.colors.length ? state.color : null,
+        mode: t.mode, gloss: t.gloss || 0.15,
+        ink: t.mode === 'foil' ? null : state.ink,
+        foil: state.foil,
+        reveal: !!def.reveal,
+        u: state.u, v: state.v, w: state.w, rot: state.rot, box: state.box
+      });
+      view.render();
+    });
+  }
+
+  /* ---------------- pointer: drag, wheel, pinch ---------------- */
+  const pointers = new Map();
+  let drag = null, pinch = null;
+  const hint = $('stageHint');
+
+  canvas.addEventListener('pointerdown', (e) => {
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.size === 2) {
+      const [a, b] = [...pointers.values()];
+      pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, w: state.w, ang: Math.atan2(b.y - a.y, b.x - a.x), rot: state.rot };
+      drag = null;
+      return;
+    }
+    const uv = view.uvAt(e.clientX, e.clientY);
+    if (uv) {
+      drag = { start: uv, u: state.u, v: state.v, last: uv };
+      canvas.setPointerCapture(e.pointerId);
+      hint.classList.add('hide');
+      e.preventDefault();
+    }
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pinch && pointers.size === 2) {
+      const [a, b] = [...pointers.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      state.w = clampW(pinch.w * d / pinch.d);
+      state.rot = pinch.rot + (Math.atan2(b.y - a.y, b.x - a.x) - pinch.ang);
+      syncRanges(); draw();
+      return;
+    }
+    if (drag) {
+      const uv = view.uvAt(e.clientX, e.clientY) || drag.last;
+      drag.last = uv;
+      let du = uv.u - drag.start.u;
+      du -= Math.round(du); // wrap on cylinders
+      state.u = drag.u + du;
+      state.v = Math.min(1.1, Math.max(-0.1, drag.v + (uv.v - drag.start.v)));
+      draw();
+    }
+    const over = !!drag || !!pinch || overDesign(e.clientX, e.clientY);
+    if (over !== state.box) { state.box = over; draw(); }
+    if (e.pointerType === 'mouse') canvas.style.cursor = drag ? 'grabbing' : (over ? 'grab' : 'default');
+  });
+  const up = (e) => {
+    pointers.delete(e.pointerId);
+    if (pointers.size < 2) pinch = null;
+    if (!pointers.size) drag = null;
+    if (e.pointerType !== 'mouse' && !pointers.size) { state.box = false; draw(); }
+  };
+  canvas.addEventListener('pointerup', up);
+  canvas.addEventListener('pointerleave', () => { if (!drag && state.box) { state.box = false; draw(); } });
+  canvas.addEventListener('pointercancel', up);
+  canvas.addEventListener('wheel', (e) => {
+    if (!overDesign(e.clientX, e.clientY)) return; // let the page scroll elsewhere
+    e.preventDefault();
+    state.w = clampW(state.w * Math.exp(-e.deltaY * 0.0015));
+    syncRanges(); draw();
+  }, { passive: false });
+
+  function overDesign(x, y) {
+    const uv = view.uvAt(x, y);
+    if (!uv || !prod) return false;
+    const a = prod.meta.printAspect;
+    let dx = uv.u - state.u;
+    dx -= Math.round(dx);
+    dx *= a;
+    const dy = uv.v - state.v;
+    const half = (state.w * a) / 2;
+    return Math.abs(dx) < half * 1.1 && Math.abs(dy) < half * 1.1;
+  }
+  const clampW = (w) => Math.min(1.2, Math.max(0.04, w));
+
+  // keyboard nudging for accessibility
+  canvas.tabIndex = 0;
+  canvas.addEventListener('keydown', (e) => {
+    const step = e.shiftKey ? 0.05 : 0.01;
+    const k = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, step], ArrowDown: [0, -step] }[e.key];
+    if (k) { e.preventDefault(); state.u += k[0]; state.v += k[1]; draw(); }
+    if (e.key === '+' || e.key === '=') { state.w = clampW(state.w * 1.08); syncRanges(); draw(); }
+    if (e.key === '-') { state.w = clampW(state.w / 1.08); syncRanges(); draw(); }
+  });
+
+  /* ---------------- controls ---------------- */
+  const sizeRange = $('sizeRange'), rotRange = $('rotRange');
+  function syncRanges() {
+    sizeRange.value = Math.round(state.w * 100);
+    rotRange.value = Math.round((((state.rot * 180) / Math.PI + 540) % 360) - 180);
+  }
+  sizeRange.addEventListener('input', () => { state.w = clampW(sizeRange.value / 100); draw(); });
+  rotRange.addEventListener('input', () => { state.rot = (rotRange.value * Math.PI) / 180; draw(); });
+  $('artText').addEventListener('input', (e) => { state.text = e.target.value; refreshDesign(); });
 
   function radio(container, items, selected, onPick, opts = {}) {
     container.innerHTML = '';
@@ -136,76 +241,126 @@ async function init() {
       b.type = 'button';
       b.setAttribute('role', 'radio');
       b.setAttribute('aria-checked', String(it.value === selected));
-      if (opts.swatch) { b.style.setProperty('--sw', it.value); b.setAttribute('aria-label', it.label); b.title = it.label; }
-      else b.textContent = it.label;
+      if (opts.swatch) {
+        if (it.value) b.style.setProperty('--sw', it.value);
+        else b.classList.add('sw-original');
+        b.setAttribute('aria-label', it.label);
+        b.title = it.label;
+      } else if (opts.thumb) {
+        b.innerHTML = `<img src="assets/mockups/${it.value}/thumb.webp" alt="" loading="lazy"><span>${it.label}</span>`;
+      } else {
+        b.textContent = it.label;
+      }
       if (it.disabled) { b.disabled = true; b.title = it.reason || ''; }
       b.addEventListener('click', () => onPick(it.value));
       container.appendChild(b);
     });
   }
 
+  const L = () => lang();
+  const nameOf = (hex) => (COLOR_NAMES[hex] || [hex, hex])[L() === 'en' ? 1 : 0];
+
   function renderUI() {
-    const p = state.product;
-    radio(productPicker, PRODUCTS.map(d => ({ value: d.id, label: d.label })), p.id, (id) => {
-      const def = PRODUCTS.find(d => d.id === id);
-      state.product = def;
-      if (!def.techs.includes(state.tech)) state.tech = def.techs[0];
-      state.base = def.base; state.ink = def.ink;
-      showProduct(def); renderUI();
+    const def = byId(state.pid);
+    const s = ui();
+    radio($('productGrid'), PRODUCTS.map(p => ({ value: p.id, label: p[L()] })), state.pid, (id) => selectProduct(id), { thumb: true });
+
+    radio($('designTabs'), [
+      { value: 'logo', label: s.designTabs.logo },
+      { value: 'upload', label: s.designTabs.upload },
+      { value: 'text', label: s.designTabs.text }
+    ], state.source, (v) => {
+      state.source = v;
+      if (v === 'upload' && !designs.upload) $('designFile').click();
+      autoInk();
+      refreshDesign();
+      renderUI();
     });
-    radio(techPicker, Object.entries(TECHS).map(([k, v]) => ({
-      value: k, label: v.label, disabled: !p.techs.includes(k), reason: `مش مناسبة لل${p.label}`
-    })), state.tech, (k) => {
-      state.tech = k; applyTech(current, k); refreshArt(); renderUI();
+    $('designUpload').hidden = state.source !== 'upload';
+    $('designText').hidden = state.source !== 'text';
+    radio($('fontPicker'), Object.keys(FONTS).map(k => ({ value: k, label: s.fonts[k] })), state.font, (k) => {
+      state.font = k; refreshDesign(); renderUI();
     });
-    techNote.textContent = TECHS[state.tech].note;
-    radio(baseSw, p.bases.map(c => ({ value: c, label: COLORS[c] || c })), state.base, (c) => {
-      state.base = c; refreshBase(); if (state.tech === 'laser') refreshArt(); renderUI();
+
+    radio($('techPicker'), def.techs.map(k => ({ value: k, label: TECHS[k][L()] })), state.tech, (k) => {
+      state.tech = k;
+      // sublimation dye only shows on light materials: switch to the lightest colour
+      if (TECHS[k].mode === 'dye' && state.color && luminance(state.color) < 0.3) {
+        state.color = def.colors.slice().sort((x, y) => luminance(y) - luminance(x))[0];
+        autoInk();
+      }
+      draw(); renderUI();
+    });
+    $('techNote').textContent = TECHS[state.tech][L() === 'en' ? 'noteEn' : 'noteAr'];
+
+    const baseWrap = $('baseSwatches');
+    baseWrap.parentElement.hidden = !def.colors.length;
+    radio(baseWrap, def.colors.map(c => ({ value: c, label: nameOf(c) })), state.color, (c) => {
+      state.color = c; autoInk(); draw(); renderUI();
     }, { swatch: true });
-    const laser = state.tech === 'laser';
-    radio(inkSw, INKS.map(c => ({ value: c, label: COLORS[c] || c, disabled: laser, reason: 'الليزر مالوش حبر' })), laser ? null : state.ink, (c) => {
-      state.ink = c; refreshArt(); renderUI();
-    }, { swatch: true });
-    tag.textContent = `${p.label} • ${TECHS[state.tech].label}`;
-    window.__emeseMockup = `${p.label} / ${TECHS[state.tech].label} / لون ${COLORS[state.base] || state.base} / «${state.text.trim() || 'EMESE'}»`;
+
+    const mode = TECHS[state.tech].mode;
+    const inkLegend = $('inkLegend');
+    if (mode === 'foil') {
+      inkLegend.textContent = s.foilLegend;
+      radio($('inkSwatches'), FOILS.map(c => ({ value: c, label: nameOf(c) })), state.foil, (c) => {
+        state.foil = c; draw(); renderUI();
+      }, { swatch: true });
+    } else {
+      inkLegend.textContent = L() === 'en' ? '5. Print color' : '٥. لون الطباعة';
+      const laser = mode === 'laser';
+      const items = [{ value: null, label: s.original, disabled: laser, reason: s.inkOff }]
+        .concat(INKS.map(c => ({ value: c, label: nameOf(c), disabled: laser, reason: s.inkOff })));
+      radio($('inkSwatches'), items, laser ? '__none' : state.ink, (c) => {
+        state.ink = c; state.inkTouched = true; draw(); renderUI();
+      }, { swatch: true });
+    }
+
+    const presets = Object.keys((prod && prod.meta.presets) || { center: 1 });
+    radio($('placePicker'), presets.map(k => ({ value: k, label: s.places[k] || k })), state.place, (k) => {
+      applyPlace(k); syncRanges(); renderUI();
+    });
+    syncRanges();
+
+    $('stageTag').textContent = `${def[L()]} · ${TECHS[state.tech][L()]}`;
+    window.__emeseMockup = `${def[L()]} / ${TECHS[state.tech][L()]}${state.color ? ' / ' + nameOf(state.color) : ''}`;
   }
 
-  textInput.addEventListener('input', () => { state.text = textInput.value; refreshArt(); renderUI(); });
-
-  // Download a framed PNG of the current view.
+  /* ---------------- download + order ---------------- */
   $('snapBtn').addEventListener('click', () => {
-    renderer.render(scene, camera);
-    const src = renderer.domElement;
+    view.set({ box: false });
+    view.render();
     const out = document.createElement('canvas');
-    out.width = src.width; out.height = src.height;
+    out.width = canvas.width; out.height = canvas.height;
     const x = out.getContext('2d');
-    const grd = x.createRadialGradient(out.width / 2, out.height * 0.38, 0, out.width / 2, out.height * 0.38, out.width * 0.75);
-    grd.addColorStop(0, '#3a3631'); grd.addColorStop(0.55, '#201e1b'); grd.addColorStop(1, '#161513');
-    x.fillStyle = grd; x.fillRect(0, 0, out.width, out.height);
-    x.drawImage(src, 0, 0);
+    x.drawImage(canvas, 0, 0);
     const u = out.width / 100;
-    x.fillStyle = '#f4efe6'; x.font = `400 ${u * 4}px "DM Serif Display", ${FAMILY}`; x.textBaseline = 'top'; x.direction = 'ltr'; x.textAlign = 'left';
-    x.fillText('EMESE', u * 4, u * 4);
-    x.font = `600 ${u * 2.2}px ${FAMILY}`; x.direction = 'rtl'; x.textAlign = 'right'; x.fillStyle = 'rgba(244,239,230,.7)';
-    x.fillText(`${state.product.label} • ${TECHS[state.tech].label}`, out.width - u * 4, u * 5);
+    x.font = `400 ${u * 3.4}px "DM Serif Display", serif`;
+    x.fillStyle = 'rgba(20,20,20,.55)';
+    x.textBaseline = 'bottom';
+    x.direction = 'ltr';
+    x.textAlign = 'left';
+    x.fillText('EMESE', u * 3.5, out.height - u * 3);
     const a = document.createElement('a');
-    a.download = `EMESE-${state.product.id}-${state.tech}.png`;
+    a.download = `EMESE-${state.pid}-${state.tech}.png`;
     a.href = out.toDataURL('image/png');
     a.click();
   });
 
-  // "Order this" pre-fills the contact form.
   $('orderBtn').addEventListener('click', () => {
+    const def = byId(state.pid);
     const sel = document.getElementById('contactProduct');
-    if (sel) sel.value = state.product.contact;
+    if (sel) sel.value = def.contact;
     const details = document.querySelector('#contactForm textarea');
-    if (details && !details.value) details.value = `عايز ${state.product.label} بطريقة ${TECHS[state.tech].label}، والتصميم: «${state.text.trim() || 'EMESE'}».`;
+    if (details && !details.value) details.value = ui().orderNote(def[L()], TECHS[state.tech][L()]);
   });
 
-  showProduct(state.product);
-  renderUI();
+  document.addEventListener('langchange', renderUI);
 
-  // Redraw once the display font is ready so the canvas uses it.
-  await fontsReady();
-  refreshArt();
+  // Start loading once the studio is close to the viewport.
+  const io = new IntersectionObserver(([en]) => {
+    if (en.isIntersecting) { io.disconnect(); selectProduct('tee'); }
+  }, { rootMargin: '600px' });
+  io.observe(canvas);
+  renderUI();
 }
