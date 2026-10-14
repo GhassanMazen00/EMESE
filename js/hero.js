@@ -75,7 +75,10 @@ async function init() {
     if (visible && !document.hidden) {
       canvas.classList.add('fade');
       await new Promise(r => setTimeout(r, FADE_MS));
-      try { await show((idx + 1) % SHOW.length); } catch (e) { /* keep the current one */ }
+      // skip any product that fails to load
+      for (let k = 1; k <= SHOW.length; k++) {
+        try { await show((idx + k) % SHOW.length); break; } catch (e) { /* try the next one */ }
+      }
       canvas.classList.remove('fade');
     }
     setTimeout(tick, SHOW_MS);

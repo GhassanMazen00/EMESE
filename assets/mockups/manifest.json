@@ -14,8 +14,8 @@
       "w": 0.5
     },
     "baseLinear": [
-      0.8509,
-      0.8509,
+      0.851,
+      0.851,
       0.8433
     ],
     "presets": {
@@ -46,7 +46,7 @@
     "tintable": true,
     "printAspect": 3.577924966588376,
     "default": {
-      "u": 0.5,
+      "u": 0.46,
       "v": 0.5,
       "w": 0.27
     },
@@ -57,12 +57,12 @@
     ],
     "presets": {
       "center": {
-        "u": 0.5,
+        "u": 0.46,
         "v": 0.5,
         "w": 0.27
       },
       "big": {
-        "u": 0.5,
+        "u": 0.46,
         "v": 0.5,
         "w": 0.4
       }
@@ -97,6 +97,221 @@
         "u": 0.75,
         "v": 0.12,
         "w": 0.3
+      }
+    }
+  },
+  "cards": {
+    "size": [
+      1200,
+      1200
+    ],
+    "lightScale": 0.5073,
+    "specScale": 0.0252,
+    "tintable": true,
+    "printAspect": 1.7999999999999998,
+    "default": {
+      "u": 0.5,
+      "v": 0.52,
+      "w": 0.62
+    },
+    "baseLinear": [
+      0.8769,
+      0.8731,
+      0.846
+    ],
+    "presets": {
+      "center": {
+        "u": 0.5,
+        "v": 0.52,
+        "w": 0.62
+      },
+      "corner": {
+        "u": 0.25,
+        "v": 0.75,
+        "w": 0.3
+      }
+    }
+  },
+  "tumbler": {
+    "size": [
+      1200,
+      1200
+    ],
+    "lightScale": 1.7844,
+    "specScale": 0.1415,
+    "tintable": true,
+    "printAspect": 1.8849555921538756,
+    "default": {
+      "u": 0.486,
+      "v": 0.55,
+      "w": 0.3
+    },
+    "baseLinear": [
+      0.8506,
+      0.8506,
+      0.8419
+    ],
+    "presets": {
+      "center": {
+        "u": 0.486,
+        "v": 0.55,
+        "w": 0.3
+      },
+      "big": {
+        "u": 0.486,
+        "v": 0.5,
+        "w": 0.42
+      }
+    }
+  },
+  "tote": {
+    "size": [
+      1200,
+      1200
+    ],
+    "lightScale": 0.8681,
+    "specScale": 0.0457,
+    "tintable": true,
+    "printAspect": 0.9047619047619048,
+    "default": {
+      "u": 0.5,
+      "v": 0.5,
+      "w": 0.55
+    },
+    "baseLinear": [
+      0.841,
+      0.8312,
+      0.802
+    ],
+    "presets": {
+      "center": {
+        "u": 0.5,
+        "v": 0.5,
+        "w": 0.55
+      },
+      "big": {
+        "u": 0.5,
+        "v": 0.47,
+        "w": 0.78
+      }
+    }
+  },
+  "pen": {
+    "size": [
+      1200,
+      1200
+    ],
+    "lightScale": 1.0488,
+    "specScale": 0.6261,
+    "tintable": true,
+    "printAspect": 1.7052315331274501,
+    "default": {
+      "u": 0.5,
+      "v": 0.25,
+      "w": 0.6
+    },
+    "baseLinear": [
+      0.8505,
+      0.8505,
+      0.8505
+    ],
+    "presets": {
+      "center": {
+        "u": 0.5,
+        "v": 0.25,
+        "w": 0.6
+      }
+    },
+    "flipV": true
+  },
+  "keychain": {
+    "size": [
+      1200,
+      1200
+    ],
+    "lightScale": 0.6731,
+    "specScale": 0.0231,
+    "tintable": false,
+    "printAspect": 1.0,
+    "default": {
+      "u": 0.5,
+      "v": 0.45,
+      "w": 0.62
+    },
+    "baseLinear": [
+      0.8,
+      0.8,
+      0.8
+    ],
+    "presets": {
+      "center": {
+        "u": 0.5,
+        "v": 0.45,
+        "w": 0.62
+      }
+    }
+  },
+  "cap": {
+    "size": [
+      1200,
+      1200
+    ],
+    "lightScale": 1.3065,
+    "specScale": 0.1107,
+    "tintable": true,
+    "printAspect": 2.0,
+    "default": {
+      "u": 0.5,
+      "v": 0.5,
+      "w": 0.55
+    },
+    "baseLinear": [
+      0.8339,
+      0.8245,
+      0.805
+    ],
+    "presets": {
+      "center": {
+        "u": 0.5,
+        "v": 0.5,
+        "w": 0.55
+      },
+      "big": {
+        "u": 0.5,
+        "v": 0.5,
+        "w": 0.8
+      }
+    }
+  },
+  "flag": {
+    "size": [
+      1200,
+      1200
+    ],
+    "lightScale": 0.8619,
+    "specScale": 0.0742,
+    "tintable": true,
+    "printAspect": 1.4999999999999998,
+    "default": {
+      "u": 0.5,
+      "v": 0.5,
+      "w": 0.6
+    },
+    "baseLinear": [
+      0.8594,
+      0.8594,
+      0.8483
+    ],
+    "presets": {
+      "center": {
+        "u": 0.5,
+        "v": 0.5,
+        "w": 0.6
+      },
+      "big": {
+        "u": 0.5,
+        "v": 0.5,
+        "w": 0.88
       }
     }
   }

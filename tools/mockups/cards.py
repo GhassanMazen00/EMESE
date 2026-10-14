@@ -87,6 +87,8 @@ def bake(pid, meta, tint, ink, logo):
 
     u = ((uvp[..., 0] << 4) | (uvp[..., 2] >> 4)) / 4095.0
     v = ((uvp[..., 1] << 4) | (uvp[..., 2] & 15)) / 4095.0
+    if meta.get('flipV'):
+        v = 1 - v
     d = meta['default']
     aspect = meta['printAspect']
     dx = u - d['u']

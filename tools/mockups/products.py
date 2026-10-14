@@ -597,7 +597,8 @@ def build_pen():
         co = me.vertices[loop.vertex_index].co
         a = math.atan2(co.y, co.x)
         # v around the barrel, centred on the side that faces up after rotation
-        uvl.data[loop.index].uv = ((co.z - z0) / (z1 - z0), ((a - math.pi / 2) / (2 * math.pi) + 0.5) % 1.0)
+        # v runs around the barrel so text reads upright on the side facing the camera
+        uvl.data[loop.index].uv = ((co.z - z0) / (z1 - z0), 1.0 - (((a - math.pi / 2) / (2 * math.pi) + 0.5) % 1.0))
     chrome = principled('chrome', color=(0.9, 0.9, 0.92), rough=0.08, metallic=1.0)
     grip = lathe('grip', [(0, 0), (R * 0.98, 0), (R * 0.95, 0.022), (0.0045, 0.03), (0, 0.03)], steps=96)
     grip.location.z = -0.028
@@ -622,8 +623,8 @@ def build_pen():
     lib.area_light((0.0, -0.05, 0.35), (0, 0, 0), 0.7, 0.04, size_y=0.5, color=(1, 1, 1))
     lib.camera((0.0, -0.16, 0.31), (-0.004, 0.0, 0.0), lens=82)
     return dict(tintable=True, print_aspect=(z1 - z0) / (2 * math.pi * R),
-                default={'u': 0.5, 'v': 0.5, 'w': 0.6},
-                extra={'presets': {'center': {'u': 0.5, 'v': 0.5, 'w': 0.6}}})
+                default={'u': 0.5, 'v': 0.25, 'w': 0.6},
+                extra={'presets': {'center': {'u': 0.5, 'v': 0.25, 'w': 0.6}}})
 
 
 # ----------------------------------------------------------------- cards ---
@@ -751,16 +752,16 @@ def build_tote():
     def canvas(name):
         m = principled(name, color=(0.86, 0.85, 0.82), rough=0.95, sheen=0.3, spec=0.3)
         co = lib.tex_coord(m)
-        wx = node(m, 'ShaderNodeTexWave', _wave_type='BANDS', _bands_direction='X', Scale=260.0, Distortion=0.8)
-        wy = node(m, 'ShaderNodeTexWave', _wave_type='BANDS', _bands_direction='Y', Scale=260.0, Distortion=0.8)
+        wx = node(m, 'ShaderNodeTexWave', _wave_type='BANDS', _bands_direction='X', Scale=150.0, Distortion=2.5, Detail=2.0)
+        wy = node(m, 'ShaderNodeTexWave', _wave_type='BANDS', _bands_direction='Y', Scale=150.0, Distortion=2.5, Detail=2.0)
         connect(m, co, wx.inputs['Vector'])
         connect(m, co, wy.inputs['Vector'])
         n = lib.noise(m, co, 30.0, detail=4)
         hem = line_groove(m, co, (-0.2, H / 2 - 0.025), (0.2, H / 2 - 0.025), [0.0, 0.006], width=0.0013)
         h = sum_sockets(m, [wx.outputs['Fac'], wy.outputs['Fac'], n.outputs['Fac'], hem], [0.4, 0.4, 0.5, 1.0])
         weave = sum_sockets(m, [wx.outputs['Fac'], wy.outputs['Fac'], n.outputs['Fac']], [0.35, 0.35, 0.3])
-        textured_albedo(m, (0.86, 0.85, 0.82), weave, amount=0.14)
-        lib.add_bump(m, h, strength=0.3, distance=0.0012)
+        textured_albedo(m, (0.86, 0.85, 0.82), weave, amount=0.06)
+        lib.add_bump(m, h, strength=0.22, distance=0.0012)
         return m
     mp, mb = canvas('print'), canvas('body')
     two_slots(bag, mp, mb)

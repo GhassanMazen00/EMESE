@@ -29,7 +29,7 @@ uniform float uWidth, uRot, uAspect, uPhysW;
 uniform int uMode;          // 0 print, 1 dye, 2 uv, 3 stitch, 4 laser, 5 foil
 uniform float uGloss;
 uniform vec3 uInk;
-uniform float uUseInk, uDesignOn, uReveal, uBox;
+uniform float uUseInk, uDesignOn, uReveal, uBox, uFlipV;
 uniform vec3 uFoil;
 
 vec3 toLin(vec3 c) { return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(0.04045, c)); }
@@ -40,7 +40,9 @@ vec2 decodeUV(vec2 p) {
   vec3 e = floor(texture2D(uUV, p).rgb * 255.0 + 0.5);
   float ulo = floor(e.b / 16.0);
   float vlo = e.b - ulo * 16.0;
-  return vec2(e.r * 16.0 + ulo, e.g * 16.0 + vlo) / 4095.0;
+  vec2 uv = vec2(e.r * 16.0 + ulo, e.g * 16.0 + vlo) / 4095.0;
+  if (uFlipV > 0.5) uv.y = 1.0 - uv.y;
+  return uv;
 }
 // uv for this texel, borrowing a neighbour on anti-aliased edges
 bool printUV(vec2 p, out vec2 uv) {
@@ -85,6 +87,7 @@ void main() {
   vec3 base = alb;
   float mod_ = 1.0;
   vec3 extra = vec3(0.0);
+  vec3 glow = vec3(0.0);   // light not tied to the diffuse pass (metal reflections)
 
   vec2 uv;
   if (uDesignOn > 0.5 && m.r > 0.001 && printUV(p, uv)) {
@@ -128,12 +131,12 @@ void main() {
       base = mix(alb, tgt, a);
       mod_ = 1.0 - relief * 0.35;
     } else if (uMode == 5) {     // hot foil: metallic, slightly debossed
-      base = mix(alb, uFoil * 0.35, a);
+      base = mix(alb, uFoil * 0.45, a);
       mod_ = 1.0 - relief * 0.4;
-      extra = uFoil * a * (0.15 * hl + 0.85 * pow(hl, 2.5));
+      glow = uFoil * a * (0.16 + 0.42 * smoothstep(0.0, 1.0, hl)) * (1.0 + relief * 0.6);
     }
   }
-  vec3 product = base * mod_ * L + spec + extra * L;
+  vec3 product = base * mod_ * L + spec + extra * L + glow;
   vec3 lin = mix(photo, product, cover);
   // dashed frame around the design while it is being moved or resized
   vec2 bu;
@@ -216,7 +219,7 @@ export class MockupView {
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     this.u = {};
     for (const n of ['uPhoto', 'uLight', 'uAlbedo', 'uUV', 'uMask', 'uDesign', 'uSpec', 'uSize', 'uLightScale', 'uSpecScale', 'uBaseLin', 'uTint', 'uUseTint',
-      'uCenter', 'uWidth', 'uRot', 'uAspect', 'uPhysW', 'uMode', 'uGloss', 'uInk', 'uUseInk', 'uDesignOn', 'uReveal', 'uFoil', 'uBox']) {
+      'uCenter', 'uWidth', 'uRot', 'uAspect', 'uPhysW', 'uMode', 'uGloss', 'uInk', 'uUseInk', 'uDesignOn', 'uReveal', 'uFoil', 'uBox', 'uFlipV']) {
       this.u[n] = gl.getUniformLocation(prog, n);
     }
     this.tex = {};
@@ -288,7 +291,8 @@ export class MockupView {
     const i = (y * w + x) * 4;
     if (this._mask[i + 2] < 128) return null;
     const ulo = this._uv[i + 2] >> 4, vlo = this._uv[i + 2] & 15;
-    return { u: ((this._uv[i] << 4) | ulo) / 4095, v: ((this._uv[i + 1] << 4) | vlo) / 4095 };
+    const v = ((this._uv[i + 1] << 4) | vlo) / 4095;
+    return { u: ((this._uv[i] << 4) | ulo) / 4095, v: this.product.meta.flipV ? 1 - v : v };
   }
 
   render() {
@@ -314,6 +318,7 @@ export class MockupView {
     gl.uniform1f(u.uReveal, s.reveal ? 1 : 0);
     gl.uniform3fv(u.uFoil, hexToLin(s.foil));
     gl.uniform1f(u.uBox, s.box ? 1 : 0);
+    gl.uniform1f(u.uFlipV, meta.flipV ? 1 : 0);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 }
