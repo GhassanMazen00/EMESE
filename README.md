@@ -35,6 +35,8 @@ python3 -m http.server 8000
 index.html        الصفحة
 css/style.css     التصميم
 js/main.js        السكرول، الخطوات، فورم الواتساب
+js/products3d.js  موديلات المنتجات الـ3D (مشتركة)
+js/hero3d.js      المنتجات الـ3D في أول الصفحة
 js/studio.js      الاستوديو الـ3D
 js/vendor/        three.js
 assets/           الأيقونة

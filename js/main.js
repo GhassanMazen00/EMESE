@@ -31,7 +31,7 @@ const WHATSAPP_NUMBER = '201000000000';
   if (items.length < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   let i = 0;
   setInterval(() => {
-    if (document.hidden) return;
+    if (document.hidden || document.querySelector('.proof.is-3d')) return;
     items[i].classList.remove('is-on'); dots[i]?.classList.remove('on');
     i = (i + 1) % items.length;
     items[i].classList.add('is-on'); dots[i]?.classList.add('on');
