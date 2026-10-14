@@ -1,7 +1,44 @@
-/* EMESE — page interactions (reveal, steps, contact) */
+/* EMESE: page interactions (theme, hero proof, reveal, steps, contact) */
 
 // ⚠️ Replace with the real business WhatsApp number (country code, no "+" or spaces).
 const WHATSAPP_NUMBER = '201000000000';
+
+/* ---------- light / dark toggle ---------- */
+(() => {
+  const root = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const meta = document.querySelector('meta[name="theme-color"]');
+  const sync = () => {
+    const dark = root.getAttribute('data-theme') === 'dark';
+    if (meta) meta.setAttribute('content', dark ? '#121110' : '#f4efe6');
+    btn?.setAttribute('aria-pressed', String(dark));
+  };
+  sync();
+  btn?.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('emese-theme', next); } catch (e) { /* storage blocked: still switches for this visit */ }
+    sync();
+  });
+})();
+
+/* ---------- hero proof card: slow cross-fade between products ---------- */
+(() => {
+  const items = [...document.querySelectorAll('.proof-item')];
+  const dots = [...document.querySelectorAll('#proofDots i')];
+  const label = document.getElementById('proofLabel');
+  const id = document.getElementById('proofId');
+  if (items.length < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let i = 0;
+  setInterval(() => {
+    if (document.hidden) return;
+    items[i].classList.remove('is-on'); dots[i]?.classList.remove('on');
+    i = (i + 1) % items.length;
+    items[i].classList.add('is-on'); dots[i]?.classList.add('on');
+    label.textContent = items[i].dataset.label;
+    id.textContent = `PROOF 0${i + 1}`;
+  }, 4200);
+})();
 
 /* ---------- reveal on scroll ---------- */
 (() => {

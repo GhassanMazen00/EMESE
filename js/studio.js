@@ -1,4 +1,4 @@
-/* EMESE — 3D studio: live product mockups built with three.js */
+/* EMESE: 3D studio: live product mockups built with three.js */
 import * as THREE from 'three';
 import { RoomEnvironment } from './vendor/RoomEnvironment.js';
 import { RoundedBoxGeometry } from './vendor/RoundedBoxGeometry.js';
@@ -8,11 +8,11 @@ import { RoundedBoxGeometry } from './vendor/RoundedBoxGeometry.js';
    ========================================================= */
 const TECHS = {
   dtf:    { label: 'DTF',     note: 'بنطبع على فيلم ونكبسه بالحرارة. ألوان كاملة على أي لون قماش، وبيستحمل الغسيل.' },
-  stitch: { label: 'تطريز',   note: 'اللوجو بيتخيّط بالخيط غرزة غرزة. شكل رسمي وملمس بارز — مكانه الطبيعي على الصدر.' },
+  stitch: { label: 'تطريز',   note: 'اللوجو بيتخيّط بالخيط غرزة غرزة. شكل رسمي وملمس بارز، ومكانه الطبيعي على الصدر.' },
   sub:    { label: 'سبلميشن', note: 'الحبر بيدخل جوّه ألياف البوليستر أو طبقة المج، فمش هتحسّ بيه خالص. أحلى على الألوان الفاتحة.' },
   uvdtf:  { label: 'UV DTF',  note: 'ستيكر كريستال من غير خلفية، بلمعة وبروز. بيتلزق على أي سطح ناشف.' },
   uv:     { label: 'UV',      note: 'طباعة مباشرة على المنتج والحبر بيتجفف بالأشعة في ساعتها. ألوان قوية بلمسة بارزة.' },
-  laser:  { label: 'ليزر',    note: 'الليزر بيحفر جوّه الخامة نفسها — مالوش لون حبر، ومستحيل يتمسح.' }
+  laser:  { label: 'ليزر',    note: 'الليزر بيحفر جوّه الخامة نفسها، فمالوش لون حبر ومستحيل يتمسح.' }
 };
 
 const COLORS = {
@@ -653,7 +653,7 @@ async function init() {
     x.fillStyle = grd; x.fillRect(0, 0, out.width, out.height);
     x.drawImage(src, 0, 0);
     const u = out.width / 100;
-    x.fillStyle = '#f4efe6'; x.font = `900 ${u * 4}px ${FAMILY}`; x.textBaseline = 'top'; x.direction = 'ltr'; x.textAlign = 'left';
+    x.fillStyle = '#f4efe6'; x.font = `800 ${u * 4}px "Syne", ${FAMILY}`; x.textBaseline = 'top'; x.direction = 'ltr'; x.textAlign = 'left';
     x.fillText('EMESE', u * 4, u * 4);
     x.font = `600 ${u * 2.2}px ${FAMILY}`; x.direction = 'rtl'; x.textAlign = 'right'; x.fillStyle = 'rgba(244,239,230,.7)';
     x.fillText(`${state.product.label} • ${TECHS[state.tech].label}`, out.width - u * 4, u * 5);

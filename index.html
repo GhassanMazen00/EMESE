@@ -3,13 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EMESE — أي فكرة، نطبعهالك</title>
-  <meta name="description" content="EMESE شركة توريدات مخصصة من مصر: يونيفورمات مطبوعة ومتطرزة، كشاكيل، أقلام، أعلام، كروت، مجات وهدايا شركات بطباعة DTF و UV DTF و UV وليزر وتطريز.">
+  <title>EMESE | إنت تتخيّل، وإحنا ننفّذ</title>
+  <meta name="description" content="EMESE شركة توريدات مخصّصة من مصر: يونيفورمات مطبوعة ومتطرّزة، كشاكيل، أقلام، أعلام، كروت، مجات وهدايا شركات بطباعة DTF و UV DTF و UV وحفر بالليزر وتطريز.">
   <meta name="theme-color" content="#f4efe6">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <script>
+    // Apply the saved theme before first paint so there's no flash.
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('emese-theme'); } catch (e) {}
+      if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script type="importmap">
     { "imports": { "three": "./js/vendor/three.module.min.js" } }
@@ -20,17 +29,22 @@
 
   <!-- ===== Header ===== -->
   <header class="nav" id="top">
-    <a class="brand" href="#top" aria-label="EMESE — الرئيسية">
-      <span class="brand-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-      <span class="brand-word">EMESE</span>
+    <a class="brand" href="#top" aria-label="EMESE، الرئيسية">
+      <span class="brand-word">EMESE</span><span class="brand-dot" aria-hidden="true"></span>
     </a>
     <nav class="nav-links" aria-label="الأقسام">
       <a href="#products">بنعمل إيه</a>
       <a href="#studio">جرّبها 3D</a>
-      <a href="#machines">المكن</a>
       <a href="#steps">إزاي بنشتغل</a>
+      <a href="#machines">المكن</a>
     </nav>
-    <a class="btn btn-ink btn-sm" href="#contact">كلّمنا</a>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="تغيير الوضع الفاتح والغامق">
+        <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+        <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+      </button>
+      <a class="btn btn-ink btn-sm" href="#contact">كلّمنا</a>
+    </div>
   </header>
 
   <main id="main">
@@ -38,14 +52,14 @@
     <!-- ===== Hero ===== -->
     <section class="hero">
       <div class="hero-copy">
-        <p class="eyebrow reveal"><span class="reg" aria-hidden="true"></span> توريدات مخصّصة • صُنع في مصر</p>
+        <p class="eyebrow reveal"><span class="reg" aria-hidden="true"></span> توريدات مخصّصة · صُنع في مصر</p>
         <h1 class="reveal">
-          لو تتخيّلها،<br>
-          <span class="hl hl-m">نطبعهالك.</span>
+          إنت تتخيّل،<br>
+          <span class="hl hl-m">وإحنا ننفّذ.</span>
         </h1>
         <p class="lead reveal">
-          EMESE بتحوّل اللوجو بتاعك لحاجة تتلمس: يونيفورم مطبوع أو متطرّز، كشاكيل، أقلام محفورة، أعلام، كروت، مجات… وأي حاجة تتخصّص.
-          عندنا DTF و UV DTF و UV وليزر ومكن تطريز — يعني مفيش خامة صعبة علينا.
+          EMESE بتحوّل فكرتك لحاجة تتلمس: يونيفورم مطبوع أو متطرّز، كشاكيل، أقلام محفورة، أعلام، كروت، مجات، وأي حاجة تتخصّص.
+          طباعة، تطريز، أو حفر بالليزر. إنت قول عايز إيه، والباقي علينا.
         </p>
         <div class="hero-cta reveal">
           <a class="btn btn-ink" href="#studio">جرّب منتجك 3D <span aria-hidden="true">←</span></a>
@@ -53,21 +67,71 @@
         </div>
       </div>
 
-      <div class="hero-art" aria-hidden="true">
-        <div class="blob blob-c"></div>
-        <div class="blob blob-m"></div>
-        <div class="blob blob-y"></div>
-        <div class="sticker s1"><b>تيشيرت</b><small>DTF</small></div>
-        <div class="sticker s2"><b>كشكول</b><small>ليزر</small></div>
-        <div class="sticker s3"><b>لوجو متطرّز</b><small>تطريز</small></div>
-        <div class="sticker s4"><b>مج</b><small>UV DTF</small></div>
-        <svg class="badge" viewBox="0 0 200 200">
-          <defs><path id="circ" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>
-          <text><textPath href="#circ">PRINT · STITCH · ENGRAVE · EMESE · PRINT · STITCH · ENGRAVE ·</textPath></text>
-          <circle cx="100" cy="100" r="34"/>
-          <path d="M100 66v68M66 100h68"/>
-        </svg>
-        <div class="halftone"></div>
+      <div class="proof reveal" aria-hidden="true">
+        <span class="crop c-tl"></span><span class="crop c-tr"></span><span class="crop c-bl"></span><span class="crop c-br"></span>
+
+        <div class="proof-top">
+          <span class="proof-id" id="proofId">PROOF 01</span>
+          <span class="proof-dots" id="proofDots"><i class="on"></i><i></i><i></i><i></i></span>
+        </div>
+
+        <div class="proof-stage">
+          <!-- Tee · DTF -->
+          <figure class="proof-item is-on" data-label="تيشيرت · DTF">
+            <svg viewBox="0 0 320 320">
+              <path class="p-shape" fill="#1f1f1f" d="M118 52 L58 84 L80 136 L104 124 V276 H216 V124 L240 136 L262 84 L202 52 C194 72 178 80 160 80 C142 80 126 72 118 52 Z"/>
+              <path d="M118 52 C126 72 142 80 160 80 C178 80 194 72 202 52" fill="none" stroke="#3b3b3b" stroke-width="6"/>
+              <g transform="translate(160 170)" fill="none" stroke="#ffe500">
+                <circle r="42" stroke-width="3.5"/><circle r="36" stroke-width="1"/>
+                <text y="6" text-anchor="middle" class="p-word" fill="#ffe500" stroke="none" font-size="13.5" textLength="56" lengthAdjust="spacingAndGlyphs">EMESE</text>
+              </g>
+            </svg>
+          </figure>
+          <!-- Notebook · laser -->
+          <figure class="proof-item" data-label="كشكول · ليزر">
+            <svg viewBox="0 0 320 320">
+              <rect x="100" y="46" width="150" height="230" rx="6" fill="#efe9dc" class="p-shape"/>
+              <rect x="90" y="40" width="150" height="232" rx="10" fill="#6b3f26" class="p-shape"/>
+              <rect x="210" y="40" width="8" height="232" fill="#1a1a1a"/>
+              <g fill="none" stroke="#c9ccd2" stroke-width="2.5">
+                <circle cx="90" cy="62" r="6"/><circle cx="90" cy="82" r="6"/><circle cx="90" cy="102" r="6"/><circle cx="90" cy="122" r="6"/><circle cx="90" cy="142" r="6"/><circle cx="90" cy="162" r="6"/><circle cx="90" cy="182" r="6"/><circle cx="90" cy="202" r="6"/><circle cx="90" cy="222" r="6"/><circle cx="90" cy="242" r="6"/>
+              </g>
+              <g transform="translate(152 150)" fill="none" stroke="#bea691">
+                <circle r="38" stroke-width="3"/><circle r="32" stroke-width="1"/>
+                <text y="6" text-anchor="middle" class="p-word" fill="#bea691" stroke="none" font-size="12" textLength="48" lengthAdjust="spacingAndGlyphs">EMESE</text>
+              </g>
+            </svg>
+          </figure>
+          <!-- Mug · UV DTF -->
+          <figure class="proof-item" data-label="مج · UV DTF">
+            <svg viewBox="0 0 320 320">
+              <path class="p-outline" d="M218 130 h16 a30 30 0 0 1 0 60 h-16" fill="none" stroke-width="22"/>
+              <path d="M218 130 h16 a30 30 0 0 1 0 60 h-16" fill="none" stroke="#f6f4ef" stroke-width="16"/>
+              <rect class="p-shape" x="78" y="84" width="140" height="176" rx="16" fill="#f6f4ef"/>
+              <ellipse class="p-shape" cx="148" cy="86" rx="70" ry="9" fill="#e4dfd5"/>
+              <text x="148" y="178" text-anchor="middle" class="p-word" fill="#ec008c" font-size="26" textLength="118" lengthAdjust="spacingAndGlyphs">EMESE</text>
+              <path d="M110 200 h76" stroke="#ec008c" stroke-width="2.5"/>
+            </svg>
+          </figure>
+          <!-- Cap · embroidery -->
+          <figure class="proof-item" data-label="كاب · تطريز">
+            <svg viewBox="0 0 320 320">
+              <path class="p-shape" fill="#1f2b4a" d="M70 206 C70 126 116 90 166 90 C216 90 262 126 262 206 Z"/>
+              <path d="M166 92 C152 126 148 166 150 206" stroke="#2f3d63" stroke-width="2.5" fill="none"/>
+              <circle cx="166" cy="92" r="7" fill="#18223b"/>
+              <path class="p-shape" fill="#18223b" d="M38 210 C90 190 250 190 292 212 C294 228 250 232 166 228 C90 226 44 228 38 210 Z"/>
+              <g transform="translate(206 158)">
+                <circle r="28" fill="#18223b" stroke="#ffe500" stroke-width="4" stroke-dasharray="3 2"/>
+                <text y="4.5" text-anchor="middle" class="p-word" fill="#f6f4ef" font-size="9" textLength="38" lengthAdjust="spacingAndGlyphs">EMESE</text>
+              </g>
+            </svg>
+          </figure>
+        </div>
+
+        <div class="proof-bottom">
+          <span class="proof-label" id="proofLabel">تيشيرت · DTF</span>
+          <span class="colorbar"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        </div>
       </div>
     </section>
 
@@ -79,12 +143,12 @@
       </div>
     </div>
 
-    <!-- ===== Products ===== -->
+    <!-- ===== 01 Products ===== -->
     <section class="section" id="products">
       <div class="section-head">
-        <p class="kicker">٠١ — بنعمل إيه؟</p>
+        <p class="kicker"><span class="k-num">٠١</span> بنعمل إيه؟</p>
         <h2 class="reveal">كل حاجة ممكن<br>تشيل اسمك.</h2>
-        <p class="sub reveal">من قطعة هدية لحد يونيفورم شركة كاملة. اختار المنتج، وإحنا نختارله أنسب طريقة طباعة.</p>
+        <p class="sub reveal">من قطعة هدية لحد يونيفورم شركة كاملة. اختار المنتج، وإحنا نختارله أنسب طريقة تنفيذ.</p>
       </div>
 
       <div class="grid products">
@@ -145,12 +209,12 @@
       </div>
     </section>
 
-    <!-- ===== 3D Studio ===== -->
+    <!-- ===== 02 3D Studio ===== -->
     <section class="studio" id="studio">
       <div class="studio-head">
-        <p class="kicker kicker-light">٠٢ — الاستوديو</p>
+        <p class="kicker kicker-light"><span class="k-num">٠٢</span> الاستوديو</p>
         <h2 class="reveal">جرّب بنفسك.<br><span class="hl hl-y">اكتب اسمك وشوفه على المنتج.</span></h2>
-        <p class="sub reveal">اختار المنتج وطريقة الطباعة واللون — والموكب بيتغيّر قدامك على طول. اسحب المنتج عشان تلفّه.</p>
+        <p class="sub reveal">اختار المنتج وطريقة التنفيذ واللون، والموكب بيتغيّر قدامك على طول. اسحب المنتج عشان تلفّه.</p>
       </div>
 
       <div class="studio-body">
@@ -176,8 +240,8 @@
           </fieldset>
 
           <fieldset>
-            <legend>٣. طريقة الطباعة</legend>
-            <div class="seg" id="techPicker" role="radiogroup" aria-label="طريقة الطباعة"></div>
+            <legend>٣. طريقة التنفيذ</legend>
+            <div class="seg" id="techPicker" role="radiogroup" aria-label="طريقة التنفيذ"></div>
             <p class="tech-note" id="techNote"></p>
           </fieldset>
 
@@ -200,64 +264,10 @@
       </div>
     </section>
 
-    <!-- ===== Machines ===== -->
-    <section class="section" id="machines">
-      <div class="section-head">
-        <p class="kicker">٠٣ — المكن</p>
-        <h2 class="reveal">المكن اللي<br>بيعمل السحر.</h2>
-        <p class="sub reveal">كل خامة ليها طريقة. ودي الطرق اللي عندنا — بالبلدي كده.</p>
-      </div>
-
-      <div class="machines">
-        <details class="machine reveal" open style="--accent: var(--c)">
-          <summary><span class="m-code">DTF</span><span class="m-name">طباعة DTF</span><span class="m-plus" aria-hidden="true"></span></summary>
-          <div class="m-body">
-            <p>بنطبع التصميم على فيلم، وبعدين بنكبسه بالحرارة على القماش. ألوان كاملة وتفاصيل دقيقة، وينفع على أي لون قماش — قطن أو بوليستر.</p>
-            <p class="m-on"><b>ينفع على:</b> تيشيرتات • هوديز • بولو • شنط قماش • كابات</p>
-          </div>
-        </details>
-        <details class="machine reveal" style="--accent: var(--m)">
-          <summary><span class="m-code">UV DTF</span><span class="m-name">ستيكر كريستال</span><span class="m-plus" aria-hidden="true"></span></summary>
-          <div class="m-body">
-            <p>ستيكر من غير خلفية، بيتلزق على أي سطح ناشف وبيدّي لمعة وبروز حلو. مش بيتقشر بسهولة وبيستحمل.</p>
-            <p class="m-on"><b>ينفع على:</b> مجات • زمزميات • علب • لابتوبات • خوذ</p>
-          </div>
-        </details>
-        <details class="machine reveal" style="--accent: var(--y)">
-          <summary><span class="m-code">UV</span><span class="m-name">طباعة UV مباشرة</span><span class="m-plus" aria-hidden="true"></span></summary>
-          <div class="m-body">
-            <p>بنطبع على المنتج نفسه، والحبر بيتجفف بالأشعة في ساعتها. ألوان قوية، وممكن نعمل ورنيش بارز تحسّه بصباعك.</p>
-            <p class="m-on"><b>ينفع على:</b> خشب • أكريليك • معدن • جلد • أقلام • كروت • جرابات موبايل</p>
-          </div>
-        </details>
-        <details class="machine reveal" style="--accent: var(--k)">
-          <summary><span class="m-code">LASER</span><span class="m-name">حفر بالليزر</span><span class="m-plus" aria-hidden="true"></span></summary>
-          <div class="m-body">
-            <p>شعاع ليزر بيحفر التصميم جوّه الخامة نفسها — مفيش حبر يتمسح ولا يبهت. أشيك حاجة للهدايا والأقلام والدروع.</p>
-            <p class="m-on"><b>ينفع على:</b> خشب • جلد • معدن • أكريليك • زجاج</p>
-          </div>
-        </details>
-        <details class="machine reveal" style="--accent: var(--m)">
-          <summary><span class="m-code">STITCH</span><span class="m-name">مكن التطريز</span><span class="m-plus" aria-hidden="true"></span></summary>
-          <div class="m-body">
-            <p>مكن تطريز بيخيط اللوجو غرزة غرزة على القماش. شكل رسمي، ملمس فخم، وبيعيش أكتر من الهدوم نفسها.</p>
-            <p class="m-on"><b>ينفع على:</b> يونيفورم • كابات • جواكت • باتشات تتخيّط أو تتكوي</p>
-          </div>
-        </details>
-        <details class="machine reveal" style="--accent: var(--c)">
-          <summary><span class="m-code">+ MORE</span><span class="m-name">وكل أنواع الطباعة</span><span class="m-plus" aria-hidden="true"></span></summary>
-          <div class="m-body">
-            <p>سلك سكرين للكميات الكبيرة، سبلميشن للبوليستر والأعلام والمجات، وديجيتال للورق والكروت والبروشورات.</p>
-            <p class="m-on"><b>يعني:</b> لو بتتطبع… بنطبعها.</p>
-          </div>
-        </details>
-      </div>
-    </section>
-
-    <!-- ===== Steps ===== -->
+    <!-- ===== 03 Steps ===== -->
     <section class="section steps-section" id="steps">
       <div class="section-head">
-        <p class="kicker">٠٤ — خطوة بخطوة</p>
+        <p class="kicker"><span class="k-num">٠٣</span> خطوة بخطوة</p>
         <h2 class="reveal">من الفكرة<br>لحد باب الشركة.</h2>
       </div>
 
@@ -277,7 +287,7 @@
           </li>
           <li class="step" data-step="1">
             <h3>نختار الخامة والطريقة</h3>
-            <p>بنرشّحلك أنسب خامة وأنسب طريقة طباعة على حسب الاستخدام والميزانية.</p>
+            <p>بنرشّحلك أنسب خامة وأنسب طريقة تنفيذ على حسب الاستخدام والميزانية.</p>
           </li>
           <li class="step" data-step="2">
             <h3>تصميم وموكب</h3>
@@ -289,20 +299,74 @@
           </li>
           <li class="step" data-step="4">
             <h3>المكن يشتغل</h3>
-            <p>طباعة، تطريز أو حفر — وكل قطعة بتعدّي على مراجعة جودة قبل ما تخرج.</p>
+            <p>طباعة أو تطريز أو حفر، وكل قطعة بتعدّي على مراجعة جودة قبل ما تخرج.</p>
           </li>
           <li class="step" data-step="5">
             <h3>تغليف وتوصيل</h3>
-            <p>بنغلّف كويس ونوصّلهولك. وإنت بتفتح الكرتونة… هتنبسط.</p>
+            <p>بنغلّف كويس ونوصّلهولك. وإنت بتفتح الكرتونة، هتنبسط.</p>
           </li>
         </ol>
       </div>
     </section>
 
-    <!-- ===== Contact ===== -->
+    <!-- ===== 04 Machines ===== -->
+    <section class="section" id="machines">
+      <div class="section-head">
+        <p class="kicker"><span class="k-num">٠٤</span> المكن</p>
+        <h2 class="reveal">المكن اللي<br>بيعمل السحر.</h2>
+        <p class="sub reveal">كل خامة ليها طريقة.</p>
+      </div>
+
+      <div class="machines">
+        <details class="machine reveal" open style="--accent: var(--c)">
+          <summary><span class="m-code">DTF</span><span class="m-name">طباعة DTF</span><span class="m-plus" aria-hidden="true"></span></summary>
+          <div class="m-body">
+            <p>بنطبع التصميم على فيلم، وبعدين بنكبسه بالحرارة على القماش. ألوان كاملة وتفاصيل دقيقة، وينفع على أي لون قماش، قطن أو بوليستر.</p>
+            <p class="m-on"><b>ينفع على:</b> تيشيرتات • هوديز • بولو • شنط قماش • كابات</p>
+          </div>
+        </details>
+        <details class="machine reveal" style="--accent: var(--m)">
+          <summary><span class="m-code">UV DTF</span><span class="m-name">ستيكر كريستال</span><span class="m-plus" aria-hidden="true"></span></summary>
+          <div class="m-body">
+            <p>ستيكر من غير خلفية، بيتلزق على أي سطح ناشف وبيدّي لمعة وبروز حلو. مش بيتقشر بسهولة وبيستحمل.</p>
+            <p class="m-on"><b>ينفع على:</b> مجات • زمزميات • علب • لابتوبات • خوذ</p>
+          </div>
+        </details>
+        <details class="machine reveal" style="--accent: var(--y)">
+          <summary><span class="m-code">UV</span><span class="m-name">طباعة UV مباشرة</span><span class="m-plus" aria-hidden="true"></span></summary>
+          <div class="m-body">
+            <p>بنطبع على المنتج نفسه، والحبر بيتجفف بالأشعة في ساعتها. ألوان قوية، وممكن نعمل ورنيش بارز تحسّه بصباعك.</p>
+            <p class="m-on"><b>ينفع على:</b> خشب • أكريليك • معدن • جلد • أقلام • كروت • جرابات موبايل</p>
+          </div>
+        </details>
+        <details class="machine machine-k reveal">
+          <summary><span class="m-code">LASER</span><span class="m-name">حفر بالليزر</span><span class="m-plus" aria-hidden="true"></span></summary>
+          <div class="m-body">
+            <p>شعاع ليزر بيحفر التصميم جوّه الخامة نفسها، فمفيش حبر يتمسح ولا يبهت. أشيك حاجة للهدايا والأقلام والدروع.</p>
+            <p class="m-on"><b>ينفع على:</b> خشب • جلد • معدن • أكريليك • زجاج</p>
+          </div>
+        </details>
+        <details class="machine reveal" style="--accent: var(--m)">
+          <summary><span class="m-code">STITCH</span><span class="m-name">مكن التطريز</span><span class="m-plus" aria-hidden="true"></span></summary>
+          <div class="m-body">
+            <p>مكن تطريز بيخيط اللوجو غرزة غرزة على القماش. شكل رسمي، ملمس فخم، وبيعيش أكتر من الهدوم نفسها.</p>
+            <p class="m-on"><b>ينفع على:</b> يونيفورم • كابات • جواكت • باتشات تتخيّط أو تتكوي</p>
+          </div>
+        </details>
+        <details class="machine reveal" style="--accent: var(--c)">
+          <summary><span class="m-code">+ MORE</span><span class="m-name">وكل أنواع الطباعة</span><span class="m-plus" aria-hidden="true"></span></summary>
+          <div class="m-body">
+            <p>سلك سكرين للكميات الكبيرة، سبلميشن للبوليستر والأعلام والمجات، وديجيتال للورق والكروت والبروشورات.</p>
+            <p class="m-on"><b>يعني:</b> لو بتتعمل، بنعملها.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ===== 05 Contact ===== -->
     <section class="contact" id="contact">
       <div class="contact-copy">
-        <p class="kicker">٠٥ — يلا نبدأ</p>
+        <p class="kicker"><span class="k-num">٠٥</span> يلا نبدأ</p>
         <h2 class="reveal">عندك فكرة؟<br><span class="hl hl-c">ابعتهالنا.</span></h2>
         <p class="sub reveal">املا البيانات دي وهتتفتحلك رسالة واتساب جاهزة. هنرد عليك بعرض سعر وترشيحات.</p>
       </div>
@@ -324,17 +388,16 @@
           </label>
           <label class="field"><span>الكمية تقريبًا</span><input name="qty" inputmode="numeric" placeholder="مثلًا ٥٠"></label>
         </div>
-        <label class="field"><span>احكيلنا أكتر</span><textarea name="details" rows="4" placeholder="الألوان، المقاسات، الميعاد…"></textarea></label>
+        <label class="field"><span>احكيلنا أكتر</span><textarea name="details" rows="4" placeholder="الألوان، المقاسات، الميعاد"></textarea></label>
         <button class="btn btn-ink btn-block" type="submit">ابعت على واتساب ←</button>
       </form>
     </section>
   </main>
 
   <footer class="footer">
-    <div class="footer-word" aria-hidden="true">EMESE</div>
+    <div class="footer-word" aria-hidden="true">EMESE<span class="brand-dot"></span></div>
     <div class="footer-row">
-      <span>EMESE — توريدات مخصّصة • مصر</span>
-      <span class="cmyk" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span>EMESE · توريدات مخصّصة · مصر</span>
       <a href="#top">فوق ↑</a>
     </div>
   </footer>
