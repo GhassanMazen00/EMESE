@@ -67,5 +67,37 @@
         "w": 0.4
       }
     }
+  },
+  "notebook": {
+    "size": [
+      1200,
+      1200
+    ],
+    "lightScale": 0.8276,
+    "specScale": 0.0515,
+    "tintable": true,
+    "printAspect": 0.6,
+    "default": {
+      "u": 0.5,
+      "v": 0.56,
+      "w": 0.55
+    },
+    "baseLinear": [
+      0.8689,
+      0.8518,
+      0.8313
+    ],
+    "presets": {
+      "center": {
+        "u": 0.5,
+        "v": 0.56,
+        "w": 0.55
+      },
+      "corner": {
+        "u": 0.75,
+        "v": 0.12,
+        "w": 0.3
+      }
+    }
   }
 }
