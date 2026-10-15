@@ -300,7 +300,8 @@ def make_thumb(photo, path, size=240):
 
 
 # ------------------------------------------------------------- driver ---
-def render_product(pid, out_dir, *, tintable, print_aspect, default, extra=None, samples=128, quick=False, preview=False):
+def render_product(pid, out_dir, *, tintable, print_aspect, default, extra=None, samples=128, quick=False, preview=False,
+                   spec_blur=0.6):
     """Render all passes for the current scene and write web assets."""
     os.makedirs(out_dir, exist_ok=True)
     if preview:  # photo only, for look development
@@ -373,7 +374,7 @@ def render_product(pid, out_dir, *, tintable, print_aspect, default, extra=None,
     sv = spec[region].max(axis=1) if region.any() else np.array([0.0])
     SP = max(float(np.percentile(sv, 99.8)) * 1.05, 0.02) if sv.size else 0.02
     # a whisper of blur drops invisible denoiser grain that would otherwise bloat the file
-    Image.fromarray(_u8(_srgb(spec / SP))).filter(ImageFilter.GaussianBlur(0.6)).save(
+    Image.fromarray(_u8(_srgb(spec / SP))).filter(ImageFilter.GaussianBlur(spec_blur)).save(
         os.path.join(out_dir, 'spec.webp'), quality=86, method=6)
     make_thumb(photo, os.path.join(out_dir, 'thumb.webp'))
     Image.fromarray(light_enc).save(os.path.join(out_dir, 'light.webp'), quality=92, method=6)

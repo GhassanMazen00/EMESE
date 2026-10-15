@@ -63,11 +63,13 @@
         <span class="crop c-tl" aria-hidden="true"></span><span class="crop c-tr" aria-hidden="true"></span><span class="crop c-bl" aria-hidden="true"></span><span class="crop c-br" aria-hidden="true"></span>
         <div class="proof-photo">
           <canvas id="heroCanvas" class="hero-canvas" role="img" data-i18n-attr="aria-label:hero.canvasLabel" aria-label="منتجات حقيقية عليها لوجو EMESE"></canvas>
+          <button class="proof-nav prev" id="heroPrev" type="button" data-i18n-attr="aria-label:hero.prev" aria-label="المنتج اللي قبله"><span aria-hidden="true"></span></button>
+          <button class="proof-nav next" id="heroNext" type="button" data-i18n-attr="aria-label:hero.next" aria-label="المنتج اللي بعده"><span aria-hidden="true"></span></button>
           <span class="proof-id" id="proofId" aria-hidden="true">PROOF 01</span>
         </div>
         <div class="proof-bottom">
           <span class="proof-label" id="proofLabel" aria-live="polite"></span>
-          <span class="proof-dots" id="proofDots" aria-hidden="true"></span>
+          <span class="proof-dots" id="proofDots"></span>
         </div>
       </div>
     </section>
@@ -87,7 +89,7 @@
 
       <div class="grid products">
         <article class="card card-photo reveal" style="--accent: var(--c)">
-          <img class="card-img" src="assets/mockups/tee/card.webp" alt="" width="640" height="640" loading="lazy">
+          <img class="card-img" src="assets/mockups/polo/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p1.t">يونيفورمات مطبوعة</h3>
           <p data-i18n="p1.d">تيشيرتات، بولو، هوديز، وأوفرولات شغل. طباعة بألوان كاملة تستحمل الغسيل.</p>
           <ul class="chips"><li>DTF</li><li data-i18n="tech.screen">سلك سكرين</li></ul>
@@ -134,12 +136,43 @@
           <p data-i18n="p8.d">ميداليات، شنط قماش، بوكسات، دروع، وكل اللي يتعمل «جيف أواي» للعملا والفريق.</p>
           <ul class="chips"><li data-i18n="tech.laser">ليزر</li><li>UV</li></ul>
         </article>
+        <article class="card card-photo reveal" style="--accent: var(--y)">
+          <img class="card-img" src="assets/mockups/hoodie/card.webp" alt="" width="640" height="640" loading="lazy">
+          <h3 data-i18n="p10.t">هوديز وسويت شيرت</h3>
+          <p data-i18n="p10.d">هوديز تقيلة بطباعة أو تطريز، من أول الباترون لحد آخر غرزة.</p>
+          <ul class="chips"><li>DTF</li><li data-i18n="tech.stitch">تطريز</li><li data-i18n="chip.sewing">تصنيع</li></ul>
+        </article>
+        <article class="card card-photo reveal" style="--accent: var(--c)">
+          <img class="card-img" src="assets/mockups/zipper/card.webp" alt="" width="640" height="640" loading="lazy">
+          <h3 data-i18n="p11.t">سوست وإكسسوارات</h3>
+          <p data-i18n="p11.d">سوست بالمقاس واللون، شدّادات بلوجو، زراير، باتشات جلد وهانج تاج.</p>
+          <ul class="chips"><li data-i18n="chip.zippers">سوست</li><li data-i18n="tech.laser">ليزر</li><li>UV</li></ul>
+        </article>
+        <article class="card card-photo reveal" style="--accent: var(--m)">
+          <img class="card-img" src="assets/mockups/label/card.webp" alt="" width="640" height="640" loading="lazy">
+          <h3 data-i18n="p12.t">نسيج وتيكت</h3>
+          <p data-i18n="p12.d">تيكت منسوج، شرايط بلوجو، وأقمشة بننسجها مخصوص لطلبك.</p>
+          <ul class="chips"><li data-i18n="chip.weaving">نسيج</li><li data-i18n="tech.screen">سلك سكرين</li></ul>
+        </article>
         <article class="card card-wild reveal">
           <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><path d="M24 24a8 8 0 1 1 12 7c-3 2-4 3-4 7M32 46v2"/><circle cx="32" cy="32" r="26"/></svg>
           <h3 data-i18n="p9.t">وأي حاجة تانية</h3>
           <p data-i18n="p9.d">عندك فكرة غريبة؟ ابعتها، وإحنا نقولك تتعمل إزاي وعلى أنهي مكنة.</p>
           <a class="link" href="#contact"><span data-i18n="p9.link">ابعت فكرتك</span> <span class="arr" aria-hidden="true"></span></a>
         </article>
+      </div>
+    
+      <div class="everything" id="everything">
+        <div class="ev-head">
+          <h3 class="ev-title reveal" data-i18n-html="ev.title">والقايمة<br>لسه طويلة.</h3>
+          <p class="sub reveal" data-i18n="ev.sub">ده جزء من اللي بنعمله. اختار طريقة التنفيذ عشان تشوف بتتعمل على إيه، واللي عليه «جرّبه» تقدر تحط اللوجو بتاعك عليه في الاستوديو.</p>
+        </div>
+        <div class="ev-bar">
+          <div class="ev-filters" role="toolbar" data-i18n-attr="aria-label:ev.filters" aria-label="فلتر حسب طريقة التنفيذ"></div>
+          <span class="ev-count" aria-live="polite"></span>
+        </div>
+        <div class="ev-groups"></div>
+        <p class="ev-more"><span data-i18n="ev.more">مش لاقي اللي بتدور عليه؟</span> <a href="#contact" data-i18n="ev.moreLink">ابعتهولنا وإحنا نشوفه</a></p>
       </div>
     </section>
 
@@ -151,7 +184,17 @@
         <p class="sub reveal" data-i18n="studio.sub">ارفع اللوجو أو اكتب اسمك، واختار المنتج وطريقة التنفيذ واللون. اسحب التصميم على المنتج عشان تحركه، وكبّره أو صغّره زي ما تحب.</p>
       </div>
 
-      <div class="studio-body">
+      <div class="studio-launch">
+        <button class="btn btn-y btn-lg" id="studioOpen" type="button" aria-expanded="false" aria-controls="studioBody">
+          <span data-i18n="studio.open">افتح الاستوديو</span> <span class="arr" aria-hidden="true"></span>
+        </button>
+        <div class="launch-thumbs" aria-hidden="true">
+          <img src="assets/mockups/polo/thumb.webp" alt=""><img src="assets/mockups/hoodie/thumb.webp" alt=""><img src="assets/mockups/cap/thumb.webp" alt=""><img src="assets/mockups/mug/thumb.webp" alt=""><img src="assets/mockups/notebook/thumb.webp" alt=""><img src="assets/mockups/zipper/thumb.webp" alt="">
+        </div>
+        <span class="launch-note" data-i18n="studio.count">١٩ منتج حقيقي · ١٠ طرق تنفيذ</span>
+      </div>
+
+      <div class="studio-body" id="studioBody" hidden>
         <div class="stage-wrap">
           <canvas id="mockCanvas" class="mock-canvas" role="img" data-i18n-attr="aria-label:studio.canvasLabel" aria-label="معاينة المنتج بالتصميم بتاعك"></canvas>
           <div class="stage-tag" id="stageTag" aria-live="polite"></div>
@@ -160,8 +203,10 @@
         </div>
 
         <form class="panel" id="studioForm" onsubmit="return false">
+          <button class="panel-close" id="studioClose" type="button"><span data-i18n="studio.close">اقفل الاستوديو</span> <span aria-hidden="true">×</span></button>
           <fieldset>
             <legend data-i18n="studio.l.product">١. المنتج</legend>
+            <div class="seg seg-sm prod-tabs" id="productTabs" role="radiogroup"></div>
             <div class="prod-grid" id="productGrid" role="radiogroup"></div>
           </fieldset>
 
@@ -285,9 +330,44 @@
           </div>
         </details>
         <details class="machine reveal" style="--accent: var(--c)">
+          <summary><span class="m-code">SUB</span><span class="m-name" data-i18n="m7.t">طباعة سبلميشن</span><span class="m-plus" aria-hidden="true"></span></summary>
+          <div class="m-body">
+            <p data-i18n="m7.d">الحبر بيتحوّل لبخار ويدخل جوّه ألياف البوليستر أو طبقة المج، فالطباعة بتبقى جزء من الخامة: مش بتتقشر ولا بتتحس.</p>
+            <p class="m-on" data-i18n-html="m7.on"><b>ينفع على:</b> فانلات رياضة • أعلام • مجات • ماوس باد • أقمشة بالمتر</p>
+          </div>
+        </details>
+        <details class="machine reveal" style="--accent: var(--y)">
+          <summary><span class="m-code">SCREEN</span><span class="m-name" data-i18n="m8.t">سلك سكرين</span><span class="m-plus" aria-hidden="true"></span></summary>
+          <div class="m-body">
+            <p data-i18n="m8.d">شاشة لكل لون والحبر بيتسحب عليها بالرَّكْلة. أحسن اختيار للكميات الكبيرة: لون تقيل وثابت وسعر القطعة أوفر.</p>
+            <p class="m-on" data-i18n-html="m8.on"><b>ينفع على:</b> يونيفورم • شنط قماش • تيكت ساتان • أقمشة</p>
+          </div>
+        </details>
+        <details class="machine machine-k reveal">
+          <summary><span class="m-code">SEWING</span><span class="m-name" data-i18n="m9.t">تصنيع ملابس</span><span class="m-plus" aria-hidden="true"></span></summary>
+          <div class="m-body">
+            <p data-i18n="m9.d">مش بس بنطبع: بنقص ونخيّط ونقفّل القطعة كاملة. باترون، قص، خياطة، تشطيب وكيّ، بالمقاسات والكميات اللي تحتاجها.</p>
+            <p class="m-on" data-i18n-html="m9.on"><b>بنعمل:</b> تيشيرتات • بولو • هوديز • يونيفورم • مرايل • جواكت</p>
+          </div>
+        </details>
+        <details class="machine reveal" style="--accent: var(--m)">
+          <summary><span class="m-code">WEAVING</span><span class="m-name" data-i18n="m10.t">نسيج</span><span class="m-plus" aria-hidden="true"></span></summary>
+          <div class="m-body">
+            <p data-i18n="m10.d">بننسج اللوجو بالخيط جوّه القماشة نفسها: تيكت منسوج بتفاصيل دقيقة، شرايط وأستك بلوجو، وأقمشة حسب الطلب.</p>
+            <p class="m-on" data-i18n-html="m10.on"><b>بنعمل:</b> تيكت • باتشات منسوجة • شرايط • أستك • أقمشة يونيفورم</p>
+          </div>
+        </details>
+        <details class="machine reveal" style="--accent: var(--c)">
+          <summary><span class="m-code">ZIPPERS</span><span class="m-name" data-i18n="m11.t">سوست وإكسسوارات</span><span class="m-plus" aria-hidden="true"></span></summary>
+          <div class="m-body">
+            <p data-i18n="m11.d">سوست نايلون ومعدن وبلاستيك بالطول واللون اللي تطلبه، وشدّادات عليها اللوجو بتاعك محفورة أو مطبوعة، وزراير وكبسونات.</p>
+            <p class="m-on" data-i18n-html="m11.on"><b>بنعمل:</b> سوست • شدّادات • زراير • كبسونات • باتشات جلد • هانج تاج</p>
+          </div>
+        </details>
+        <details class="machine reveal" style="--accent: var(--m)">
           <summary><span class="m-code">+ MORE</span><span class="m-name" data-i18n="m6.t">وكل أنواع الطباعة</span><span class="m-plus" aria-hidden="true"></span></summary>
           <div class="m-body">
-            <p data-i18n="m6.d">سلك سكرين للكميات الكبيرة، سبلميشن للبوليستر والأعلام والمجات، فويل دهبي وفضي للكروت والكشاكيل، وديجيتال للورق والبروشورات.</p>
+            <p data-i18n="m6.d">فويل دهبي وفضي للكروت والكشاكيل، ديجيتال للورق والبروشورات، وأي طريقة تانية المنتج بتاعك محتاجها.</p>
             <p class="m-on" data-i18n-html="m6.on"><b>يعني:</b> لو بتتعمل، بنعملها.</p>
           </div>
         </details>
@@ -315,6 +395,8 @@
               <option value="mugs" data-i18n="opt.mugs">مجات وزمزميات</option>
               <option value="totes" data-i18n="opt.totes">شنط قماش</option>
               <option value="gifts" data-i18n="opt.gifts">هدايا شركات</option>
+              <option value="accessories" data-i18n="opt.accessories">سوست وإكسسوارات</option>
+              <option value="labels" data-i18n="opt.labels">تيكت ونسيج</option>
               <option value="other" data-i18n="opt.other">حاجة تانية</option>
             </select>
           </label>

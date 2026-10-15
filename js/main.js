@@ -1,5 +1,6 @@
 /* EMESE: page interactions (theme, language, reveal, marquee, steps, contact) */
 import { applyLang, setLang, lang, ui } from './i18n.js';
+import { initEverything } from './everything.js';
 
 // ⚠️ Replace with the real business WhatsApp number (country code, no "+" or spaces).
 const WHATSAPP_NUMBER = '201000000000';
@@ -7,6 +8,9 @@ const WHATSAPP_NUMBER = '201000000000';
 /* ---------- language: Arabic by default, English on request ---------- */
 if (lang() === 'en') applyLang('en');
 document.getElementById('langToggle')?.addEventListener('click', () => setLang(lang() === 'en' ? 'ar' : 'en'));
+
+/* ---------- the full range: "try it" opens the studio on that product ---------- */
+initEverything({ onTry: (pid) => document.dispatchEvent(new CustomEvent('studio:open', { detail: { pid } })) });
 
 /* ---------- marquee (rebuilt per language) ---------- */
 function buildMarquee() {

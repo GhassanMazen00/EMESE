@@ -4,14 +4,23 @@ import { TECHS, byId } from './catalog.js';
 import { lang } from './i18n.js';
 
 const SHOW = [
-  { id: 'tee',      tint: '#262626', tech: 'dtf',    ink: '#f6f4ef' },
+  { id: 'polo',     tint: '#1f2b4a', tech: 'stitch', ink: '#f6f4ef' },
+  { id: 'hoodie',   tint: '#262626', tech: 'dtf',    ink: '#f6f4ef' },
+  { id: 'cap',      tint: '#f2f1ee', tech: 'stitch', ink: null },
+  { id: 'tee',      tint: '#f2f1ee', tech: 'dtf',    ink: null },
+  { id: 'zipper',   tint: '#262626', tech: 'laser' },
+  { id: 'label',    tint: '#262626', tech: 'woven',  ink: '#f6f4ef' },
   { id: 'mug',      tint: '#f4f3ef', tech: 'sub',    ink: null },
   { id: 'notebook', tint: '#262626', tech: 'foil',   foil: '#d4af37' },
-  { id: 'cap',      tint: '#1f2b4a', tech: 'stitch', ink: '#f6f4ef' },
-  { id: 'tote',     tint: '#e8dcc4', tech: 'screen', ink: '#141414' },
+  { id: 'patch',    tint: '#b07a4b', tech: 'laser' },
+  { id: 'polo_ls',  tint: '#f2f1ee', tech: 'stitch', ink: null },
+  { id: 'apron',    tint: '#262626', tech: 'dtf',    ink: '#f6f4ef' },
   { id: 'tumbler',  tint: '#1f2b4a', tech: 'laser' },
   { id: 'cards',    tint: '#161616', tech: 'foil',   foil: '#d4af37' },
+  { id: 'hangtag',  tint: '#c7a97f', tech: 'digital', ink: '#141414' },
+  { id: 'tote',     tint: '#e8dcc4', tech: 'screen', ink: '#141414' },
   { id: 'pen',      tint: '#262626', tech: 'laser' },
+  { id: 'flag',     tint: '#1f2b4a', tech: 'sub',    ink: '#f6f4ef' },
   { id: 'keychain', tint: null,      tech: 'laser' }
 ];
 const SHOW_MS = 4800;
@@ -25,7 +34,7 @@ async function init() {
   const label = document.getElementById('proofLabel');
   const pid = document.getElementById('proofId');
   const dots = document.getElementById('proofDots');
-  dots.innerHTML = SHOW.map(() => '<i></i>').join('');
+  dots.innerHTML = SHOW.map((_, i) => `<button type="button" aria-label="${i + 1}"></button>`).join('');
 
   let view;
   try { view = new MockupView(canvas); } catch (e) { return; }
@@ -53,6 +62,7 @@ async function init() {
     const d = prod.meta.default;
     view.set({
       tint: s.tint, mode: TECHS[s.tech].mode, gloss: TECHS[s.tech].gloss || 0.15,
+      pitch: TECHS[s.tech].pitch, relief: TECHS[s.tech].relief,
       ink: s.ink || null, foil: s.foil || '#d4af37', reveal: !!byId(s.id).reveal,
       u: d.u, v: d.v, w: d.w, rot: 0
     });
@@ -64,24 +74,58 @@ async function init() {
     loadProduct(SHOW[(i + 1) % SHOW.length].id).catch(() => {}); // warm the next one
   }
 
-  await show(0);
+  for (let i = 0; i < SHOW.length; i++) {   // start with the first product that loads
+    try { await show(i); break; } catch (e) { /* try the next one */ }
+  }
   canvas.classList.add('ready');
   document.addEventListener('langchange', setLabel);
-  if (reduceMotion) return;
 
+  // navigation: arrows, dots, swipe; autoplay pauses after the visitor takes over
+  let busy = false, lastTouch = 0;
+  async function go(target) {
+    if (busy) return;
+    busy = true;
+    canvas.classList.add('fade');
+    await new Promise(r => setTimeout(r, reduceMotion ? 0 : FADE_MS));
+    const n = SHOW.length;
+    const step = target > idx || (idx === n - 1 && target === 0) ? 1 : -1;
+    for (let k = 0; k < n; k++) {   // skip anything that fails to load
+      try { await show(((target + k * step) % n + n) % n); break; } catch (e) { /* try the next one */ }
+    }
+    canvas.classList.remove('fade');
+    busy = false;
+  }
+  const user = (fn) => { lastTouch = performance.now(); fn(); };
+  const rtl = () => document.documentElement.dir === 'rtl';
+  const next = () => go((idx + 1) % SHOW.length);
+  const prev = () => go((idx - 1 + SHOW.length) % SHOW.length);
+  document.getElementById('heroNext').addEventListener('click', () => user(next));
+  document.getElementById('heroPrev').addEventListener('click', () => user(prev));
+  dots.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (b) user(() => go([...dots.children].indexOf(b)));
+  });
+  let sx = null, sy = null;
+  canvas.addEventListener('pointerdown', (e) => { sx = e.clientX; sy = e.clientY; });
+  canvas.addEventListener('pointerup', (e) => {
+    if (sx == null) return;
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    sx = null;
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+    // swipe towards the reading direction's start = forward
+    const forward = rtl() ? dx > 0 : dx < 0;
+    user(forward ? next : prev);
+  });
+  canvas.closest('.proof').addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    const forward = (e.key === 'ArrowLeft') === rtl();
+    user(forward ? next : prev);
+  });
+
+  if (reduceMotion) return;
   let visible = true;
   new IntersectionObserver(([en]) => { visible = en.isIntersecting; }).observe(canvas);
-  const tick = async () => {
-    if (visible && !document.hidden) {
-      canvas.classList.add('fade');
-      await new Promise(r => setTimeout(r, FADE_MS));
-      // skip any product that fails to load
-      for (let k = 1; k <= SHOW.length; k++) {
-        try { await show((idx + k) % SHOW.length); break; } catch (e) { /* try the next one */ }
-      }
-      canvas.classList.remove('fade');
-    }
-    setTimeout(tick, SHOW_MS);
-  };
-  setTimeout(tick, SHOW_MS);
+  setInterval(() => {
+    if (visible && !document.hidden && performance.now() - lastTouch > 12000) next();
+  }, SHOW_MS);
 }

@@ -12,6 +12,12 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 import lib  # noqa: E402
 import products  # noqa: E402
+import garments  # noqa: E402
+import accessories  # noqa: E402
+
+SCENES = dict(products.SCENES)
+SCENES.update(garments.SCENES)
+SCENES.update(accessories.SCENES)   # includes the rebuilt cap
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
@@ -25,11 +31,11 @@ def main(argv):
     out_root = os.path.join(ROOT, 'assets', 'mockups')
     if '--out' in argv:
         out_root = argv[argv.index('--out') + 1]
-    names = [a for a in argv if not a.startswith('--') and not a.isdigit() and a != out_root] or list(products.SCENES)
+    names = [a for a in argv if not a.startswith('--') and not a.isdigit() and a != out_root] or list(SCENES)
     for name in names:
         if res:
             lib.RES = res
-        cfg = products.SCENES[name]()
+        cfg = SCENES[name]()
         lib.render_product(name, os.path.join(out_root, name), quick=quick, preview=preview, **cfg)
 
 

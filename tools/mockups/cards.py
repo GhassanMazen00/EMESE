@@ -18,13 +18,22 @@ MOCK = os.path.join(ROOT, 'assets', 'mockups')
 # product: (tint or None, ink or None = original logo colours, size factor)
 CARDS = {
     'tee': ('#f2f1ee', None, 1.0),
+    'polo': ('#1f2b4a', '#f6f4ef', 1.0),
+    'polo_ls': ('#f2f1ee', None, 1.0),
+    'hoodie': ('#262626', '#f6f4ef', 1.0),
+    'apron': ('#262626', '#f6f4ef', 1.0),
     'cap': ('#1f2b4a', '#f6f4ef', 1.0),
+    'zipper': ('#262626', '#b9bec6', 1.0),
+    'label': ('#262626', '#f6f4ef', 1.0),
+    'patch': ('#b07a4b', 'burn', 1.0),
+    'hangtag': ('#c7a97f', '#141414', 1.0),
     'notebook': ('#262626', '#d4af37', 1.0),
     'pen': ('#262626', '#c8ccd2', 1.0),
     'flag': ('#1f2b4a', '#f6f4ef', 1.0),
     'cards': ('#f4f3ef', None, 1.0),
     'mug': ('#f4f3ef', None, 1.0),
-    'keychain': (None, '#4a2c18', 1.0),
+    'mousepad': ('#f2f1ee', None, 1.0),
+    'keychain': (None, 'burn', 1.0),
     'tote': ('#e8dcc4', '#141414', 1.0),
     'tumbler': ('#1f2b4a', '#c8ccd2', 1.0),
 }
@@ -102,12 +111,12 @@ def bake(pid, meta, tint, ink, logo):
     samp = np.zeros(photo.shape[:2] + (4,), np.float32)
     samp[inside] = bilinear(logo, tx[inside] * (n - 1), (1 - ty[inside]) * (n - 1))
     a = (samp[..., 3] * pm)[..., None]
-    if ink:
+    if ink == 'burn':  # laser: burn into wood or leather
+        dcol = alb * np.array([0.42, 0.33, 0.27], np.float32)
+    elif ink:
         dcol = np.broadcast_to(hex_lin(ink), photo.shape)
     else:
         dcol = to_lin(np.clip(samp[..., :3] / np.maximum(samp[..., 3:4], 1e-3), 0, 1) * 255)
-    if pid == 'keychain':  # laser: burn into the wood
-        dcol = alb * np.array([0.42, 0.33, 0.27], np.float32)
     newalb = alb * (1 - a * 0.97) + dcol * a * 0.97
     cover = np.maximum(pm, tm)[..., None]
     product = newalb * light + spec

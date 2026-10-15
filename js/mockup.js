@@ -29,7 +29,7 @@ uniform float uWidth, uRot, uAspect, uPhysW;
 uniform int uMode;          // 0 print, 1 dye, 2 uv, 3 stitch, 4 laser, 5 foil
 uniform float uGloss;
 uniform vec3 uInk;
-uniform float uUseInk, uDesignOn, uReveal, uBox, uFlipV;
+uniform float uUseInk, uDesignOn, uReveal, uBox, uFlipV, uPitch, uRelief;
 uniform vec3 uFoil;
 
 vec3 toLin(vec3 c) { return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(0.04045, c)); }
@@ -116,12 +116,12 @@ void main() {
       mod_ = 1.0 + relief * 0.45;
       extra = vec3(a * uGloss * pow(hl, 4.0));
     } else if (uMode == 3) {     // embroidery: satin stitches, raised thread
-      float n = physW / 0.0011;
+      float n = physW / uPitch;
       float st = fract((t.x * cos(0.8) + t.y * sin(0.8)) * n);
       float thread = 0.72 + 0.28 * smoothstep(0.0, 0.5, st) * smoothstep(1.0, 0.5, st);
       base = mix(alb, dcol * thread, a);
       float shadow = designA(t + vec2(-e * 1.4, e * 1.4)) * (1.0 - a);
-      mod_ = (1.0 + relief * 0.9) * (1.0 - shadow * 0.35);
+      mod_ = (1.0 + relief * 0.9 * uRelief) * (1.0 - shadow * 0.35 * uRelief);
       extra = vec3(a * 0.05 * hl * thread);
     } else if (uMode == 4) {     // laser: no ink, the surface itself changes
       vec3 burned = alb * vec3(0.42, 0.33, 0.27);            // wood, light leather, paper
@@ -219,7 +219,7 @@ export class MockupView {
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     this.u = {};
     for (const n of ['uPhoto', 'uLight', 'uAlbedo', 'uUV', 'uMask', 'uDesign', 'uSpec', 'uSize', 'uLightScale', 'uSpecScale', 'uBaseLin', 'uTint', 'uUseTint',
-      'uCenter', 'uWidth', 'uRot', 'uAspect', 'uPhysW', 'uMode', 'uGloss', 'uInk', 'uUseInk', 'uDesignOn', 'uReveal', 'uFoil', 'uBox', 'uFlipV']) {
+      'uCenter', 'uWidth', 'uRot', 'uAspect', 'uPhysW', 'uMode', 'uGloss', 'uInk', 'uUseInk', 'uDesignOn', 'uReveal', 'uFoil', 'uBox', 'uFlipV', 'uPitch', 'uRelief']) {
       this.u[n] = gl.getUniformLocation(prog, n);
     }
     this.tex = {};
@@ -319,6 +319,8 @@ export class MockupView {
     gl.uniform3fv(u.uFoil, hexToLin(s.foil));
     gl.uniform1f(u.uBox, s.box ? 1 : 0);
     gl.uniform1f(u.uFlipV, meta.flipV ? 1 : 0);
+    gl.uniform1f(u.uPitch, s.pitch || 0.0011);
+    gl.uniform1f(u.uRelief, s.relief ?? 1);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 }

@@ -1,10 +1,45 @@
 /* EMESE: mockup studio. Real product renders + the visitor's own logo or text. */
 import { MockupView, loadProduct, designFromImage, designFromText } from './mockup.js';
-import { PRODUCTS, TECHS, COLOR_NAMES, INKS, FOILS, byId, luminance } from './catalog.js';
+import { PRODUCTS, TECHS, COLOR_NAMES, INKS, FOILS, CATS, byId, luminance } from './catalog.js';
 import { lang, ui } from './i18n.js';
 
 const canvas = document.getElementById('mockCanvas');
-if (canvas) init();
+const section = document.getElementById('studio');
+const body = document.getElementById('studioBody');
+const openBtn = document.getElementById('studioOpen');
+let studio = null;   // created on first open, so the page stays light until then
+
+function setOpen(open, pid) {
+  if (!body) return;
+  body.hidden = !open;
+  section.classList.toggle('open', open);
+  openBtn.setAttribute('aria-expanded', String(open));
+  openBtn.querySelector('[data-i18n]').textContent = open ? ui().closeStudio : ui().openStudio;
+  if (open) {
+    if (!studio) studio = init();
+    if (studio && pid) studio.select(pid);
+    else if (studio) studio.ensure();
+    requestAnimationFrame(() => body.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }));
+  } else {
+    section.scrollIntoView({ block: 'start' });
+  }
+}
+
+if (canvas && body) {
+  openBtn.addEventListener('click', () => setOpen(body.hidden));
+  document.getElementById('studioClose').addEventListener('click', () => setOpen(false));
+  // any "try it" link on the page opens the studio
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href="#studio"]');
+    if (!a) return;
+    e.preventDefault();
+    setOpen(true);
+  });
+  document.addEventListener('studio:open', (e) => setOpen(true, e.detail && e.detail.pid));
+  document.addEventListener('langchange', () => {
+    openBtn.querySelector('[data-i18n]').textContent = body.hidden ? ui().openStudio : ui().closeStudio;
+  });
+}
 
 function init() {
   let view;
@@ -12,7 +47,7 @@ function init() {
   catch (e) {
     canvas.insertAdjacentHTML('afterend', `<p class="stage-fallback">${ui().fallback}</p>`);
     canvas.remove();
-    return;
+    return null;
   }
 
   const $ = (id) => document.getElementById(id);
@@ -24,7 +59,7 @@ function init() {
   };
 
   const state = {
-    pid: 'tee', tech: 'dtf', color: '#f2f1ee', ink: null, foil: FOILS[0],
+    pid: 'polo', cat: 'apparel', tech: 'stitch', color: '#f2f1ee', ink: null, foil: FOILS[0],
     source: 'logo', text: 'EMESE', font: 'modern', place: 'center',
     u: 0.5, v: 0.5, w: 0.4, rot: 0, inkTouched: false, box: false
   };
@@ -84,6 +119,7 @@ function init() {
   async function selectProduct(pid) {
     const def = byId(pid);
     state.pid = pid;
+    state.cat = def.cat;
     if (!def.techs.includes(state.tech)) state.tech = def.techs[0];
     if (!def.colors.includes(state.color)) state.color = def.colors[0] || null;
     loading.classList.add('on');
@@ -94,7 +130,11 @@ function init() {
       p.meta.widthM = def.widthM;
       prod = p;
       view.setProduct(p);
-      applyPlace(state.place in (p.meta.presets || {}) ? state.place : 'center');
+      // start where this product is usually decorated (chest on polos, centre on tees...)
+      const d = p.meta.default, pres = p.meta.presets || {};
+      const natural = Object.keys(pres).find(k => Math.abs(pres[k].u - d.u) < 1e-3 && Math.abs(pres[k].v - d.v) < 1e-3 && Math.abs(pres[k].w - d.w) < 1e-3);
+      applyPlace(natural || Object.keys(pres)[0] || 'center');
+      fitTechToColor(def);
       autoInk();
       refreshDesign();
     } catch (e) {
@@ -103,6 +143,13 @@ function init() {
       if (state.pid === pid) loading.classList.remove('on');
     }
     renderUI();
+  }
+
+  // sublimation dye only shows on light colours: on a dark product use another method
+  function fitTechToColor(def) {
+    if (TECHS[state.tech].mode === 'dye' && state.color && luminance(state.color) < 0.3) {
+      state.tech = def.techs.find(t => TECHS[t].mode !== 'dye') || state.tech;
+    }
   }
 
   function applyPlace(name) {
@@ -131,7 +178,7 @@ function init() {
       const t = TECHS[state.tech];
       view.set({
         tint: def.colors.length ? state.color : null,
-        mode: t.mode, gloss: t.gloss || 0.15,
+        mode: t.mode, gloss: t.gloss || 0.15, pitch: t.pitch, relief: t.relief,
         ink: t.mode === 'foil' ? null : state.ink,
         foil: state.foil,
         reveal: !!def.reveal,
@@ -263,7 +310,9 @@ function init() {
   function renderUI() {
     const def = byId(state.pid);
     const s = ui();
-    radio($('productGrid'), PRODUCTS.map(p => ({ value: p.id, label: p[L()] })), state.pid, (id) => selectProduct(id), { thumb: true });
+    radio($('productTabs'), CATS.map(c => ({ value: c, label: s.cats[c] })), state.cat, (c) => { state.cat = c; renderUI(); });
+    radio($('productGrid'), PRODUCTS.filter(p => p.cat === state.cat).map(p => ({ value: p.id, label: p[L()] })), state.pid,
+      (id) => selectProduct(id), { thumb: true });
 
     radio($('designTabs'), [
       { value: 'logo', label: s.designTabs.logo },
@@ -296,7 +345,7 @@ function init() {
     const baseWrap = $('baseSwatches');
     baseWrap.parentElement.hidden = !def.colors.length;
     radio(baseWrap, def.colors.map(c => ({ value: c, label: nameOf(c) })), state.color, (c) => {
-      state.color = c; autoInk(); draw(); renderUI();
+      state.color = c; fitTechToColor(def); autoInk(); draw(); renderUI();
     }, { swatch: true });
 
     const mode = TECHS[state.tech].mode;
@@ -357,10 +406,9 @@ function init() {
 
   document.addEventListener('langchange', renderUI);
 
-  // Start loading once the studio is close to the viewport.
-  const io = new IntersectionObserver(([en]) => {
-    if (en.isIntersecting) { io.disconnect(); selectProduct('tee'); }
-  }, { rootMargin: '600px' });
-  io.observe(canvas);
   renderUI();
+  return {
+    select: (pid) => (byId(pid) ? selectProduct(pid) : selectProduct(state.pid)),
+    ensure: () => { if (!prod) selectProduct(state.pid); }
+  };
 }
