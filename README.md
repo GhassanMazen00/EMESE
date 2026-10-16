@@ -48,6 +48,8 @@ python tools/mockups/render.py tee --preview   # صورة سريعة للتجر�
 2. زوّد المنتج في `PHOTOS` جوّه `tools/mockups/from_photo.py` (مكان الطباعة، وأي حاجة فوقها زي الأحبال).
 3. شغّل `python tools/mockups/from_photo.py <id>` وبعده `python tools/mockups/cards.py`.
 
+لو الصورة صغيرة، كبّرها الأول: `python tools/mockups/upscale.py in.png out.png --scale 2`.
+
 التصميمات اللي بتتعمل لعميل معيّن (زي `assets/designs/emese-streetwear.png`) بتتحدّد في `cards.py`.
 
 ## الملفات
@@ -69,7 +71,7 @@ tools/mockups/        سكريبتات Blender اللي بتعمل الصور
   accessories.py      شدّاد سوستة، تيكت منسوج، هانج تاج، باتش جلد، مريلة، ماوس باد
   garments.py         أجزاء مشتركة (ريب، زراير) للإكسسوارات
   from_photo.py       بيحوّل صورة منتج حقيقية (من غير لوجو) لموكب للاستوديو: نفس الخلفية والإضاءة، ويتلوّن ويتطبع عليه
-  photos/<id>/        الصور الأصلية: photo.jpg والقصّ بتاعها alpha.png (الهودي والبولو نص كم)
-  polo3d.py           البولو كم طويل 3D (شكل جوست مانيكان): قماش، ياقة مطوية، بليتة بـ ٣ زراير، أساور ريب
+  photos/<id>/        الصور الأصلية: photo.jpg والقصّ بتاعها alpha.png (الهودي والبولو نص كم وكم طويل)
+  upscale.py          تكبير الصور الصغيرة بالذكاء الاصطناعي (Real-ESRGAN) من غير ما تبقى مبكسلة
   cards.py            بيحط اللوجو على صور الكروت وكارت الرئيسية (شغّله تاني لو غيّرت اللوجو)
 ```

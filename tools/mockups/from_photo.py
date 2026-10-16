@@ -58,6 +58,22 @@ PHOTOS = {
                     'center': {'u': 0.5, 'v': 0.667, 'w': 0.42},
                     'big': {'u': 0.5, 'v': 0.6, 'w': 0.62}},
     },
+    # stock render, navy, 540x665: AI-upscaled 2.25x (upscale.py, texture kept), cut from its grey
+    # background, right sleeve edge completed from the left; shading lifted to a white base
+    'polo_ls': {
+        'size': 1600, 'height': 0.80, 'top': 0.07, 'neutral': True, 'normalize': 0.62, 'grain': 0.006,
+        'exposure': 0.92, 'contrast': 0.8, 'matte': (0.15, 0.9), 'bg_min': 0.45, 'core_erode': 4,
+        'own_shadow': False, 'drop': {'gap': 0.045, 'rx': 0.36, 'ry': 0.022, 'strength': 0.5},
+        'keep': [[(658, 156), (722, 156), (722, 216), (658, 216)]],                 # the size label
+        'print': [(290, 330), (330, 240), (470, 195), (505, 305), (870, 300), (900, 195), (1040, 240),
+                  (1080, 330), (1012, 600), (1016, 1392), (338, 1392), (334, 600)],
+        'cut': [([(685, 245), (685, 545)], 84)],                                   # placket and buttons
+        'uv': {'cx': 682, 'bottom': 1400, 'W': 700, 'H': 1280, 'R': 480, 'displace': 5.0},
+        'default': {'u': 0.73, 'v': 0.766, 'w': 0.16},
+        'presets': {'chest': {'u': 0.73, 'v': 0.766, 'w': 0.16},
+                    'center': {'u': 0.5, 'v': 0.5625, 'w': 0.42},
+                    'big': {'u': 0.5, 'v': 0.5, 'w': 0.6}},
+    },
 }
 
 
@@ -102,27 +118,40 @@ def backdrop():
 
 
 def build(pid, cfg):
+    SIZE = cfg.get('size', 1200)
     folder = os.path.join(HERE, 'photos', pid)
     name = next(f for f in sorted(os.listdir(folder)) if f.startswith('photo.'))
-    src = np.array(Image.open(os.path.join(folder, name)).convert('RGB'))
+    im = Image.open(os.path.join(folder, name))
+    if im.mode.startswith('I'):
+        # 16-bit grey (an upscaled dark garment): keep every level so light recolours don't band
+        g16 = np.asarray(im, np.float32) / 65535.0
+        lin = np.repeat(to_lin(g16 * 255.0)[..., None], 3, -1)
+    else:
+        lin = to_lin(np.array(im.convert('RGB')))
     alpha = np.array(Image.open(os.path.join(HERE, 'photos', pid, 'alpha.png')).convert('L')).astype(np.float32) / 255
     sh, sw = alpha.shape
-    lin = to_lin(src)
+    orig = lin.copy()
     # edge pixels still hold some of the old white background: give them the colour of the
     # nearest solid pixel, and tighten the matte, so no light fringe shows on dark colours
     core = alpha > 0.92
+    if cfg.get('core_erode'):
+        # sharpened edges ring a little lighter: take edge colours from further inside
+        core = ndimage.binary_erosion(alpha > 0.98, iterations=cfg['core_erode'])
     iy, ix = ndimage.distance_transform_edt(~core, return_distances=False, return_indices=True)
     lin_prod = lin[iy, ix]
-    edge = np.clip((alpha - 0.3) / 0.45, 0, 1)
+    m0, m1 = cfg.get('matte', (0.3, 0.75))
+    edge = np.clip((alpha - m0) / (m1 - m0), 0, 1)
     edge = edge * edge * (3 - 2 * edge)
 
     # the photo's own floor shadow: how much darker than its clean backdrop each pixel is
     solid = alpha > 0.02
-    clear = ~ndimage.binary_dilation(solid, iterations=25) & (lum(lin) > 0.80)
+    clear = ~ndimage.binary_dilation(solid, iterations=25) & (lum(lin) > cfg.get('bg_min', 0.80))
     bg0 = polyfit_surface(lin, clear, deg=2)
     shadow = np.clip(lum(lin) / np.maximum(lum(bg0), 1e-3), 0, 1)
     shadow = np.where(solid, 1.0, shadow)
     shadow = ndimage.gaussian_filter(shadow, 1.5) ** 0.9
+    if cfg.get('own_shadow') is False:
+        shadow = np.ones_like(shadow)        # the backdrop was rebuilt: use the synthetic drop shadow only
 
     # place it in the square
     ys, xs = np.nonzero(alpha > 0.5)
@@ -143,6 +172,17 @@ def build(pid, cfg):
     P = np.clip(place(lin_prod, fill=1.0), 0, 1)
     SH = np.clip(place(shadow, fill=1.0), 0, 1)
     bd = backdrop()
+    if bd.shape[0] != SIZE:
+        bd = np.stack([ndimage.zoom(bd[..., c], SIZE / bd.shape[0], order=1) for c in range(3)], -1)[:SIZE, :SIZE]
+    # parts shown exactly as photographed (a size label): no recolour, no print
+    keep = np.zeros((SIZE, SIZE), np.float32)
+    if cfg.get('keep'):
+        kimg = Image.new('L', (SIZE * 2, SIZE * 2), 0)
+        kd = ImageDraw.Draw(kimg)
+        for poly in cfg['keep']:
+            kd.polygon([((x * s + ox) * 2, (y * s + oy) * 2) for x, y in poly], fill=255)
+        keep = np.asarray(kimg.resize((SIZE, SIZE), Image.LANCZOS), np.float32) / 255 * A
+        P_orig = np.clip(place(orig, fill=1.0), 0, 1)
     yy, xx = np.mgrid[0:SIZE, 0:SIZE]
     if 'drop' in cfg:
         # artwork with no floor shadow of its own: a soft one under the hem, like the hoodie's
@@ -159,6 +199,10 @@ def build(pid, cfg):
     if cfg.get('neutral'):
         # an illustration's colour cast is not the fabric's: keep only the shading
         P = np.repeat(lum(P)[..., None], 3, -1)
+    if cfg.get('normalize'):
+        # a dark garment: lift its shading to what the same cut would show in white
+        m_ = np.median(lum(P)[(A > 0.5) & (keep < 0.5)])
+        P = P * (cfg['normalize'] / m_)
     if cfg.get('grain'):
         rng = np.random.default_rng(5)
         g = ndimage.gaussian_filter(rng.standard_normal((SIZE, SIZE)).astype(np.float32), 0.7)
@@ -178,6 +222,9 @@ def build(pid, cfg):
 
     back = bd * SH[..., None]
     photo = back * (1 - A[..., None]) + (ALB * light + sheen[..., None]) * A[..., None]
+    if cfg.get('keep'):
+        kept = P_orig * (cfg.get('exposure', 0.86) * side)[..., None] * warm
+        photo = photo * (1 - keep[..., None]) + kept * keep[..., None]
 
     # print area: the front panel, minus whatever lies on top of it (drawcords)
     img = Image.new('L', (SIZE * 2, SIZE * 2), 0)
@@ -186,8 +233,8 @@ def build(pid, cfg):
     d.polygon([T(p) for p in cfg['print']], fill=255)
     for line, width in cfg.get('cut', []):
         d.line([T(p) for p in line], fill=0, width=int(width * s * 2), joint='curve')
-    pm = np.asarray(img.resize((SIZE, SIZE), Image.LANCZOS), np.float32) / 255 * A
-    tm = A
+    pm = np.asarray(img.resize((SIZE, SIZE), Image.LANCZOS), np.float32) / 255 * A * (1 - keep)
+    tm = A * (1 - keep)
 
     # UV: around a gentle cylinder across the body, up the front; folds nudge the print
     uvc = cfg['uv']
