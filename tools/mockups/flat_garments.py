@@ -1,4 +1,4 @@
-"""Polo (short / long sleeve), built with the flat-lay height field (flatlay.py).
+"""Long-sleeve polo, built with the flat-lay height field (flatlay.py).
 
 Coordinates are metres on the table, +y towards the collar, viewed from above.
 """
@@ -284,6 +284,5 @@ def build_polo(long_sleeve=False):
 
 
 SCENES = {
-    'polo': lambda: build_polo(False),
     'polo_ls': lambda: build_polo(True),
-}   # the hoodie now comes from a real photo: see from_photo.py
+}   # the short-sleeve polo and the hoodie now come from real artwork: see from_photo.py

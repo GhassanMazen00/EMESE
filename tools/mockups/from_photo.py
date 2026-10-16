@@ -1,7 +1,8 @@
 """Turn a real (or stock) product photo into a studio-ready mockup in assets/mockups/<id>/.
 
 The photo is a blank, light-coloured product (no logo) cut out from its background
-(photos/<id>/photo.jpg + photos/<id>/alpha.png, e.g. made with `rembg`). This script:
+(photos/<id>/photo.jpg|png + photos/<id>/alpha.png, e.g. made with `rembg`, or straight from
+a vector file's shapes). This script:
 
   * puts it on the same warm paper backdrop as the rendered shots, carrying its own
     floor shadow over, and relights it a little from the left like the rest
@@ -43,6 +44,19 @@ PHOTOS = {
         'presets': {'center': {'u': 0.5, 'v': 0.76, 'w': 0.46},
                     'chest': {'u': 0.762, 'v': 0.842, 'w': 0.27},
                     'big': {'u': 0.5, 'v': 0.68, 'w': 0.68}},
+    },
+    # vector illustration (Vecteezy, 3D polo white t-shirt), front view rendered from the EPS
+    'polo': {
+        'height': 0.80, 'top': 0.07, 'neutral': True, 'grain': 0.018, 'exposure': 0.95, 'contrast': 1.35,
+        'drop': {'gap': 0.05, 'rx': 0.34, 'ry': 0.022, 'strength': 0.5},
+        'print': [(205, 225), (450, 125), (555, 300), (670, 210), (780, 300), (890, 125), (1140, 225),
+                  (1045, 690), (1062, 1700), (270, 1700), (295, 690)],
+        'cut': [([(670, 200), (670, 462)], 74)],                          # placket and buttons
+        'uv': {'cx': 670, 'bottom': 1700, 'W': 784, 'H': 1500, 'R': 520, 'displace': 4.0},
+        'default': {'u': 0.748, 'v': 0.853, 'w': 0.17},
+        'presets': {'chest': {'u': 0.748, 'v': 0.853, 'w': 0.17},
+                    'center': {'u': 0.5, 'v': 0.667, 'w': 0.42},
+                    'big': {'u': 0.5, 'v': 0.6, 'w': 0.62}},
     },
 }
 
@@ -88,7 +102,9 @@ def backdrop():
 
 
 def build(pid, cfg):
-    src = np.array(Image.open(os.path.join(HERE, 'photos', pid, 'photo.jpg')).convert('RGB'))
+    folder = os.path.join(HERE, 'photos', pid)
+    name = next(f for f in sorted(os.listdir(folder)) if f.startswith('photo.'))
+    src = np.array(Image.open(os.path.join(folder, name)).convert('RGB'))
     alpha = np.array(Image.open(os.path.join(HERE, 'photos', pid, 'alpha.png')).convert('L')).astype(np.float32) / 255
     sh, sw = alpha.shape
     lin = to_lin(src)
@@ -127,13 +143,33 @@ def build(pid, cfg):
     P = np.clip(place(lin_prod, fill=1.0), 0, 1)
     SH = np.clip(place(shadow, fill=1.0), 0, 1)
     bd = backdrop()
+    yy, xx = np.mgrid[0:SIZE, 0:SIZE]
+    if 'drop' in cfg:
+        # artwork with no floor shadow of its own: a soft one under the hem, like the hoodie's
+        fy, fx = np.nonzero(A > 0.5)
+        w_, h_ = fx.max() - fx.min(), fy.max() - fy.min()
+        dr = cfg['drop']
+        cx_, cy_ = (fx.min() + fx.max()) / 2, fy.max() + dr['gap'] * h_
+        blob = np.exp(-(((xx - cx_) / (dr['rx'] * w_)) ** 2 + ((yy - cy_) / (dr['ry'] * h_)) ** 2) * 1.6)
+        SH = SH * (1 - dr['strength'] * ndimage.gaussian_filter(blob, 6))
+    if cfg.get('contrast'):
+        # soft illustration shading: deepen the folds a little so dark colours keep their shape
+        m_ = lum(P)[A > 0.5].mean()
+        P = P * ((np.maximum(lum(P), 1e-4) / m_) ** (cfg['contrast'] - 1))[..., None]
+    if cfg.get('neutral'):
+        # an illustration's colour cast is not the fabric's: keep only the shading
+        P = np.repeat(lum(P)[..., None], 3, -1)
+    if cfg.get('grain'):
+        rng = np.random.default_rng(5)
+        g = ndimage.gaussian_filter(rng.standard_normal((SIZE, SIZE)).astype(np.float32), 0.7)
+        g += 0.5 * ndimage.gaussian_filter(rng.standard_normal((SIZE, SIZE)).astype(np.float32), 2.0)
+        P = P * (1 + cfg['grain'] * g / g.std())[..., None]
 
     # relight: the studio key light comes from the left, and the room is warm
-    yy, xx = np.mgrid[0:SIZE, 0:SIZE]
     side = (lum(bd) / lum(bd).mean()) ** 0.3
     side = ndimage.gaussian_filter(side, 40)
     warm = np.array([1.0, 0.985, 0.955], np.float32)
-    prod = P * (0.86 * side)[..., None] * warm
+    prod = P * (cfg.get('exposure', 0.86) * side)[..., None] * warm
 
     # split into the compositor's passes: prod = ALB * light + sheen
     L0 = lum(prod) / ALB
