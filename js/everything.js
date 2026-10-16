@@ -117,8 +117,10 @@ export const GROUPS = [
 ];
 
 const STR = {
-  ar: { all: 'الكل', try: 'جرّبه', count: (n) => `${n} منتج` },
-  en: { all: 'All', try: 'Try it', count: (n) => `${n} items` }
+  ar: { all: 'الكل', try: 'جرّبه', count: (n) => `${n} منتج`, open: 'استكشف القايمة كلها', close: 'اقفل القايمة',
+        total: (n) => `${n.toLocaleString('ar-EG')} منتج`, num: (n) => n.toLocaleString('ar-EG') },
+  en: { all: 'All', try: 'Try it', count: (n) => `${n} items`, open: 'Explore the full list', close: 'Close the list',
+        total: (n) => `${n} items`, num: (n) => String(n) }
 };
 
 export function initEverything({ onTry } = {}) {
@@ -127,7 +129,12 @@ export function initEverything({ onTry } = {}) {
   const filters = root.querySelector('.ev-filters');
   const list = root.querySelector('.ev-groups');
   const countEl = root.querySelector('.ev-count');
+  const peek = root.querySelector('.ev-peek');
+  const toggle = root.querySelector('#evToggle');
+  const body = root.querySelector('#evBody');
+  const total = GROUPS.reduce((n, g) => n + g.items.length, 0);
   let active = 'all';
+  let open = false;
 
   const L = () => (lang() === 'en' ? 1 : 0);
 
@@ -135,21 +142,25 @@ export function initEverything({ onTry } = {}) {
     const l = L();
     const s = STR[l ? 'en' : 'ar'];
     const counts = {};
-    let total = 0;
     GROUPS.forEach(g => g.items.forEach(it => {
-      total++;
       it[2].split(' ').forEach(c => { counts[c] = (counts[c] || 0) + 1; });
     }));
+    // collapsed view: group names you can jump into, and the big toggle
+    peek.innerHTML = GROUPS.map((g, i) =>
+      `<li><button type="button" data-group="${i}">${l ? g.en : g.ar}<small>${s.num(g.items.length)}</small></button></li>`).join('');
+    toggle.querySelector('.ev-toggle-label').textContent = open ? s.close : s.open;
+    toggle.querySelector('.ev-total').textContent = s.total(total);
+
     filters.innerHTML = [['all', s.all, total], ...Object.keys(CAPS).map(k => [k, CAPS[k][l], counts[k] || 0])]
       .map(([k, label, n]) => `<button type="button" class="ev-chip" data-cap="${k}" aria-pressed="${k === active}">${label}<small>${n}</small></button>`)
       .join('');
 
     let shown = 0;
-    list.innerHTML = GROUPS.map(g => {
+    list.innerHTML = GROUPS.map((g, gi) => {
       const items = g.items.filter(it => active === 'all' || it[2].split(' ').includes(active));
       if (!items.length) return '';
       shown += items.length;
-      return `<div class="ev-group">
+      return `<div class="ev-group" id="ev-g${gi}">
         <h3>${l ? g.en : g.ar}<span>${items.length}</span></h3>
         <ul>${items.map(it => `<li>
           <span class="ev-name">${it[l]}</span>
@@ -161,6 +172,28 @@ export function initEverything({ onTry } = {}) {
     countEl.textContent = s.count(shown);
   }
 
+  function setOpen(v) {
+    open = v;
+    root.classList.toggle('open', v);
+    toggle.setAttribute('aria-expanded', String(v));
+    if (v) body.removeAttribute('inert'); else body.setAttribute('inert', '');
+    render();
+  }
+
+  toggle.addEventListener('click', () => setOpen(!open));
+  root.querySelector('.ev-close').addEventListener('click', () => {
+    setOpen(false);
+    root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    toggle.focus({ preventScroll: true });
+  });
+  peek.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-group]');
+    if (!b) return;
+    active = 'all';
+    setOpen(true);
+    const g = document.getElementById(`ev-g${b.dataset.group}`);
+    if (g) setTimeout(() => g.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+  });
   filters.addEventListener('click', (e) => {
     const b = e.target.closest('.ev-chip');
     if (!b) return;

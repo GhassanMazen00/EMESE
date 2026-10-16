@@ -55,6 +55,8 @@ const EN = {
   'ev.title': 'And the list<br>goes on.',
   'ev.sub': 'Here is a slice of what we make. Pick a method to see what it is used for, and anything marked Try it can wear your logo in the studio.',
   'ev.filters': 'Filter by method',
+  'ev.groups': 'Groups',
+  'ev.close': 'Close the list',
   'ev.more': "Can't find what you're after?",
   'ev.moreLink': "Send it over and we'll look into it",
   'hero.prev': 'Previous product',

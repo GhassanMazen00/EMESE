@@ -16,6 +16,9 @@ varying vec2 vUv;
 void main() { vUv = aPos * 0.5 + 0.5; gl_Position = vec4(aPos, 0.0, 1.0); }`;
 
 const FRAG = `
+#ifdef GL_OES_standard_derivatives
+#extension GL_OES_standard_derivatives : enable
+#endif
 precision highp float;
 varying vec2 vUv;
 uniform sampler2D uPhoto, uLight, uAlbedo, uUV, uMask, uDesign, uSpec;
@@ -117,8 +120,13 @@ void main() {
       extra = vec3(a * uGloss * pow(hl, 4.0));
     } else if (uMode == 3) {     // embroidery: satin stitches, raised thread
       float n = physW / uPitch;
-      float st = fract((t.x * cos(0.8) + t.y * sin(0.8)) * n);
+      float sc = (t.x * cos(0.8) + t.y * sin(0.8)) * n;
+      float st = fract(sc);
       float thread = 0.72 + 0.28 * smoothstep(0.0, 0.5, st) * smoothstep(1.0, 0.5, st);
+#ifdef GL_OES_standard_derivatives
+      // threads finer than the pixels would alias into broken letters: average them out
+      thread = mix(thread, 0.86, clamp((fwidth(sc) - 0.3) / 0.3, 0.0, 1.0));
+#endif
       base = mix(alb, dcol * thread, a);
       float shadow = designA(t + vec2(-e * 1.4, e * 1.4)) * (1.0 - a);
       mod_ = (1.0 + relief * 0.9 * uRelief) * (1.0 - shadow * 0.35 * uRelief);
@@ -196,6 +204,7 @@ export class MockupView {
     this.canvas = canvas;
     const gl = canvas.getContext('webgl', { preserveDrawingBuffer: true, premultipliedAlpha: false, antialias: false });
     if (!gl) throw new Error('WebGL unavailable');
+    gl.getExtension('OES_standard_derivatives');   // lets embroidery threads anti-alias
     this.gl = gl;
     const sh = (type, src) => {
       const s = gl.createShader(type);

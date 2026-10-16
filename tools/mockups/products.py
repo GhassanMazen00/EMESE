@@ -803,122 +803,6 @@ def build_tote():
                 extra={'presets': {'center': {'u': 0.5, 'v': 0.5, 'w': 0.55}, 'big': {'u': 0.5, 'v': 0.47, 'w': 0.78}}})
 
 
-# -------------------------------------------------------------------- cap ---
-def twill(name, color):
-    m = principled(name, color=color, rough=0.9, sheen=0.3, sheen_rough=0.6, spec=0.35)
-    co = lib.tex_coord(m)
-    rot = node(m, 'ShaderNodeMapping')
-    rot.inputs['Rotation'].default_value = (0.0, 0.0, 0.785)
-    connect(m, co, rot.inputs['Vector'])
-    tw = node(m, 'ShaderNodeTexWave', _wave_type='BANDS', _bands_direction='X', Scale=170.0, Distortion=1.5, Detail=2.0)
-    connect(m, rot.outputs['Vector'], tw.inputs['Vector'])
-    n = lib.noise(m, co, 90.0, detail=3)
-    # six panel seams radiating from the top button
-    sep = node(m, 'ShaderNodeSeparateXYZ')
-    connect(m, co, sep.inputs['Vector'])
-    at = node(m, 'ShaderNodeMath', _operation='ARCTAN2')
-    connect(m, sep.outputs['Y'], at.inputs[0])
-    connect(m, sep.outputs['X'], at.inputs[1])
-    k = node(m, 'ShaderNodeMath', _operation='MULTIPLY')
-    k.inputs[1].default_value = 3.0
-    connect(m, at.outputs['Value'], k.inputs[0])
-    off = node(m, 'ShaderNodeMath', _operation='ADD')
-    off.inputs[1].default_value = 1.5708
-    connect(m, k.outputs['Value'], off.inputs[0])
-    cs = node(m, 'ShaderNodeMath', _operation='COSINE')
-    connect(m, off.outputs['Value'], cs.inputs[0])
-    seam = node(m, 'ShaderNodeMapRange', _interpolation_type='SMOOTHSTEP', **{'From Min': 0.985, 'From Max': 0.999, 'To Min': 0.0, 'To Max': -1.0})
-    connect(m, cs.outputs['Value'], seam.inputs['Value'])
-    tex = sum_sockets(m, [tw.outputs['Fac'], n.outputs['Fac']], [0.5, 0.5])
-    textured_albedo(m, color, tex, amount=0.08)
-    h = sum_sockets(m, [tw.outputs['Fac'], n.outputs['Fac'], seam.outputs['Result']], [0.25, 0.3, 1.2])
-    lib.add_bump(m, h, strength=0.3, distance=0.0012)
-    return m
-
-
-def build_cap():
-    lib.reset()
-    R = 0.094
-    bm = bmesh.new()
-    bmesh.ops.create_uvsphere(bm, u_segments=96, v_segments=48, radius=R)
-    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < -1e-5], context='VERTS')
-    for v in bm.verts:
-        x, y, z = v.co
-        # front a little taller and fuller than the back, like a structured cap
-        front = max(0.0, -y / R)
-        back = max(0.0, y / R)
-        v.co.z = z * (1.02 + 0.22 * front - 0.12 * back)
-        v.co.y = y * 1.08
-    crown = lib.mesh_object('crown', bm)
-    sol = crown.modifiers.new('sol', 'SOLIDIFY')
-    sol.thickness = 0.0025
-    lib.apply_modifiers(crown)
-    lib.smooth(crown)
-    color = (0.86, 0.85, 0.83)
-    mp, mb = twill('print', color), twill('body', color)
-    two_slots(crown, mp, mb)
-    me = crown.data
-    uvl = me.uv_layers.new(name='PrintUV')
-    W, H, z0 = 0.13, 0.065, 0.012
-    for poly in me.polygons:
-        c = poly.center
-        if c.y < -0.03 and abs(c.x) < 0.08 and z0 - 0.005 < c.z < z0 + H + 0.01 and poly.normal.y < -0.2:
-            poly.material_index = 0
-    for loop in me.loops:
-        co = me.vertices[loop.vertex_index].co
-        uvl.data[loop.index].uv = ((co.x + W / 2) / W, (co.z - z0) / H)
-    # top button
-    bm = bmesh.new()
-    bmesh.ops.create_uvsphere(bm, u_segments=24, v_segments=12, radius=0.0075)
-    button = lib.mesh_object('button', bm)
-    button.scale.z = 0.45
-    button.location.z = R * 1.02 + 0.001
-    lib.smooth(button)
-    lib.assign(button, mb)
-    # brim: a curved bill in front
-    bm = bmesh.new()
-    rows = []
-    NA, NR = 48, 12
-    for i in range(NA + 1):
-        a = math.pi + 0.62 + (math.pi - 1.24) * i / NA     # front arc only (y < 0)
-        c = math.sin((a - math.pi - 0.62) / (math.pi - 1.24) * math.pi)  # 0 at the ends, 1 centre
-        reach = 0.078 * c ** 0.55
-        row = []
-        for j in range(NR + 1):
-            t = j / NR
-            r = R * 0.985 + reach * t
-            x, y = r * math.cos(a), r * math.sin(a) * 1.08
-            z = 0.003 - 0.030 * (math.cos(a) ** 2) * t - 0.004 * t * t
-            row.append(bm.verts.new((x, y, z)))
-        rows.append(row)
-    for i in range(NA):
-        for j in range(NR):
-            bm.faces.new((rows[i][j], rows[i + 1][j], rows[i + 1][j + 1], rows[i][j + 1]))
-    brim = lib.mesh_object('brim', bm)
-    sol = brim.modifiers.new('sol', 'SOLIDIFY')
-    sol.thickness = 0.004
-    sol.offset = 0
-    bv = brim.modifiers.new('bev', 'BEVEL')
-    bv.width = 0.0012
-    bv.segments = 3
-    sub = brim.modifiers.new('sub', 'SUBSURF')
-    sub.levels = 1
-    lib.apply_modifiers(brim)
-    lib.smooth(brim)
-    lib.assign(brim, mb)
-    from mathutils import Euler
-    for o in (crown, button, brim):
-        o.location.z += 0.022
-        o.rotation_euler = Euler((-0.18, 0.0, -0.2))
-        o.location.rotate(Euler((-0.18, 0.0, -0.2)))
-    sweep(color=(0.74, 0.72, 0.69), radius=0.4, depth=1.5, height=1.2, width=3)
-    product_lights(key=(-0.55, -0.5, 0.6), target=(0, 0, 0.05), key_e=2.8, rim_e=1.2, world=0.05)
-    lib.camera((-0.30, -0.66, 0.30), (0.0, -0.03, 0.062), lens=85)
-    return dict(tintable=True, print_aspect=W / H,
-                default={'u': 0.5, 'v': 0.5, 'w': 0.55},
-                extra={'presets': {'center': {'u': 0.5, 'v': 0.5, 'w': 0.55}, 'big': {'u': 0.5, 'v': 0.5, 'w': 0.8}}})
-
-
 # ------------------------------------------------------------------- flag ---
 def build_flag():
     lib.reset()
@@ -985,6 +869,5 @@ SCENES = {
     'pen': build_pen,
     'cards': build_cards,
     'keychain': build_keychain,
-    'cap': build_cap,
     'flag': build_flag,
 }

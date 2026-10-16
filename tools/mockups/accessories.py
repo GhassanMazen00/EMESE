@@ -1,5 +1,5 @@
-"""Headwear and garment accessories: cap (rebuilt), zipper, woven label, hang tag,
-leather patch, apron and mouse pad.
+"""Garment accessories and flat goods: zipper, woven label, hang tag, leather patch,
+apron and mouse pad. (The cap lives in cap.py.)
 """
 import math
 
@@ -10,52 +10,10 @@ from mathutils import Euler, Matrix, Vector
 import lib
 from lib import connect, node, principled
 from products import (backdrop_paper, bevelled_slab, knit_height, line_groove, planar_print, product_lights, prism,
-                      rounded_rect, sum_sockets, sweep, textured_albedo, tube_curve, two_slots, leather, _crease, bezier)
-from garments import solid, lift, rib_material, button, button_material, mirror, slots
+                      sum_sockets, textured_albedo, tube_curve, two_slots, leather, _crease, bezier)
+from garments import solid, lift, mirror
 
 WHITE = (0.86, 0.86, 0.85)
-
-
-# ===================================================================== cap ===
-CAP_R = (0.094, 0.104)   # crown footprint half-axes (x, y); front is -y
-SEAMS = [-math.pi / 2 + k * math.pi / 3 for k in range(6)]
-
-
-def cap_twill(name, color=WHITE):
-    """Cotton twill with panel seams and twin topstitching computed from the angle around the crown."""
-    m = principled(name, color=color, rough=0.9, sheen=0.35, sheen_rough=0.6, spec=0.35)
-    co = lib.tex_coord(m)
-    rot = node(m, 'ShaderNodeMapping')
-    rot.inputs['Rotation'].default_value = (0.0, 0.0, 0.785)
-    connect(m, co, rot.inputs['Vector'])
-    tw = node(m, 'ShaderNodeTexWave', _wave_type='BANDS', _bands_direction='X', Scale=150.0, Distortion=1.2, Detail=2.0)
-    connect(m, rot.outputs['Vector'], tw.inputs['Vector'])
-    slub = lib.noise(m, co, 300.0, detail=2, rough=0.5)
-    tex = sum_sockets(m, [tw.outputs['Fac'], slub.outputs['Fac']], [0.75, 0.25])
-    textured_albedo(m, color, tw.outputs['Fac'], amount=0.035)
-    lib.add_bump(m, tex, strength=0.16, distance=0.0008)
-    return m
-
-
-def stitch_rows(m, value_socket, rows, width=0.0035, dash=None):
-    """Thin dark grooves where `value_socket` equals any of `rows` (a stitch line)."""
-    total = None
-    for r in rows:
-        sub = node(m, 'ShaderNodeMath', _operation='SUBTRACT')
-        sub.inputs[1].default_value = r
-        connect(m, value_socket, sub.inputs[0])
-        ab = node(m, 'ShaderNodeMath', _operation='ABSOLUTE')
-        connect(m, sub.outputs['Value'], ab.inputs[0])
-        ss = node(m, 'ShaderNodeMapRange', _interpolation_type='SMOOTHSTEP', **{'From Min': 0.0, 'From Max': width, 'To Min': -1.0, 'To Max': 0.0})
-        connect(m, ab.outputs['Value'], ss.inputs['Value'])
-        if total is None:
-            total = ss.outputs['Result']
-        else:
-            add = node(m, 'ShaderNodeMath', _operation='ADD')
-            connect(m, total, add.inputs[0])
-            connect(m, ss.outputs['Result'], add.inputs[1])
-            total = add.outputs['Value']
-    return total
 
 
 def add_bump_extra(m, height, strength):
@@ -67,187 +25,6 @@ def add_bump_extra(m, height, strength):
     if prev is not None:
         connect(m, prev, b.inputs['Normal'])
     connect(m, b.outputs['Normal'], p.inputs['Normal'])
-
-
-def crown_point(phi, theta):
-    """phi: angle around (front = -pi/2); theta: 0 at the band, pi/2 at the button."""
-    front = max(0.0, -math.sin(phi))
-    back = max(0.0, math.sin(phi))
-    h = 0.106 + 0.014 * front - 0.012 * back              # structured front stands taller
-    p = 2.35 + 0.55 * front - 0.35 * back                  # a bit squarer at the structured front
-    c, s = math.cos(theta), math.sin(theta)
-    rr = abs(c) ** (2 / p)
-    zz = abs(s) ** (2 / p)
-    hm = 0.104
-    w = s ** 4
-    hh = h * (1 - w) + hm * w                              # meet at one apex
-    # panels puff a little between seams, seams pull in
-    d = min(abs(((phi - sk + math.pi) % (2 * math.pi)) - math.pi) for sk in SEAMS)
-    puff = 1.0 + 0.018 * math.sin(min(d, math.pi / 6) * 3) * math.sin(theta * 2) ** 0.5 - 0.012 * math.exp(-(d / 0.035) ** 2)
-    x = CAP_R[0] * rr * math.cos(phi) * puff
-    y = CAP_R[1] * rr * math.sin(phi) * puff
-    return Vector((x, y, hh * zz))
-
-
-def build_cap_mesh(NA=192, NT=64):
-    bm = bmesh.new()
-    rows = []
-    for j in range(NT + 1):
-        th = (j / NT) * (math.pi / 2) * 0.999
-        row = [bm.verts.new(crown_point(-math.pi + 2 * math.pi * i / NA, th)) for i in range(NA)]
-        rows.append(row)
-    top = bm.verts.new((0, 0, 0.104))
-    for j in range(NT):
-        for i in range(NA):
-            a, b = rows[j][i], rows[j][(i + 1) % NA]
-            c, d = rows[j + 1][(i + 1) % NA], rows[j + 1][i]
-            bm.faces.new((a, b, c, d))
-    for i in range(NA):
-        bm.faces.new((rows[NT][i], rows[NT][(i + 1) % NA], top))
-    obj = lib.mesh_object('crown', bm)
-    sol = obj.modifiers.new('sol', 'SOLIDIFY')
-    sol.thickness = 0.0022
-    sol.offset = -1
-    lib.apply_modifiers(obj)
-    lib.smooth(obj)
-    return obj
-
-
-def build_brim(NS=64, NR=20):
-    bm = bmesh.new()
-    rows = []
-    span = 1.06
-    for i in range(NS + 1):
-        s = -1 + 2 * i / NS
-        phi = -math.pi / 2 + s * span
-        base = crown_point(phi, 0.0)
-        nrm = Vector((math.cos(phi) / CAP_R[0], math.sin(phi) / CAP_R[1], 0)).normalized()
-        depth = 0.072 * (1 - abs(s) ** 2.4) ** 0.6
-        row = []
-        for j in range(NR + 1):
-            t = j / NR
-            p = base + nrm * (depth * t - 0.004)
-            # pre-curved bill: sides bend down, the whole brim tilts slightly down
-            p.z = 0.002 - 0.046 * (s * s) * (0.2 + 0.8 * t) - 0.012 * t * t
-            row.append(bm.verts.new(p))
-        rows.append(row)
-    for i in range(NS):
-        for j in range(NR):
-            bm.faces.new((rows[i][j], rows[i + 1][j], rows[i + 1][j + 1], rows[i][j + 1]))
-    obj = lib.mesh_object('brim', bm)
-    me = obj.data
-    uvl = me.uv_layers.new(name='BrimUV')
-    for poly in me.polygons:
-        for li in poly.loop_indices:
-            vi = me.loops[li].vertex_index
-            i, j = divmod(vi, NR + 1)
-            uvl.data[li].uv = (i / NS, j / NR)
-    sol = obj.modifiers.new('sol', 'SOLIDIFY')
-    sol.thickness = 0.0042
-    sol.offset = 0
-    sub = obj.modifiers.new('sub', 'SUBSURF')
-    sub.levels = 2
-    lib.apply_modifiers(obj)
-    lib.smooth(obj)
-    return obj
-
-
-def build_cap():
-    lib.reset()
-    crown = build_cap_mesh()
-    m_print = cap_twill('print')
-    m_body = cap_twill('body')
-    # seam grooves + twin topstitching, from the angle around the crown
-    for m in (m_print, m_body):
-        co = lib.tex_coord(m)
-        sep = node(m, 'ShaderNodeSeparateXYZ')
-        connect(m, co, sep.inputs['Vector'])
-        at = node(m, 'ShaderNodeMath', _operation='ARCTAN2')
-        connect(m, sep.outputs['Y'], at.inputs[0])
-        connect(m, sep.outputs['X'], at.inputs[1])
-        # distance (radians) to the nearest of six seams: fold the angle into one 60 degree sector
-        off = node(m, 'ShaderNodeMath', _operation='ADD')
-        off.inputs[1].default_value = math.pi / 2 + math.pi / 6
-        connect(m, at.outputs['Value'], off.inputs[0])
-        mod = node(m, 'ShaderNodeMath', _operation='FLOORED_MODULO')
-        mod.inputs[1].default_value = math.pi / 3
-        connect(m, off.outputs['Value'], mod.inputs[0])
-        cen = node(m, 'ShaderNodeMath', _operation='SUBTRACT')
-        cen.inputs[1].default_value = math.pi / 6
-        connect(m, mod.outputs['Value'], cen.inputs[0])
-        ab = node(m, 'ShaderNodeMath', _operation='ABSOLUTE')
-        connect(m, cen.outputs['Value'], ab.inputs[0])
-        st = stitch_rows(m, ab.outputs['Value'], [0.0, 0.055, 0.075], width=0.006)
-        add_bump_extra(m, st, 0.6)
-    slots(crown, [m_print, m_body])
-    me = crown.data
-    uvl = me.uv_layers.new(name='PrintUV')
-    W, H, z0 = 0.135, 0.075, 0.012
-    for poly in me.polygons:
-        c = poly.center
-        outer = poly.normal.dot(Vector((c.x, c.y, c.z - 0.03)).normalized()) > 0
-        poly.material_index = 0 if (outer and c.y < -0.035 and abs(c.x) < 0.085 and z0 - 0.006 < c.z < z0 + H + 0.012) else 1
-    for loop in me.loops:
-        co = me.vertices[loop.vertex_index].co
-        uvl.data[loop.index].uv = ((co.x + W / 2) / W, (co.z - z0) / H)
-
-    brim = build_brim()
-    brim_m = cap_twill('body_brim')
-    co_uv = node(brim_m, 'ShaderNodeUVMap')
-    co_uv.uv_map = 'BrimUV'
-    sep = node(brim_m, 'ShaderNodeSeparateXYZ')
-    connect(brim_m, co_uv.outputs['UV'], sep.inputs['Vector'])
-    rows = stitch_rows(brim_m, sep.outputs['Y'], [0.93, 0.85, 0.77, 0.69, 0.61, 0.53, 0.45], width=0.012)
-    add_bump_extra(brim_m, rows, 0.5)
-    lib.assign(brim, brim_m)
-
-    parts = [crown, brim]
-    # fabric-covered top button
-    bmb = bmesh.new()
-    bmesh.ops.create_uvsphere(bmb, u_segments=32, v_segments=16, radius=0.0085)
-    btn = lib.mesh_object('squatchee', bmb)
-    btn.scale.z = 0.42
-    btn.location.z = 0.104 + 0.0018
-    lib.smooth(btn)
-    lib.assign(btn, m_body)
-    parts.append(btn)
-    # embroidered eyelets on each panel
-    eyelet_m = principled('eyelet', color=(0.05, 0.05, 0.05), rough=0.8)
-    for k in range(6):
-        phi = SEAMS[k] + math.pi / 6
-        p = crown_point(phi, math.radians(52))
-        n = (p - Vector((0, 0, 0.02))).normalized()
-        ring_pts = []
-        t1 = n.cross(Vector((0, 0, 1))).normalized()
-        t2 = n.cross(t1).normalized()
-        for i in range(17):
-            a = i * 2 * math.pi / 16
-            q = p + n * 0.0006 + (t1 * math.cos(a) + t2 * math.sin(a)) * 0.0028
-            ring_pts.append(tuple(q))
-        ring = tube_curve(f'eyelet{k}', ring_pts, 0.0009, res=3)
-        lib.assign(ring, m_body)
-        parts.append(ring)
-        hole = bmesh.new()
-        bmesh.ops.create_circle(hole, cap_ends=True, segments=16, radius=0.0021)
-        h = lib.mesh_object(f'hole{k}', hole)
-        h.matrix_world = Matrix.Translation(p + n * 0.0003) @ n.to_track_quat('Z', 'Y').to_matrix().to_4x4()
-        lib.assign(h, eyelet_m)
-        parts.append(h)
-
-    # rest the cap naturally: tilted back a little on its brim
-    tilt = Euler((-0.12, 0.0, -0.58)).to_matrix().to_4x4()
-    for o in parts:
-        o.matrix_world = tilt @ o.matrix_world
-    bpy.context.view_layer.update()
-    zmin = min((o.matrix_world @ v.co).z for o in (crown, brim) for v in o.data.vertices)
-    for o in parts:
-        o.location.z -= zmin
-    sweep(color=(0.74, 0.72, 0.69), radius=0.4, depth=1.5, height=1.2, width=3)
-    product_lights(key=(-0.55, -0.5, 0.6), target=(0, 0, 0.05), key_e=2.6, rim_e=1.2, world=0.05)
-    lib.camera((-0.07, -0.76, 0.35), (0.0, -0.01, 0.05), lens=85)
-    return dict(tintable=True, print_aspect=W / H, spec_blur=4.0,   # fabric sheen is soft; drop denoiser blotches
-                default={'u': 0.5, 'v': 0.5, 'w': 0.5},
-                extra={'presets': {'center': {'u': 0.5, 'v': 0.5, 'w': 0.5}, 'big': {'u': 0.5, 'v': 0.5, 'w': 0.72}}})
 
 
 # ============================================================== helpers ===
@@ -612,7 +389,6 @@ def build_mousepad():
 
 
 SCENES = {
-    'cap': build_cap,
     'zipper': build_zipper,
     'label': build_label,
     'hangtag': build_hangtag,
