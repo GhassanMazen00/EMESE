@@ -54,7 +54,7 @@ CARDS = {
 }
 
 # how much of the shot the card shows (products that fill the frame need it all)
-CARD_CROP = {'cap': 1.0, 'hoodie': 0.93, 'polo': 0.93, 'polo_ls': 0.92}
+CARD_CROP = {'cap': 1.0, 'hoodie': 0.93, 'polo': 0.93, 'polo_ls': 0.93}
 
 # hero slides, in the order index.html lists them
 HERO = [

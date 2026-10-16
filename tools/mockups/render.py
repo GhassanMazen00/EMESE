@@ -1,4 +1,4 @@
-"""Render EMESE product mockups into assets/mockups/<id>/.
+"""Render EMESE product mockups into assets/mockups/<id>/ (products made from photos: from_photo.py).
 
 Usage (needs the `bpy` package, i.e. Blender as a Python module):
     python tools/mockups/render.py                # every product
@@ -14,13 +14,11 @@ import lib  # noqa: E402
 import products  # noqa: E402
 import garments  # noqa: E402
 import accessories  # noqa: E402
-import flat_garments  # noqa: E402
 import cap  # noqa: E402
 
 SCENES = dict(products.SCENES)
 SCENES.update(garments.SCENES)
-SCENES.update(accessories.SCENES)   # includes the rebuilt cap
-SCENES.update(flat_garments.SCENES)  # polo, long-sleeve polo, hoodie
+SCENES.update(accessories.SCENES)
 SCENES.update(cap.SCENES)
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))

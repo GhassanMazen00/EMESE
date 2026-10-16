@@ -167,7 +167,7 @@ def button_material():
     return m
 
 
-# polo and hoodie live in flat_garments.py (2.5D height-field build)
+# polos and the hoodie now come from real artwork: see from_photo.py
 
 
 SCENES = {}
