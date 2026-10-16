@@ -1,3 +1,5 @@
 __pycache__/
 assets/mockups/*/_tmp/
 assets/mockups/*/preview.png
+# raw product photos stay local: stock images (Canva etc.) may not be shared as standalone files
+tools/mockups/photos/*/photo.*

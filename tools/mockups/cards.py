@@ -28,12 +28,14 @@ TECH = {
     'laser': ('laser', {}), 'foil': ('foil', {}),
 }
 
-# product cards: tint (None keeps the shot), technique, ink (None = the logo's own colours; foil colour for foil)
+# product cards: tint (None keeps the shot), technique, ink (None = the logo's own colours; foil colour for foil),
+# optionally a design of the customer's own and the preset it sits at (default: assets/logo.png at the default spot)
+STREETWEAR = {'design': 'assets/designs/emese-streetwear.png', 'place': 'chest'}
 CARDS = {
     'tee': ('#f2f1ee', 'dtf', None),
     'polo': ('#1f2b4a', 'stitch', '#f6f4ef'),
     'polo_ls': ('#f2f1ee', 'stitch', None),
-    'hoodie': ('#262626', 'dtf', '#f6f4ef'),
+    'hoodie': (None, 'dtf', None, STREETWEAR),
     'apron': ('#262626', 'dtf', '#f6f4ef'),
     'cap': ('#1f2b4a', 'stitch', '#f6f4ef'),
     'zipper': ('#262626', 'laser', None),
@@ -52,12 +54,12 @@ CARDS = {
 }
 
 # how much of the shot the card shows (products that fill the frame need it all)
-CARD_CROP = {'cap': 1.0, 'hoodie': 0.97, 'polo_ls': 0.92}
+CARD_CROP = {'cap': 1.0, 'hoodie': 0.93, 'polo_ls': 0.92}
 
 # hero slides, in the order index.html lists them
 HERO = [
     ('polo', '#1f2b4a', 'stitch', '#f6f4ef'),
-    ('hoodie', '#262626', 'dtf', '#f6f4ef'),
+    ('hoodie', None, 'dtf', None, STREETWEAR),
     ('cap', '#1f2b4a', 'stitch', '#f6f4ef'),
     ('tee', '#f2f1ee', 'dtf', None),
     ('zipper', '#262626', 'laser', None),
@@ -147,7 +149,15 @@ def design(logo, tx, ty, alpha_only=False):
     return out[..., 0] if alpha_only else out
 
 
-def composite(pid, meta, tint, tech, ink, logo, width_m=0.3, reveal=False):
+def design_square(path):
+    img = Image.open(os.path.join(ROOT, path)).convert('RGBA')
+    side = max(img.size)
+    sq = Image.new('RGBA', (side, side), (0, 0, 0, 0))
+    sq.paste(img, ((side - img.width) // 2, (side - img.height) // 2), img)
+    return np.array(sq.resize((1024, 1024), Image.LANCZOS)).astype(np.float32) / 255.0
+
+
+def composite(pid, meta, tint, tech, ink, logo, width_m=0.3, reveal=False, place=None):
     photo = to_lin(load(pid, 'photo.webp'))
     L = to_lin(load(pid, 'light.webp')) * meta['lightScale']
     alb0 = to_lin(load(pid, 'albedo.webp'))
@@ -177,7 +187,7 @@ def composite(pid, meta, tint, tech, ink, logo, width_m=0.3, reveal=False):
         ok |= take
     if meta.get('flipV'):
         v = 1 - v
-    d = meta['default']
+    d = (meta.get('presets') or {}).get(place) or meta['default']
     aspect = meta['printAspect']
     W = d['w'] * aspect
     ddx = u - d['u']
@@ -266,21 +276,24 @@ def main():
     cat = catalog()
     logo = logo_square()
     ready = lambda pid: pid in man and os.path.exists(os.path.join(MOCK, pid, 'spec.webp'))
-    for pid, (tint, tech, ink) in CARDS.items():
+
+    def make(pid, tint, tech, ink, extra=None):
+        w, rv = cat.get(pid, (0.3, False))
+        art = design_square(extra['design']) if extra else logo
+        return composite(pid, man[pid], tint, tech, ink, art, w, rv, place=extra and extra.get('place'))
+    for pid, (tint, tech, ink, *extra) in CARDS.items():
         if not ready(pid):
             continue
-        w, rv = cat.get(pid, (0.3, False))
-        img = composite(pid, man[pid], tint, tech, ink, logo, w, rv)
+        img = make(pid, tint, tech, ink, *extra)
         s = img.size[0]
         c = int(s * CARD_CROP.get(pid, 0.86))
         img = img.crop(((s - c) // 2, (s - c) // 2, (s + c) // 2, (s + c) // 2)).resize((640, 640), Image.LANCZOS)
         img.save(os.path.join(MOCK, pid, 'card.webp'), quality=84, method=6)
         print('card', pid)
-    for pid, tint, tech, ink in HERO:
+    for pid, tint, tech, ink, *extra in HERO:
         if not ready(pid):
             continue
-        w, rv = cat.get(pid, (0.3, False))
-        img = composite(pid, man[pid], tint, tech, ink, logo, w, rv).resize((960, 960), Image.LANCZOS)
+        img = make(pid, tint, tech, ink, *extra).resize((960, 960), Image.LANCZOS)
         img.save(os.path.join(MOCK, pid, 'hero.webp'), quality=80, method=6)
         print('hero', pid)
 
