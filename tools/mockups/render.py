@@ -15,11 +15,13 @@ import products  # noqa: E402
 import garments  # noqa: E402
 import accessories  # noqa: E402
 import cap  # noqa: E402
+import polo3d  # noqa: E402
 
 SCENES = dict(products.SCENES)
 SCENES.update(garments.SCENES)
 SCENES.update(accessories.SCENES)
 SCENES.update(cap.SCENES)
+SCENES.update(polo3d.SCENES)
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 

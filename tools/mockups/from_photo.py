@@ -58,19 +58,6 @@ PHOTOS = {
                     'center': {'u': 0.5, 'v': 0.667, 'w': 0.42},
                     'big': {'u': 0.5, 'v': 0.6, 'w': 0.62}},
     },
-    # small stock preview (562x360): front view enlarged 4x before the cut; a bigger copy will be sharper
-    'polo_ls': {
-        'height': 0.80, 'top': 0.07, 'neutral': True, 'grain': 0.012, 'exposure': 0.92, 'contrast': 1.2,
-        'drop': {'gap': 0.05, 'rx': 0.34, 'ry': 0.022, 'strength': 0.5},
-        'print': [(330, 260), (455, 135), (530, 310), (622, 290), (740, 300), (800, 135), (900, 260),
-                  (915, 600), (930, 1290), (320, 1290), (350, 600)],
-        'cut': [([(622, 280), (622, 455)], 50)],                          # placket and buttons
-        'uv': {'cx': 622, 'bottom': 1300, 'W': 590, 'H': 1020, 'R': 400, 'displace': 3.0},
-        'default': {'u': 0.775, 'v': 0.873, 'w': 0.17},
-        'presets': {'chest': {'u': 0.775, 'v': 0.873, 'w': 0.17},
-                    'center': {'u': 0.5, 'v': 0.68, 'w': 0.42},
-                    'big': {'u': 0.5, 'v': 0.62, 'w': 0.62}},
-    },
 }
 
 
