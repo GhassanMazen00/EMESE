@@ -36,11 +36,32 @@ export const GROUPS = [
     ['صديري أمن عاكس', 'Hi-vis vests', 'screen dtf sewing'],
     ['بيجامات وملابس بيت', 'Loungewear', 'sub screen sewing']
   ]},
-  { ar: 'كابات وشنط', en: 'Headwear & bags', items: [
-    ['كابات', 'Caps', 'stitch dtf sewing', 'cap'],
-    ['بوكيت هات', 'Bucket hats', 'stitch dtf sewing'],
-    ['طواقي شتوي', 'Beanies', 'stitch weaving'],
+  { id: 'headwear', ar: 'كابات وبرانيط', en: 'Caps & hats',
+    note: ['مش بس كاب بيسبول: كل أنواع الكابات والبرانيط، متطرّزة أو مطبوعة، بأي لون.',
+           'Not just baseball caps: every kind of cap and hat, embroidered or printed, in any color.'], items: [
+    ['كاب بيسبول', 'Baseball caps', 'stitch dtf sewing', 'cap'],
+    ['كاب سناب باك', 'Snapbacks', 'stitch dtf sewing'],
+    ['كاب تراكر بشبك', 'Mesh trucker caps', 'stitch dtf sewing'],
+    ['كاب قماش طري (داد هات)', 'Soft dad hats', 'stitch dtf sewing'],
+    ['كاب ٥ أجزاء', 'Five-panel caps', 'stitch dtf screen sewing'],
+    ['كاب رياضي خفيف', 'Running & sports caps', 'sub dtf sewing'],
+    ['كاب بباتش جلد محفور', 'Caps with laser-engraved leather patches', 'laser stitch sewing'],
+    ['كابات أطفال', "Kids' caps", 'stitch dtf sewing'],
+    ['بوكيت هات', 'Bucket hats', 'stitch dtf sub sewing'],
+    ['برنيطة شمس واسعة', 'Wide-brim sun hats', 'stitch sewing'],
+    ['برنيطة سفاري', 'Safari hats', 'stitch sewing'],
+    ['فيزور', 'Sun visors', 'stitch dtf sewing'],
+    ['طواقي صوف', 'Knit beanies', 'stitch weaving'],
+    ['طواقي بومبوم', 'Pom-pom beanies', 'stitch weaving'],
+    ['قبعات شيف', 'Chef hats', 'stitch dtf sewing'],
+    ['طواقي مطبخ وكافيهات', 'Kitchen & café caps', 'stitch dtf sewing'],
+    ['كاب طبي', 'Scrub caps', 'sub sewing'],
+    ['قبعات تخرج', 'Graduation caps', 'stitch dtf sewing'],
+    ['قبعات فعاليات ومهرجانات', 'Event & promo hats', 'screen dtf'],
     ['باندانا', 'Bandanas', 'sub screen'],
+    ['رباط راس وأساور عرق', 'Headbands & sweatbands', 'stitch sub weaving']
+  ]},
+  { ar: 'شنط', en: 'Bags', items: [
     ['شنط قماش', 'Tote bags', 'screen dtf stitch sewing', 'tote'],
     ['شنط ظهر', 'Backpacks', 'stitch dtf uvdtf sewing zippers'],
     ['شنط لاب توب', 'Laptop sleeves', 'stitch dtf sewing zippers'],
@@ -162,6 +183,7 @@ export function initEverything({ onTry } = {}) {
       shown += items.length;
       return `<div class="ev-group" id="ev-g${gi}">
         <h3>${l ? g.en : g.ar}<span>${items.length}</span></h3>
+        ${g.note ? `<p class="ev-note">${g.note[l]}</p>` : ''}
         <ul>${items.map(it => `<li>
           <span class="ev-name">${it[l]}</span>
           <span class="ev-tags">${it[2].split(' ').map(c => `<i class="${c === active ? 'on' : ''}">${CAPS[c][l]}</i>`).join('')}</span>
@@ -186,13 +208,24 @@ export function initEverything({ onTry } = {}) {
     root.scrollIntoView({ behavior: 'smooth', block: 'start' });
     toggle.focus({ preventScroll: true });
   });
-  peek.addEventListener('click', (e) => {
-    const b = e.target.closest('button[data-group]');
-    if (!b) return;
+  function openAt(gi) {
     active = 'all';
     setOpen(true);
-    const g = document.getElementById(`ev-g${b.dataset.group}`);
+    const g = document.getElementById(`ev-g${gi}`);
     if (g) setTimeout(() => g.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+  }
+  peek.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-group]');
+    if (b) openAt(b.dataset.group);
+  });
+  // links elsewhere on the page that open the list at one group (e.g. the caps card)
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a.ev-jump[data-group]');
+    if (!a) return;
+    const gi = GROUPS.findIndex(g => g.id === a.dataset.group);
+    if (gi < 0) return;
+    e.preventDefault();
+    openAt(gi);
   });
   filters.addEventListener('click', (e) => {
     const b = e.target.closest('.ev-chip');

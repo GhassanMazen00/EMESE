@@ -74,6 +74,17 @@ PHOTOS = {
                     'center': {'u': 0.5, 'v': 0.5625, 'w': 0.42},
                     'big': {'u': 0.5, 'v': 0.5, 'w': 0.6}},
     },
+    # stock photo, white structured cap 3/4 view, 2000x1500: the front panel prints
+    'cap': {
+        'width': 0.84, 'top': 0.19, 'neutral': True, 'exposure': 0.88, 'bg_min': 0.38, 'core_erode': 3,
+        'print': [(905, 315), (1000, 300), (1100, 298), (1200, 322), (1240, 450), (1265, 600), (1288, 760),
+                  (1290, 856), (1200, 838), (1100, 814), (1000, 787), (900, 764), (752, 742), (790, 620),
+                  (830, 500), (870, 400)],
+        'uv': {'cx': 1037, 'bottom': 825, 'H': 470, 'W': 440, 'R': 480, 'shear': 0.1, 'displace': 2.0,
+               'bottom_curve': [(740, 770), (900, 792), (1000, 815), (1100, 842), (1200, 866), (1290, 884)]},
+        'default': {'u': 0.5, 'v': 0.56, 'w': 0.62},
+        'presets': {'center': {'u': 0.5, 'v': 0.56, 'w': 0.62}, 'big': {'u': 0.5, 'v': 0.54, 'w': 0.85}},
+    },
 }
 
 
@@ -155,7 +166,14 @@ def build(pid, cfg):
 
     # place it in the square
     ys, xs = np.nonzero(alpha > 0.5)
-    s = cfg['height'] * SIZE / (ys.max() - ys.min())
+    if 'width' in cfg:          # wide products (a cap) fit by width
+        s = cfg['width'] * SIZE / (xs.max() - xs.min())
+    else:
+        s = cfg['height'] * SIZE / (ys.max() - ys.min())
+    if s < 0.95:                # shrinking a big photo: soften first so the weave doesn't alias
+        sig = 0.45 * (1 / s - 1) + 0.25
+        lin_prod = ndimage.gaussian_filter(lin_prod, (sig, sig, 0))
+        orig = ndimage.gaussian_filter(orig, (sig, sig, 0))
     ox = SIZE / 2 - (xs.min() + xs.max()) / 2 * s
     oy = cfg['top'] * SIZE - ys.min() * s
 
@@ -239,9 +257,15 @@ def build(pid, cfg):
     # UV: around a gentle cylinder across the body, up the front; folds nudge the print
     uvc = cfg['uv']
     px, py = (xx + 0.5 - ox) / s, (yy + 0.5 - oy) / s
-    dx = np.clip((px - uvc['cx']) / uvc['R'], -0.999, 0.999)
+    if 'bottom_curve' in uvc:   # the print sits on a curved seam (a cap's brim): follow it
+        bxs, bys = zip(*uvc['bottom_curve'])
+        bottom = np.polyval(np.polyfit(bxs, bys, 2), px)
+    else:
+        bottom = uvc['bottom']
+    pxe = px - uvc.get('shear', 0.0) * (bottom - py)      # panels that lean as they rise
+    dx = np.clip((pxe - uvc['cx']) / uvc['R'], -0.999, 0.999)
     u = 0.5 + uvc['R'] * np.arcsin(dx) / uvc['W']
-    v = (uvc['bottom'] - py) / uvc['H']
+    v = (bottom - py) / uvc['H']
     shade = ndimage.gaussian_filter(lum(light), 3.0)
     ref = shade[pm > 0.5].mean() if (pm > 0.5).any() else 1.0
     disp = (shade / max(ref, 1e-3) - 1.0) * uvc['displace'] / s

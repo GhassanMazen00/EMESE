@@ -61,7 +61,7 @@ export const PRODUCTS = [
     techs: ['dtf', 'stitch', 'screen'], colors: ['#f2f1ee', '#262626', '#1f2b4a', '#8b8d8f', '#4b5a3a', '#6d1a24', '#d9c7a5'] },
   { id: 'apron', cat: 'apparel', ar: 'مريلة', en: 'Apron', widthM: 0.66, contact: 'uniform',
     techs: ['dtf', 'stitch', 'screen'], colors: ['#262626', '#f2f1ee', '#1f2b4a', '#6b3f26', '#4b5a3a', '#a8171f'] },
-  { id: 'cap', cat: 'apparel', ar: 'كاب', en: 'Cap', widthM: 0.135, contact: 'embroidery',
+  { id: 'cap', cat: 'apparel', ar: 'كاب بيسبول', en: 'Baseball cap', widthM: 0.135, contact: 'caps',
     techs: ['stitch', 'dtf'], colors: ['#f2f1ee', '#262626', '#1f2b4a', '#a8171f', '#4b5a3a', '#d9c7a5', '#9cc3e0'] },
   // garment accessories
   { id: 'zipper', cat: 'accessories', ar: 'شدّاد سوستة', en: 'Zipper puller', widthM: 0.016, contact: 'accessories', reveal: true,
