@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ar-EG" dir="rtl" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>لوحة الفريق | EMESE</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#e2dfd9">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+  <script>
+    (function () {
+      var d = document.documentElement, t = null, l = null;
+      try { t = localStorage.getItem('emese-theme'); l = localStorage.getItem('emese-lang'); } catch (e) {}
+      d.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
+      if (l === 'en') { d.setAttribute('lang', 'en'); d.setAttribute('dir', 'ltr'); }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body class="page admin">
+  <a class="skip" href="#main" data-i18n="skip">اقفز للمحتوى</a>
+  <div id="header"></div>
+  <main id="main" class="page-main">
+
+    <section id="setup" class="page-card" hidden>
+      <h1 data-i18n="ad.setupTitle">لوحة الفريق محتاجة قاعدة البيانات</h1>
+      <p class="sub" data-i18n="ad.setupText">الطلبات لسه بتروح على واتساب بس. عشان تشتغل اللوحة: اعمل مشروع Supabase، شغّل ملف supabase/migrations، وحط عنوان المشروع والمفتاح في js/config.js. الخطوات كلها في README.</p>
+      <a class="btn btn-ghost" href="./bulk.html" data-i18n="ad.bulkOnly">أسماء بالجملة (شغالة من غير قاعدة بيانات)</a>
+    </section>
+
+    <section id="login" class="page-card" hidden>
+      <h1 data-i18n="ad.loginTitle">دخول الفريق</h1>
+      <form id="loginForm" class="sz-form" novalidate>
+        <label class="field"><span data-i18n="ad.email">الإيميل</span><input id="lgEmail" type="email" autocomplete="username" spellcheck="false" dir="ltr" required><small class="err"></small></label>
+        <label class="field"><span data-i18n="ad.password">الباسورد</span><input id="lgPass" type="password" autocomplete="current-password" dir="ltr" required><small class="err"></small></label>
+        <p class="form-error" role="alert" id="lgError" hidden></p>
+        <button class="btn btn-ink btn-block" type="submit" id="lgSubmit"><span data-i18n="ad.signIn">ادخل</span></button>
+      </form>
+    </section>
+
+    <div id="app" hidden>
+      <div class="ad-bar">
+        <nav class="ad-tabs" aria-label="Dashboard" data-i18n-attr="aria-label:ad.sections">
+          <a href="#orders" data-tab="orders" data-i18n="ad.orders">الطلبات</a>
+          <a href="#sizes" data-tab="sizes" data-i18n="ad.sizeLists">قوايم المقاسات</a>
+          <a href="./bulk.html" data-i18n="ad.bulk">أسماء بالجملة</a>
+        </nav>
+        <div class="ad-who"><span id="who" dir="ltr"></span> <button type="button" class="link-btn" id="signOut" data-i18n="ad.signOut">اخرج</button></div>
+      </div>
+
+      <!-- orders list -->
+      <section id="ordersView" class="ad-view">
+        <div class="ad-filters">
+          <label class="field ad-search"><span class="visually-hidden" data-i18n="ad.search">دوّر</span><input type="search" id="q" data-i18n-attr="placeholder:ad.searchPh" placeholder="رقم الطلب، الاسم، الموبايل، الشركة…" autocomplete="off"></label>
+          <div class="seg-row" id="statusFilter" role="group"></div>
+        </div>
+        <p class="sub" id="ordersEmpty" hidden data-i18n="ad.noOrders">مفيش طلبات هنا.</p>
+        <div class="table-wrap">
+          <table class="ad-table">
+            <thead><tr><th data-i18n="ad.colCode">الطلب</th><th data-i18n="ad.colCustomer">العميل</th><th data-i18n="ad.colItem">المطلوب</th><th data-i18n="ad.colStatus">الحالة</th><th data-i18n="ad.colDate">التاريخ</th></tr></thead>
+            <tbody id="ordersRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- one order -->
+      <section id="orderView" class="ad-view" hidden>
+        <a href="#orders" class="link-btn back" data-i18n="ad.back">كل الطلبات</a>
+        <div class="ad-order">
+          <div class="ad-main">
+            <p class="track-code" translate="no" id="oCode"></p>
+            <h1 id="oCustomer"></h1>
+            <p class="sub" id="oContact"></p>
+            <dl class="details" id="oDetails"></dl>
+            <div class="track-files" id="oFiles"></div>
+            <h2 data-i18n="ad.proofs">التصميمات</h2>
+            <div id="oProofs" class="ad-proofs"></div>
+            <form id="proofForm" class="ad-box" novalidate>
+              <h3 data-i18n="ad.newProof">ابعت تصميم للموافقة</h3>
+              <label class="field"><span data-i18n="ad.proofFile">صورة التصميم</span><input type="file" id="pFile" accept="image/png,image/jpeg,image/webp" required><small class="err"></small></label>
+              <label class="field"><span><span data-i18n="ad.proofNote">ملاحظة للعميل</span> <em data-i18n="order.optional">اختياري</em></span><textarea id="pNote" rows="2"></textarea></label>
+              <p class="form-error" role="alert" hidden></p>
+              <button class="btn btn-ink" type="submit"><span data-i18n="ad.sendProof">ارفع وابعت</span></button>
+            </form>
+          </div>
+          <aside class="ad-side">
+            <form id="statusForm" class="ad-box">
+              <h3 data-i18n="ad.status">الحالة</h3>
+              <label class="field"><span class="visually-hidden" data-i18n="ad.status">الحالة</span><select id="oStatus"></select></label>
+              <button class="btn btn-ink btn-block" type="submit"><span data-i18n="ad.save">احفظ</span></button>
+            </form>
+            <form id="quoteForm" class="ad-box">
+              <h3 data-i18n="ad.quote">السعر</h3>
+              <label class="field"><span data-i18n="ad.amount">المبلغ (جنيه)</span><input id="qAmount" type="number" inputmode="decimal" min="0" step="1"></label>
+              <label class="field"><span data-i18n="ad.quoteNote">تفاصيل السعر</span><textarea id="qNote" rows="3"></textarea></label>
+              <button class="btn btn-ink btn-block" type="submit"><span data-i18n="ad.saveQuote">احفظ السعر</span></button>
+            </form>
+            <div class="ad-box">
+              <h3 data-i18n="ad.customerLink">لينك العميل</h3>
+              <div class="share-row"><input id="oLink" readonly dir="ltr" aria-label="Link"><button type="button" class="btn btn-ghost btn-sm" data-copy="oLink"><span data-i18n="order.copy">انسخ اللينك</span></button></div>
+              <a class="btn btn-ghost btn-block" id="oWa" target="_blank" rel="noopener" data-i18n="ad.waCustomer">ابعتله على واتساب</a>
+              <button type="button" class="btn btn-ghost btn-block" id="oMakeSizes" data-i18n="ad.makeSizes">اعمل قايمة مقاسات للطلب ده</button>
+            </div>
+            <ol class="history" id="oHistory"></ol>
+          </aside>
+        </div>
+      </section>
+
+      <!-- size lists -->
+      <section id="sizesView" class="ad-view" hidden>
+        <form id="sizeListForm" class="ad-box ad-inline">
+          <h2 data-i18n="ad.newList">قايمة مقاسات جديدة</h2>
+          <div class="grid3">
+            <label class="field"><span data-i18n="ad.listTitle">العنوان</span><input id="slTitle" autocomplete="off" required data-i18n-attr="placeholder:ad.listTitlePh" placeholder="يونيفورم فرع المعادي"><small class="err"></small></label>
+            <label class="field"><span data-i18n="ad.company">الشركة</span><input id="slCompany" autocomplete="off"></label>
+            <label class="field"><span data-i18n="ad.product">المنتج</span><input id="slProduct" autocomplete="off" data-i18n-attr="placeholder:ad.productPh" placeholder="بولو كم طويل"></label>
+          </div>
+          <label class="field"><span data-i18n="ad.sizesField">المقاسات (افصل بينهم بفاصلة)</span><input id="slSizes" autocomplete="off" dir="ltr" value="XS, S, M, L, XL, XXL, 3XL"></label>
+          <button class="btn btn-ink" type="submit"><span data-i18n="ad.create">اعمل القايمة</span></button>
+        </form>
+        <ul class="ad-lists" id="sizeLists"></ul>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

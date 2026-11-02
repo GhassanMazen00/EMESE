@@ -2,11 +2,14 @@
 <html lang="ar-EG" dir="rtl" data-theme="light">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>EMESE | إنت تتخيّل، وإحنا ننفّذ</title>
   <meta name="description" content="EMESE شركة توريدات مخصّصة من مصر: يونيفورمات مطبوعة ومتطرّزة، كشاكيل، أقلام، أعلام، كروت، مجات وهدايا شركات بطباعة DTF و UV DTF و UV وحفر بالليزر وتطريز.">
-  <meta name="theme-color" content="#f4efe6">
+  <meta name="theme-color" content="#e2dfd9">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <script>
     // Landing defaults: Arabic + light. A visitor's own choice is remembered.
     (function () {
@@ -41,7 +44,7 @@
         <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
         <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
       </button>
-      <a class="btn btn-ink btn-sm nav-cta" href="#contact" data-i18n="nav.contact">كلّمنا</a>
+      <a class="btn btn-ink btn-sm nav-cta" href="#order" data-i18n="nav.contact">اطلب عرض سعر</a>
     </div>
   </header>
 
@@ -50,16 +53,30 @@
     <!-- ===== Hero ===== -->
     <section class="hero">
       <div class="hero-copy">
-        <p class="eyebrow reveal"><span class="reg" aria-hidden="true"></span> <span data-i18n="hero.eyebrow">توريدات مخصّصة · صُنع في مصر</span></p>
-        <h1 class="reveal" data-i18n-html="hero.title">إنت تتخيّل،<br><span class="hl hl-m">وإحنا ننفّذ.</span></h1>
-        <p class="lead reveal" data-i18n="hero.lead">EMESE بتحوّل فكرتك لحاجة تتلمس: يونيفورم مطبوع أو متطرّز، كشاكيل، أقلام محفورة، أعلام، كروت، مجات، وأي حاجة تتخصّص. طباعة، تطريز، أو حفر بالليزر. إنت قول عايز إيه، والباقي علينا.</p>
-        <div class="hero-cta reveal">
-          <a class="btn btn-ink" href="#studio"><span data-i18n="hero.cta1">جرّب منتجك</span> <span class="arr" aria-hidden="true"></span></a>
-          <a class="btn btn-ghost" href="#contact" data-i18n="hero.cta2">اطلب عرض سعر</a>
+        <h1 class="press">
+          <span class="plate plate-c" aria-hidden="true" data-i18n-html="hero.title">إنت تتخيّل،<br>وإحنا ننفّذ<b class="dot">.</b></span>
+          <span class="plate plate-m" aria-hidden="true" data-i18n-html="hero.title">إنت تتخيّل،<br>وإحنا ننفّذ<b class="dot">.</b></span>
+          <span class="plate plate-y" aria-hidden="true" data-i18n-html="hero.title">إنت تتخيّل،<br>وإحنا ننفّذ<b class="dot">.</b></span>
+          <span class="press-ink" data-i18n-html="hero.title">إنت تتخيّل،<br>وإحنا ننفّذ<b class="dot">.</b></span>
+        </h1>
+        <p class="lead" data-i18n="hero.lead">EMESE بتحوّل فكرتك لحاجة تتلمس: يونيفورم مطبوع أو متطرّز، كشاكيل، أقلام محفورة، أعلام، كروت، مجات، وأي حاجة تتخصّص. طباعة، تطريز، أو حفر بالليزر. إنت قول عايز إيه، والباقي علينا.</p>
+        <div class="hero-cta">
+          <a class="btn btn-ink" href="#order" data-i18n="hero.cta2">اطلب عرض سعر</a>
+          <a class="btn btn-ghost" href="#studio" data-i18n="hero.cta1">جرّب منتجك</a>
+        </div>
+        <div class="brand-try" id="brandTry">
+          <label class="brand-pick">
+            <input type="file" id="brandFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="visually-hidden">
+            <span class="brand-swatch" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span data-i18n="brand.try">جرّب اللوجو بتاعك على كل المنتجات</span>
+          </label>
+          <button type="button" class="brand-reset" id="brandReset" hidden data-i18n="brand.reset">رجّع لوجو EMESE</button>
+          <p class="brand-note" data-i18n="brand.note">اللوجو بيفضل على جهازك، ومش بيترفع لأي مكان غير لما تبعت طلب.</p>
+          <p class="brand-status" id="brandStatus" role="status" aria-live="polite"></p>
         </div>
       </div>
 
-      <div class="proof reveal">
+      <div class="proof">
         <span class="crop c-tl" aria-hidden="true"></span><span class="crop c-tr" aria-hidden="true"></span><span class="crop c-bl" aria-hidden="true"></span><span class="crop c-br" aria-hidden="true"></span>
         <div class="proof-photo">
           <div class="proof-track" id="proofTrack" tabindex="0" role="group" aria-roledescription="carousel" data-i18n-attr="aria-label:hero.canvasLabel" aria-label="منتجات حقيقية عليها لوجو EMESE">
@@ -93,101 +110,95 @@
       </div>
     </section>
 
-    <!-- ===== Marquee ===== -->
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee-track" id="marqueeTrack"></div>
-    </div>
-
     <!-- ===== 01 Products ===== -->
     <section class="section" id="products">
       <div class="section-head">
-        <p class="kicker"><span class="k-num" data-i18n="num.1">٠١</span> <span data-i18n="products.kicker">بنعمل إيه؟</span></p>
-        <h2 class="reveal" data-i18n-html="products.title">كل حاجة ممكن<br>تشيل اسمك.</h2>
-        <p class="sub reveal" data-i18n="products.sub">من قطعة هدية لحد يونيفورم شركة كاملة. اختار المنتج، وإحنا نختارله أنسب طريقة تنفيذ.</p>
+        <h2 data-i18n-html="products.title">كل حاجة ممكن<br>تشيل اسمك.</h2>
+        <p class="sub" data-i18n="products.sub">من قطعة هدية لحد يونيفورم شركة كاملة. اختار المنتج، وإحنا نختارله أنسب طريقة تنفيذ.</p>
       </div>
 
       <div class="grid products">
-        <article class="card card-photo reveal" style="--accent: var(--c)">
+        <article class="card card-photo" style="--accent: var(--c)">
           <img class="card-img" src="assets/mockups/polo/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p1.t">يونيفورمات مطبوعة ومتطرّزة</h3>
           <p data-i18n="p1.d">تيشيرتات، بولو، هوديز، وأوفرولات شغل. طباعة بألوان كاملة تستحمل الغسيل، أو لوجو متطرّز على الصدر والكُم.</p>
           <ul class="chips"><li>DTF</li><li data-i18n="tech.screen">سلك سكرين</li><li data-i18n="tech.stitch">تطريز</li></ul>
         </article>
-        <article class="card card-photo reveal" style="--accent: var(--m)">
+        <article class="card card-photo" style="--accent: var(--m)">
           <img class="card-img" src="assets/mockups/cap/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p2.t">كابات وبرانيط من كل نوع</h3>
           <p data-i18n="p2.d">مش بس كاب بيسبول: سناب باك، تراكر بشبك، كاب قماش طري، بوكيت هات، طواقي صوف، فيزور، برانيط شمس، وقبعات شيف وتخرج. بأي لون وباللوجو بتاعك.</p>
           <ul class="chips"><li data-i18n="tech.stitch">تطريز</li><li>DTF</li><li data-i18n="chip.patches">باتشات</li></ul>
-          <a class="link ev-jump" href="#everything" data-group="headwear"><span data-i18n="p2.link">شوف كل الأنواع</span> <span class="arr" aria-hidden="true"></span></a>
+          <a class="link ev-jump" href="#everything" data-group="headwear"><span data-i18n="p2.link">شوف كل الأنواع</span></a>
         </article>
-        <article class="card card-photo reveal" style="--accent: var(--y)">
+        <article class="card card-photo" style="--accent: var(--y)">
           <img class="card-img" src="assets/mockups/notebook/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p3.t">كشاكيل وأجندات</h3>
           <p data-i18n="p3.d">غلاف بتصميمك، اسم محفور على جلد، أو طباعة UV على أي غلاف.</p>
           <ul class="chips"><li>UV</li><li data-i18n="tech.laser">ليزر</li><li data-i18n="tech.foil">فويل</li></ul>
         </article>
-        <article class="card card-photo reveal" style="--accent: var(--c)">
+        <article class="card card-photo" style="--accent: var(--c)">
           <img class="card-img" src="assets/mockups/pen/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p4.t">أقلام</h3>
           <p data-i18n="p4.d">أقلام معدن وبلاستيك عليها اسمك أو اللوجو، محفورة بالليزر أو مطبوعة UV.</p>
           <ul class="chips"><li data-i18n="tech.laser">ليزر</li><li>UV</li></ul>
         </article>
-        <article class="card card-photo reveal" style="--accent: var(--m)">
+        <article class="card card-photo" style="--accent: var(--m)">
           <img class="card-img" src="assets/mockups/flag/card.webp" alt="" width="640" height="640" loading="lazy" style="object-position: 50% 15%">
           <h3 data-i18n="p5.t">أعلام ورايات</h3>
           <p data-i18n="p5.d">أعلام مكاتب، رايات فعاليات، وبانرات بألوان فاقعة ما بتبهتش.</p>
           <ul class="chips"><li data-i18n="tech.sub">سبلميشن</li><li>DTF</li></ul>
         </article>
-        <article class="card card-photo reveal" style="--accent: var(--y)">
+        <article class="card card-photo" style="--accent: var(--y)">
           <img class="card-img" src="assets/mockups/cards/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p6.t">كروت</h3>
           <p data-i18n="p6.d">كروت بيزنس، دعوات، كروت شكر، وكروت خشب أو معدن محفورة.</p>
           <ul class="chips"><li>UV</li><li data-i18n="tech.foil">فويل</li><li data-i18n="tech.digital">ديجيتال</li></ul>
         </article>
-        <article class="card card-photo reveal" style="--accent: var(--c)">
+        <article class="card card-photo" style="--accent: var(--c)">
           <img class="card-img" src="assets/mockups/mug/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p7.t">مجات وزمزميات</h3>
           <p data-i18n="p7.d">التصميم بتاعك ملفوف حوالين المج أو الزمزمية، بلمعة وألوان عالية.</p>
           <ul class="chips"><li>UV DTF</li><li data-i18n="tech.sub">سبلميشن</li><li data-i18n="tech.laser">ليزر</li></ul>
         </article>
-        <article class="card card-photo reveal" style="--accent: var(--m)">
+        <article class="card card-photo" style="--accent: var(--m)">
           <img class="card-img" src="assets/mockups/tote/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p8.t">هدايا الشركات</h3>
           <p data-i18n="p8.d">ميداليات، شنط قماش، بوكسات، دروع، وكل اللي يتعمل «جيف أواي» للعملا والفريق.</p>
           <ul class="chips"><li data-i18n="tech.laser">ليزر</li><li>UV</li></ul>
         </article>
-        <article class="card card-photo reveal" style="--accent: var(--y)">
+        <article class="card card-photo" style="--accent: var(--y)">
           <img class="card-img" src="assets/mockups/hoodie/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p10.t">هوديز وسويت شيرت</h3>
           <p data-i18n="p10.d">هوديز تقيلة بطباعة أو تطريز، من أول الباترون لحد آخر غرزة.</p>
           <ul class="chips"><li>DTF</li><li data-i18n="tech.stitch">تطريز</li><li data-i18n="chip.sewing">تصنيع</li></ul>
         </article>
-        <article class="card card-photo reveal" style="--accent: var(--c)">
+        <article class="card card-photo" style="--accent: var(--c)">
           <img class="card-img" src="assets/mockups/zipper/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p11.t">سوست وإكسسوارات</h3>
           <p data-i18n="p11.d">سوست بالمقاس واللون، شدّادات بلوجو، زراير، باتشات جلد وهانج تاج.</p>
           <ul class="chips"><li data-i18n="chip.zippers">سوست</li><li data-i18n="tech.laser">ليزر</li><li>UV</li></ul>
         </article>
-        <article class="card card-photo reveal" style="--accent: var(--m)">
+        <article class="card card-photo" style="--accent: var(--m)">
           <img class="card-img" src="assets/mockups/label/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p12.t">نسيج وتيكت</h3>
           <p data-i18n="p12.d">تيكت منسوج، شرايط بلوجو، وأقمشة بننسجها مخصوص لطلبك.</p>
           <ul class="chips"><li data-i18n="chip.weaving">نسيج</li><li data-i18n="tech.screen">سلك سكرين</li></ul>
         </article>
-        <article class="card card-wild reveal">
+        <article class="card card-wild">
           <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><path d="M24 24a8 8 0 1 1 12 7c-3 2-4 3-4 7M32 46v2"/><circle cx="32" cy="32" r="26"/></svg>
           <h3 data-i18n="p9.t">وأي حاجة تانية</h3>
           <p data-i18n="p9.d">عندك فكرة غريبة؟ ابعتها، وإحنا نقولك تتعمل إزاي وعلى أنهي مكنة.</p>
-          <a class="link" href="#contact"><span data-i18n="p9.link">ابعت فكرتك</span> <span class="arr" aria-hidden="true"></span></a>
+          <a class="link" href="#order"><span data-i18n="p9.link">ابعت فكرتك</span></a>
         </article>
       </div>
     
       <div class="everything" id="everything">
         <div class="ev-head">
-          <h3 class="ev-title reveal" data-i18n-html="ev.title">والقايمة<br>لسه طويلة.</h3>
-          <p class="sub reveal" data-i18n="ev.sub">ده جزء من اللي بنعمله. اختار طريقة التنفيذ عشان تشوف بتتعمل على إيه، واللي عليه «جرّبه» تقدر تحط اللوجو بتاعك عليه في الاستوديو.</p>
+          <h3 class="ev-title" data-i18n-html="ev.title">والقايمة<br>لسه طويلة.</h3>
+          <p class="sub" data-i18n="ev.sub">ده جزء من اللي بنعمله. اختار طريقة التنفيذ عشان تشوف بتتعمل على إيه، واللي عليه «جرّبه» تقدر تحط اللوجو بتاعك عليه في الاستوديو.</p>
         </div>
-        <div class="ev-teaser reveal">
+        <div class="ev-teaser">
           <ul class="ev-peek" data-i18n-attr="aria-label:ev.groups" aria-label="المجموعات"></ul>
           <button type="button" class="ev-toggle" id="evToggle" aria-expanded="false" aria-controls="evBody">
             <span class="ev-toggle-label"></span>
@@ -203,7 +214,7 @@
             </div>
             <div class="ev-groups"></div>
             <div class="ev-foot">
-              <p class="ev-more"><span data-i18n="ev.more">مش لاقي اللي بتدور عليه؟</span> <a href="#contact" data-i18n="ev.moreLink">ابعتهولنا وإحنا نشوفه</a></p>
+              <p class="ev-more"><span data-i18n="ev.more">مش لاقي اللي بتدور عليه؟</span> <a href="#order" data-i18n="ev.moreLink">ابعتهولنا وإحنا نشوفه</a></p>
               <button type="button" class="ev-close" data-i18n="ev.close">اقفل القايمة</button>
             </div>
           </div>
@@ -214,26 +225,25 @@
     <!-- ===== 02 Studio ===== -->
     <section class="studio" id="studio">
       <div class="studio-head">
-        <p class="kicker kicker-light"><span class="k-num" data-i18n="num.2">٠٢</span> <span data-i18n="studio.kicker">الاستوديو</span></p>
-        <h2 class="reveal" data-i18n-html="studio.title">جرّب بنفسك.<br><span class="hl hl-y">حط اللوجو بتاعك على منتج حقيقي.</span></h2>
-        <p class="sub reveal" data-i18n="studio.sub">ارفع اللوجو أو اكتب اسمك، واختار المنتج وطريقة التنفيذ واللون. اسحب التصميم على المنتج عشان تحركه، وكبّره أو صغّره زي ما تحب.</p>
+        <h2 data-i18n-html="studio.title">جرّب بنفسك.<br>حط اللوجو بتاعك على منتج حقيقي.</h2>
+        <p class="sub" data-i18n="studio.sub">ارفع اللوجو أو اكتب اسمك، واختار المنتج وطريقة التنفيذ واللون. اسحب التصميم على المنتج عشان تحركه، وكبّره أو صغّره زي ما تحب.</p>
       </div>
 
       <div class="studio-launch">
         <button class="btn btn-y btn-lg" id="studioOpen" type="button" aria-expanded="false" aria-controls="studioBody">
-          <span data-i18n="studio.open">افتح الاستوديو</span> <span class="arr" aria-hidden="true"></span>
+          <span data-i18n="studio.open">افتح الاستوديو</span>
         </button>
         <div class="launch-thumbs" aria-hidden="true">
-          <img src="assets/mockups/polo/thumb.webp" alt=""><img src="assets/mockups/hoodie/thumb.webp" alt=""><img src="assets/mockups/cap/thumb.webp" alt=""><img src="assets/mockups/mug/thumb.webp" alt=""><img src="assets/mockups/notebook/thumb.webp" alt=""><img src="assets/mockups/zipper/thumb.webp" alt="">
+          <img src="assets/mockups/polo/thumb.webp" alt="" width="54" height="54" loading="lazy"><img src="assets/mockups/hoodie/thumb.webp" alt="" width="54" height="54" loading="lazy"><img src="assets/mockups/cap/thumb.webp" alt="" width="54" height="54" loading="lazy"><img src="assets/mockups/mug/thumb.webp" alt="" width="54" height="54" loading="lazy"><img src="assets/mockups/notebook/thumb.webp" alt="" width="54" height="54" loading="lazy"><img src="assets/mockups/zipper/thumb.webp" alt="" width="54" height="54" loading="lazy">
         </div>
-        <span class="launch-note" data-i18n="studio.count">١٩ منتج حقيقي · ١٠ طرق تنفيذ</span>
+        <span class="launch-note" data-i18n="studio.count">١٩ منتج حقيقي و١٠ طرق تنفيذ</span>
       </div>
 
       <div class="studio-body" id="studioBody" hidden>
         <div class="stage-wrap">
           <canvas id="mockCanvas" class="mock-canvas" role="img" data-i18n-attr="aria-label:studio.canvasLabel" aria-label="معاينة المنتج بالتصميم بتاعك"></canvas>
           <div class="stage-tag" id="stageTag" aria-live="polite"></div>
-          <div class="stage-hint" id="stageHint" data-i18n="studio.hint">اسحب التصميم عشان تحركه · صباعين أو العجلة للتكبير</div>
+          <div class="stage-hint" id="stageHint" data-i18n="studio.hint">اسحب التصميم عشان تحركه، وكبّره بصباعين أو بالعجلة</div>
           <div class="stage-loading" id="stageLoading" aria-hidden="true"><i></i></div>
         </div>
 
@@ -287,7 +297,7 @@
 
           <div class="panel-actions">
             <button type="button" class="btn btn-y" id="snapBtn"><span data-i18n="studio.download">نزّل الموكب</span> ↓</button>
-            <a class="btn btn-ghost-light" id="orderBtn" href="#contact" data-i18n="studio.order">اطلب ده</a>
+            <a class="btn btn-ghost-light" id="orderBtn" href="#order" data-i18n="studio.order">اطلب ده</a>
           </div>
         </form>
       </div>
@@ -296,8 +306,7 @@
     <!-- ===== 03 Steps ===== -->
     <section class="section steps-section" id="steps">
       <div class="section-head">
-        <p class="kicker"><span class="k-num" data-i18n="num.3">٠٣</span> <span data-i18n="steps.kicker">خطوة بخطوة</span></p>
-        <h2 class="reveal" data-i18n-html="steps.title">من الفكرة<br>لحد باب الشركة.</h2>
+        <h2 data-i18n-html="steps.title">من الفكرة<br>لحد باب الشركة.</h2>
       </div>
 
       <div class="steps">
@@ -323,83 +332,82 @@
     <!-- ===== 04 Machines ===== -->
     <section class="section" id="machines">
       <div class="section-head">
-        <p class="kicker"><span class="k-num" data-i18n="num.4">٠٤</span> <span data-i18n="machines.kicker">المكن</span></p>
-        <h2 class="reveal" data-i18n-html="machines.title">المكن اللي<br>بيعمل السحر.</h2>
-        <p class="sub reveal" data-i18n="machines.sub">كل خامة ليها طريقة.</p>
+        <h2 data-i18n-html="machines.title">المكن اللي<br>بيعمل السحر.</h2>
+        <p class="sub" data-i18n="machines.sub">كل خامة ليها طريقة.</p>
       </div>
 
       <div class="machines">
-        <details class="machine reveal" open style="--accent: var(--c)">
+        <details class="machine" open style="--accent: var(--c)">
           <summary><span class="m-code">DTF</span><span class="m-name" data-i18n="m1.t">طباعة DTF</span><span class="m-plus" aria-hidden="true"></span></summary>
           <div class="m-body">
             <p data-i18n="m1.d">بنطبع التصميم على فيلم، وبعدين بنكبسه بالحرارة على القماش. ألوان كاملة وتفاصيل دقيقة، وينفع على أي لون قماش، قطن أو بوليستر.</p>
             <p class="m-on" data-i18n-html="m1.on"><b>ينفع على:</b> تيشيرتات • هوديز • بولو • شنط قماش • كابات</p>
           </div>
         </details>
-        <details class="machine reveal" style="--accent: var(--m)">
+        <details class="machine" style="--accent: var(--m)">
           <summary><span class="m-code">UV DTF</span><span class="m-name" data-i18n="m2.t">ستيكر كريستال</span><span class="m-plus" aria-hidden="true"></span></summary>
           <div class="m-body">
             <p data-i18n="m2.d">ستيكر من غير خلفية، بيتلزق على أي سطح ناشف وبيدّي لمعة وبروز حلو. مش بيتقشر بسهولة وبيستحمل.</p>
             <p class="m-on" data-i18n-html="m2.on"><b>ينفع على:</b> مجات • زمزميات • علب • لابتوبات • خوذ</p>
           </div>
         </details>
-        <details class="machine reveal" style="--accent: var(--y)">
+        <details class="machine" style="--accent: var(--y)">
           <summary><span class="m-code">UV</span><span class="m-name" data-i18n="m3.t">طباعة UV مباشرة</span><span class="m-plus" aria-hidden="true"></span></summary>
           <div class="m-body">
             <p data-i18n="m3.d">بنطبع على المنتج نفسه، والحبر بيتجفف بالأشعة في ساعتها. ألوان قوية، وممكن نعمل ورنيش بارز تحسّه بصباعك.</p>
             <p class="m-on" data-i18n-html="m3.on"><b>ينفع على:</b> خشب • أكريليك • معدن • جلد • أقلام • كروت • جرابات موبايل</p>
           </div>
         </details>
-        <details class="machine machine-k reveal">
+        <details class="machine machine-k">
           <summary><span class="m-code">LASER</span><span class="m-name" data-i18n="m4.t">حفر بالليزر</span><span class="m-plus" aria-hidden="true"></span></summary>
           <div class="m-body">
             <p data-i18n="m4.d">شعاع ليزر بيحفر التصميم جوّه الخامة نفسها، فمفيش حبر يتمسح ولا يبهت. أشيك حاجة للهدايا والأقلام والدروع.</p>
             <p class="m-on" data-i18n-html="m4.on"><b>ينفع على:</b> خشب • جلد • معدن • أكريليك • زجاج</p>
           </div>
         </details>
-        <details class="machine reveal" style="--accent: var(--m)">
+        <details class="machine" style="--accent: var(--m)">
           <summary><span class="m-code">STITCH</span><span class="m-name" data-i18n="m5.t">مكن التطريز</span><span class="m-plus" aria-hidden="true"></span></summary>
           <div class="m-body">
             <p data-i18n="m5.d">مكن تطريز بيخيط اللوجو غرزة غرزة على القماش. شكل رسمي، ملمس فخم، وبيعيش أكتر من الهدوم نفسها.</p>
             <p class="m-on" data-i18n-html="m5.on"><b>ينفع على:</b> يونيفورم • كابات • جواكت • باتشات تتخيّط أو تتكوي</p>
           </div>
         </details>
-        <details class="machine reveal" style="--accent: var(--c)">
+        <details class="machine" style="--accent: var(--c)">
           <summary><span class="m-code">SUB</span><span class="m-name" data-i18n="m7.t">طباعة سبلميشن</span><span class="m-plus" aria-hidden="true"></span></summary>
           <div class="m-body">
             <p data-i18n="m7.d">الحبر بيتحوّل لبخار ويدخل جوّه ألياف البوليستر أو طبقة المج، فالطباعة بتبقى جزء من الخامة: مش بتتقشر ولا بتتحس.</p>
             <p class="m-on" data-i18n-html="m7.on"><b>ينفع على:</b> فانلات رياضة • أعلام • مجات • ماوس باد • أقمشة بالمتر</p>
           </div>
         </details>
-        <details class="machine reveal" style="--accent: var(--y)">
+        <details class="machine" style="--accent: var(--y)">
           <summary><span class="m-code">SCREEN</span><span class="m-name" data-i18n="m8.t">سلك سكرين</span><span class="m-plus" aria-hidden="true"></span></summary>
           <div class="m-body">
             <p data-i18n="m8.d">شاشة لكل لون والحبر بيتسحب عليها بالرَّكْلة. أحسن اختيار للكميات الكبيرة: لون تقيل وثابت وسعر القطعة أوفر.</p>
             <p class="m-on" data-i18n-html="m8.on"><b>ينفع على:</b> يونيفورم • شنط قماش • تيكت ساتان • أقمشة</p>
           </div>
         </details>
-        <details class="machine machine-k reveal">
+        <details class="machine machine-k">
           <summary><span class="m-code">SEWING</span><span class="m-name" data-i18n="m9.t">تصنيع ملابس</span><span class="m-plus" aria-hidden="true"></span></summary>
           <div class="m-body">
             <p data-i18n="m9.d">مش بس بنطبع: بنقص ونخيّط ونقفّل القطعة كاملة. باترون، قص، خياطة، تشطيب وكيّ، بالمقاسات والكميات اللي تحتاجها.</p>
             <p class="m-on" data-i18n-html="m9.on"><b>بنعمل:</b> تيشيرتات • بولو • هوديز • يونيفورم • مرايل • جواكت</p>
           </div>
         </details>
-        <details class="machine reveal" style="--accent: var(--m)">
+        <details class="machine" style="--accent: var(--m)">
           <summary><span class="m-code">WEAVING</span><span class="m-name" data-i18n="m10.t">نسيج</span><span class="m-plus" aria-hidden="true"></span></summary>
           <div class="m-body">
             <p data-i18n="m10.d">بننسج اللوجو بالخيط جوّه القماشة نفسها: تيكت منسوج بتفاصيل دقيقة، شرايط وأستك بلوجو، وأقمشة حسب الطلب.</p>
             <p class="m-on" data-i18n-html="m10.on"><b>بنعمل:</b> تيكت • باتشات منسوجة • شرايط • أستك • أقمشة يونيفورم</p>
           </div>
         </details>
-        <details class="machine reveal" style="--accent: var(--c)">
+        <details class="machine" style="--accent: var(--c)">
           <summary><span class="m-code">ZIPPERS</span><span class="m-name" data-i18n="m11.t">سوست وإكسسوارات</span><span class="m-plus" aria-hidden="true"></span></summary>
           <div class="m-body">
             <p data-i18n="m11.d">سوست نايلون ومعدن وبلاستيك بالطول واللون اللي تطلبه، وشدّادات عليها اللوجو بتاعك محفورة أو مطبوعة، وزراير وكبسونات.</p>
             <p class="m-on" data-i18n-html="m11.on"><b>بنعمل:</b> سوست • شدّادات • زراير • كبسونات • باتشات جلد • هانج تاج</p>
           </div>
         </details>
-        <details class="machine reveal" style="--accent: var(--m)">
+        <details class="machine" style="--accent: var(--m)">
           <summary><span class="m-code">+ MORE</span><span class="m-name" data-i18n="m6.t">وكل أنواع الطباعة</span><span class="m-plus" aria-hidden="true"></span></summary>
           <div class="m-body">
             <p data-i18n="m6.d">فويل دهبي وفضي للكروت والكشاكيل، ديجيتال للورق والبروشورات، وأي طريقة تانية المنتج بتاعك محتاجها.</p>
@@ -409,38 +417,85 @@
       </div>
     </section>
 
-    <!-- ===== 05 Contact ===== -->
-    <section class="contact" id="contact">
-      <div class="contact-copy">
-        <p class="kicker"><span class="k-num" data-i18n="num.5">٠٥</span> <span data-i18n="contact.kicker">يلا نبدأ</span></p>
-        <h2 class="reveal" data-i18n-html="contact.title">عندك فكرة؟<br><span class="hl hl-c">ابعتهالنا.</span></h2>
-        <p class="sub reveal" data-i18n="contact.sub">املا البيانات دي وهتتفتحلك رسالة واتساب جاهزة. هنرد عليك بعرض سعر وترشيحات.</p>
+    <!-- ===== Order ===== -->
+    <section class="order" id="order" aria-labelledby="orderTitle">
+      <div class="order-copy">
+        <h2 id="orderTitle" data-i18n="order.title">اطلب عرض سعر</h2>
+        <p class="sub" data-i18n="order.sub">قولنا عايز إيه وكام قطعة. هنبعتلك السعر وتصميم للموافقة قبل ما نبدأ أي حاجة.</p>
+        <ol class="order-how">
+          <li data-i18n="order.how1">بتبعتلنا الطلب</li>
+          <li data-i18n="order.how2">بنبعتلك السعر والتصميم</li>
+          <li data-i18n="order.how3">توافق، وإحنا ننفّذ</li>
+        </ol>
       </div>
-      <form class="contact-form reveal" id="contactForm">
-        <label class="field"><span data-i18n="contact.name">اسمك أو اسم الشركة</span><input name="name" required autocomplete="organization"></label>
-        <div class="row">
-          <label class="field"><span data-i18n="contact.product">المنتج</span>
-            <select name="product" id="contactProduct">
-              <option value="uniform" data-i18n="opt.uniform">يونيفورم مطبوع</option>
-              <option value="embroidery" data-i18n="opt.embroidery">لوجو متطرّز</option>
-              <option value="caps" data-i18n="opt.caps">كابات وبرانيط</option>
-              <option value="notebooks" data-i18n="opt.notebooks">كشاكيل وأجندات</option>
-              <option value="pens" data-i18n="opt.pens">أقلام</option>
-              <option value="flags" data-i18n="opt.flags">أعلام ورايات</option>
-              <option value="cards" data-i18n="opt.cards">كروت</option>
-              <option value="mugs" data-i18n="opt.mugs">مجات وزمزميات</option>
-              <option value="totes" data-i18n="opt.totes">شنط قماش</option>
-              <option value="gifts" data-i18n="opt.gifts">هدايا شركات</option>
-              <option value="accessories" data-i18n="opt.accessories">سوست وإكسسوارات</option>
-              <option value="labels" data-i18n="opt.labels">تيكت ونسيج</option>
-              <option value="other" data-i18n="opt.other">حاجة تانية</option>
-            </select>
-          </label>
-          <label class="field"><span data-i18n="contact.qty">الكمية تقريبًا</span><input name="qty" inputmode="numeric" data-i18n-attr="placeholder:contact.qtyPh" placeholder="مثلًا ٥٠"></label>
+
+      <form class="ticket" id="orderForm" novalidate>
+        <span class="ticket-perf" aria-hidden="true"></span>
+        <fieldset>
+          <legend data-i18n="order.what">المنتج</legend>
+          <div class="grid2">
+            <label class="field"><span data-i18n="order.product">المنتج</span><select id="orderProduct" name="product"></select><small class="err"></small></label>
+            <label class="field" hidden><span data-i18n="order.other">أنهي منتج؟</span><input id="orderOther" name="other" autocomplete="off" data-i18n-attr="placeholder:order.otherPh" placeholder="مثلًا بوكيت هات، كوسترز خشب…"><small class="err"></small></label>
+            <label class="field"><span data-i18n="order.method">طريقة التنفيذ</span><select id="orderMethod" name="method"></select><small class="err"></small></label>
+            <label class="field"><span data-i18n="order.color">اللون</span><select id="orderColor" name="color"></select><small class="err"></small></label>
+            <label class="field"><span data-i18n="order.qty">الكمية</span><input id="orderQty" name="qty" type="number" inputmode="numeric" min="1" step="1" autocomplete="off" placeholder="50"><small class="err"></small></label>
+            <label class="field"><span data-i18n="order.deadline">محتاجه يوم</span><input id="orderDeadline" name="deadline" type="date"><small class="err"></small></label>
+          </div>
+          <label class="check"><input type="checkbox" id="orderSizes" name="sizes"> <span data-i18n="order.sizes">ابعتولي لينك أجمع بيه المقاسات من الموظفين</span></label>
+        </fieldset>
+
+        <fieldset>
+          <legend data-i18n="order.design">التصميم</legend>
+          <div class="attach">
+            <label class="attach-logo">
+              <input type="file" id="orderLogoFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="visually-hidden">
+              <img id="orderLogoThumb" alt="" width="64" height="64" hidden>
+              <span id="orderLogoAddText" data-i18n="order.logoAdd">ضيف اللوجو بتاعك</span>
+              <span id="orderLogoChangeText" data-i18n="order.logoChange" hidden>غيّر</span>
+            </label>
+            <button type="button" class="link-btn" id="orderLogoRemove" data-i18n="order.logoRemove" hidden>شيله</button>
+            <div class="attach-mock" id="orderMockup" hidden>
+              <img alt="" width="64" height="64">
+              <span><b data-i18n="order.mockup">موكب من الاستوديو</b><small class="mock-label"></small></span>
+              <button type="button" class="link-btn" id="orderMockupRemove" data-i18n="order.logoRemove">شيله</button>
+            </div>
+          </div>
+          <p class="hint" data-i18n="order.logoHint">أحسن حاجة PNG بخلفية شفافة. وممكن تبعته بعدين.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend data-i18n="order.you">بياناتك</legend>
+          <div class="grid2">
+            <label class="field"><span data-i18n="order.name">الاسم</span><input id="orderName" name="name" autocomplete="name" required><small class="err"></small></label>
+            <label class="field"><span data-i18n="order.phone">الموبايل (واتساب)</span><input id="orderPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="01001234567" required><small class="err"></small></label>
+            <label class="field"><span><span data-i18n="order.company">الشركة</span> <em data-i18n="order.optional">اختياري</em></span><input id="orderCompany" name="company" autocomplete="organization"><small class="err"></small></label>
+            <label class="field"><span><span data-i18n="order.email">الإيميل</span> <em data-i18n="order.optional">اختياري</em></span><input id="orderEmail" name="email" type="email" autocomplete="email" spellcheck="false" dir="ltr"><small class="err"></small></label>
+            <label class="field"><span><span data-i18n="order.city">المدينة</span> <em data-i18n="order.optional">اختياري</em></span><input id="orderCity" name="city" autocomplete="address-level2"><small class="err"></small></label>
+          </div>
+          <label class="field"><span data-i18n="order.notes">أي تفاصيل تانية</span><textarea id="orderNotes" name="notes" rows="3" data-i18n-attr="placeholder:order.notesPh" placeholder="مكان اللوجو، الألوان، المقاسات، التغليف…"></textarea><small class="err"></small></label>
+        </fieldset>
+
+        <div class="estimate" id="orderEstimate" aria-live="polite" hidden>
+          <span class="est-label" data-i18n="order.estimate">سعر تقريبي</span>
+          <b class="est-value"></b>
+          <small class="est-note"></small>
         </div>
-        <label class="field"><span data-i18n="contact.details">احكيلنا أكتر</span><textarea name="details" rows="4" data-i18n-attr="placeholder:contact.detailsPh" placeholder="الألوان، المقاسات، الميعاد"></textarea></label>
-        <button class="btn btn-ink btn-block" type="submit"><span data-i18n="contact.send">ابعت على واتساب</span> <span class="arr" aria-hidden="true"></span></button>
+        <p class="form-error" id="orderError" role="alert" hidden><span class="msg"></span> <a href="#" target="_blank" rel="noopener" data-i18n="order.waToo">ابعتلنا على واتساب</a></p>
+        <button class="btn btn-ink btn-block" type="submit" id="orderSubmit"><span>ابعت الطلب</span></button>
       </form>
+
+      <div class="ticket ticket-done" id="orderDone" tabindex="-1" hidden>
+        <span class="ticket-perf" aria-hidden="true"></span>
+        <p class="done-kicker" data-i18n="order.doneTitle">وصلنا طلبك</p>
+        <p class="done-code" translate="no"></p>
+        <p class="done-text"></p>
+        <div class="done-actions">
+          <a class="btn btn-ink" id="orderTrack" href="#" data-i18n="order.track">تابع طلبك</a>
+          <button type="button" class="btn btn-ghost" id="orderCopy"><span data-i18n="order.copy">انسخ اللينك</span></button>
+          <a class="btn btn-ghost" id="orderWa" href="#" target="_blank" rel="noopener" data-i18n="order.waToo">ابعتلنا على واتساب</a>
+        </div>
+        <button type="button" class="link-btn" id="orderAnother" data-i18n="order.another">طلب جديد</button>
+      </div>
     </section>
   </main>
 
@@ -455,8 +510,10 @@
         <a href="#studio" data-i18n="nav.studio">جرّب منتجك</a>
         <a href="#steps" data-i18n="nav.steps">إزاي بنشتغل</a>
         <a href="#machines" data-i18n="nav.machines">المكن</a>
+        <a href="track.html" data-i18n="nav.track">تابع طلبك</a>
+        <a href="admin.html" data-i18n="nav.team">دخول الفريق</a>
       </nav>
-      <a class="btn btn-y" href="#contact"><span data-i18n="footer.cta">ابدأ طلبك</span> <span class="arr" aria-hidden="true"></span></a>
+      <a class="btn btn-y" href="#order"><span data-i18n="footer.cta">ابدأ طلبك</span></a>
     </div>
     <div class="footer-bottom">
       <span data-i18n="footer.rights">© ٢٠٢٦ EMESE. كل الحقوق محفوظة.</span>
@@ -467,5 +524,7 @@
   <script type="module" src="js/main.js"></script>
   <script type="module" src="js/hero.js"></script>
   <script type="module" src="js/studio.js"></script>
+  <script type="module" src="js/brand.js"></script>
+  <script type="module" src="js/order.js"></script>
 </body>
 </html>

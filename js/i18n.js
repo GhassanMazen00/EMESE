@@ -7,21 +7,20 @@ const EN = {
   'nav.studio': 'Try it',
   'nav.steps': 'How it works',
   'nav.machines': 'Machines',
-  'nav.contact': 'Contact us',
+  'nav.contact': 'Get a quote',
+  'nav.track': 'Track your order',
+  'nav.team': 'Team sign-in',
   'lang.other': 'ع',
   'lang.aria': 'التحويل للعربي',
   'theme.aria': 'Toggle light and dark mode',
 
-  'hero.eyebrow': 'Custom supplies · Made in Egypt',
-  'hero.title': 'You imagine it,<br><span class="hl hl-m">we make it.</span>',
+  'hero.title': 'You imagine it,<br>we make it<b class="dot">.</b>',
   'hero.lead': 'EMESE turns your idea into something you can hold: printed or embroidered uniforms, notebooks, engraved pens, flags, cards, mugs, and anything else that can be customized. Print, embroidery or laser engraving. Tell us what you need and we handle the rest.',
   'hero.cta1': 'Try your product',
   'hero.cta2': 'Get a quote',
   'hero.canvasLabel': 'Real products carrying the EMESE logo',
 
-  'num.1': '01', 'num.2': '02', 'num.3': '03', 'num.4': '04', 'num.5': '05',
 
-  'products.kicker': 'What do we make?',
   'products.title': 'Anything that can<br>carry your name.',
   'products.sub': 'From a single gift to a full company uniform. Pick the product and we pick the best way to make it.',
   'p1.t': 'Printed & embroidered uniforms',
@@ -64,7 +63,7 @@ const EN = {
   'hero.next': 'Next product',
   'studio.open': 'Open the studio',
   'studio.close': 'Close the studio',
-  'studio.count': '19 real products · 10 methods',
+  'studio.count': '19 real products and 10 methods',
   'tech.screen': 'Screen print',
   'tech.stitch': 'Embroidery',
   'tech.laser': 'Laser',
@@ -73,11 +72,10 @@ const EN = {
   'tech.digital': 'Digital',
   'chip.patches': 'Patches',
 
-  'studio.kicker': 'The studio',
-  'studio.title': 'Try it yourself.<br><span class="hl hl-y">Put your logo on a real product.</span>',
+  'studio.title': 'Try it yourself.<br>Put your logo on a real product.',
   'studio.sub': 'Upload your logo or type your name, then pick the product, the method and the color. Drag the design to move it and make it as big or small as you like.',
   'studio.canvasLabel': 'Preview of the product with your design',
-  'studio.hint': 'Drag the design to move it · pinch or scroll to resize',
+  'studio.hint': 'Drag the design to move it, pinch or scroll to resize',
   'studio.l.product': '1. Product',
   'studio.l.design': '2. Design',
   'studio.l.tech': '3. Method',
@@ -92,7 +90,6 @@ const EN = {
   'studio.download': 'Download mockup',
   'studio.order': 'Order this',
 
-  'steps.kicker': 'Step by step',
   'steps.title': 'From the idea<br>to your door.',
   's1.t': 'Send us your idea',
   's1.d': 'A logo, a sketch on paper, even a voice note. Tell us what you want, how many pieces, and when you need them.',
@@ -107,7 +104,6 @@ const EN = {
   's6.t': 'Packing & delivery',
   's6.d': 'We pack everything carefully and deliver it to you. Opening that box will feel good.',
 
-  'machines.kicker': 'Machines',
   'machines.title': 'The machines<br>behind the magic.',
   'machines.sub': 'Every material has its method.',
   'm1.t': 'DTF printing',
@@ -144,29 +140,6 @@ const EN = {
   'm11.on': '<b>We make:</b> Zippers • Pullers • Buttons • Snaps • Leather patches • Hang tags',
   'm6.on': '<b>In short:</b> if it can be made, we make it.',
 
-  'contact.kicker': "Let's start",
-  'contact.title': 'Got an idea?<br><span class="hl hl-c">Send it over.</span>',
-  'contact.sub': "Fill this in and a ready WhatsApp message opens. We'll reply with a quote and recommendations.",
-  'contact.name': 'Your name or company',
-  'contact.product': 'Product',
-  'contact.qty': 'Approx. quantity',
-  'contact.qtyPh': 'e.g. 50',
-  'contact.details': 'Tell us more',
-  'contact.detailsPh': 'Colors, sizes, deadline',
-  'contact.send': 'Send on WhatsApp',
-  'opt.uniform': 'Printed uniform',
-  'opt.embroidery': 'Embroidered logo',
-  'opt.caps': 'Caps & hats',
-  'opt.notebooks': 'Notebooks & planners',
-  'opt.pens': 'Pens',
-  'opt.flags': 'Flags & banners',
-  'opt.cards': 'Cards',
-  'opt.mugs': 'Mugs & bottles',
-  'opt.totes': 'Tote bags',
-  'opt.gifts': 'Corporate gifts',
-  'opt.accessories': 'Zippers & accessories',
-  'opt.labels': 'Labels & weaving',
-  'opt.other': 'Something else',
 
   'footer.tag': 'Custom supplies from Egypt.<br>You imagine it, we make it.',
   'footer.cta': 'Start your order',
@@ -178,7 +151,6 @@ const EN = {
 const UI = {
   ar: {
     title: 'EMESE | إنت تتخيّل، وإحنا ننفّذ',
-    marquee: ['يونيفورمات', 'بولو', 'هوديز', 'كابات وبرانيط', 'تطريز', 'سوست', 'تيكت منسوج', 'كشاكيل', 'أقلام', 'أعلام', 'كروت', 'مجات', 'ميداليات', 'شنط قماش', 'دروع'],
     nums: ['٠١', '٠٢', '٠٣', '٠٤', '٠٥', '٠٦'],
     designTabs: { logo: 'لوجو EMESE', upload: 'ارفع اللوجو بتاعك', text: 'اكتب نص' },
     fonts: { modern: 'مودرن', classic: 'كلاسيك', light: 'خفيف' },
@@ -189,13 +161,10 @@ const UI = {
     foilLegend: '٥. لون الفويل',
     inkOff: 'الليزر مالوش حبر',
     loading: 'بيحمّل',
-    wa: { hi: 'أهلًا EMESE 👋', name: 'الاسم', product: 'المنتج', qty: 'الكمية', details: 'التفاصيل', studio: 'من الاستوديو' },
-    orderNote: (p, t) => `عايز ${p} بطريقة ${t}، وهبعتلكم اللوجو.`,
     fallback: 'المعاينة محتاجة متصفح بيدعم WebGL.'
   },
   en: {
     title: 'EMESE | You imagine it, we make it.',
-    marquee: ['Uniforms', 'Polos', 'Hoodies', 'Caps & hats', 'Embroidery', 'Zippers', 'Woven labels', 'Notebooks', 'Pens', 'Flags', 'Cards', 'Mugs', 'Keychains', 'Tote bags', 'Awards'],
     nums: ['01', '02', '03', '04', '05', '06'],
     designTabs: { logo: 'EMESE logo', upload: 'Upload your logo', text: 'Type text' },
     fonts: { modern: 'Modern', classic: 'Classic', light: 'Light' },
@@ -206,11 +175,18 @@ const UI = {
     foilLegend: '5. Foil color',
     inkOff: 'Laser uses no ink',
     loading: 'Loading',
-    wa: { hi: 'Hi EMESE 👋', name: 'Name', product: 'Product', qty: 'Quantity', details: 'Details', studio: 'From the studio' },
-    orderNote: (p, t) => `I'd like ${p} with ${t}. I'll send you the logo.`,
     fallback: 'The preview needs a browser with WebGL.'
   }
 };
+
+/* Pages and modules add their own strings: EN keys for data-i18n, and ar/en UI strings. */
+export function addStrings(en = {}, uiStrings = null) {
+  Object.assign(EN, en);
+  if (uiStrings) {
+    Object.assign(UI.ar, uiStrings.ar || {});
+    Object.assign(UI.en, uiStrings.en || {});
+  }
+}
 
 export const lang = () => (document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'ar');
 export const ui = () => UI[lang()];

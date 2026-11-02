@@ -2,6 +2,7 @@
 import { MockupView, loadProduct, designFromImage, designFromText } from './mockup.js';
 import { PRODUCTS, TECHS, COLOR_NAMES, INKS, FOILS, CATS, byId, luminance } from './catalog.js';
 import { lang, ui } from './i18n.js';
+import { readLogoFile, setLogo, getLogo } from './logo.js';
 
 const canvas = document.getElementById('mockCanvas');
 const section = document.getElementById('studio');
@@ -83,37 +84,21 @@ function init() {
     if (d) { view.setDesign(d); draw(); }
   }
 
-  $('designFile').addEventListener('change', (e) => {
+  // the visitor's logo is shared with the hero and the order form (js/logo.js)
+  $('designFile').addEventListener('change', async (e) => {
     const file = e.target.files && e.target.files[0];
+    e.target.value = '';
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      // JPEGs have no transparency: drop a near-white background.
-      const src = /png|svg|webp/i.test(file.type) ? img : knockOutWhite(img);
-      designs.upload = designFromImage(src);
-      URL.revokeObjectURL(url);
-      state.source = 'upload';
-      state.ink = null;
-      refreshDesign();
-      renderUI();
-    };
-    img.src = url;
+    try { await setLogo(await readLogoFile(file), file.name); } catch (err) { /* not an image: keep the current design */ }
   });
-
-  function knockOutWhite(img) {
-    const c = document.createElement('canvas');
-    c.width = img.naturalWidth; c.height = img.naturalHeight;
-    const x = c.getContext('2d');
-    x.drawImage(img, 0, 0);
-    const d = x.getImageData(0, 0, c.width, c.height);
-    for (let i = 0; i < d.data.length; i += 4) {
-      const m = Math.min(d.data[i], d.data[i + 1], d.data[i + 2]);
-      if (m > 235) d.data[i + 3] = Math.max(0, (255 - m) * 12);
-    }
-    x.putImageData(d, 0, 0);
-    return c;
+  function useLogo() {
+    const l = getLogo();
+    designs.upload = l ? designFromImage(l.canvas) : null;
+    if (l) { state.source = 'upload'; state.ink = null; }
+    else if (state.source === 'upload') state.source = 'logo';
   }
+  document.addEventListener('logo:change', () => { useLogo(); refreshDesign(); renderUI(); });
+  useLogo();
 
   /* ---------------- product loading ---------------- */
   async function selectProduct(pid) {
@@ -371,8 +356,7 @@ function init() {
     });
     syncRanges();
 
-    $('stageTag').textContent = `${def[L()]} · ${TECHS[state.tech][L()]}`;
-    window.__emeseMockup = `${def[L()]} / ${TECHS[state.tech][L()]}${state.color ? ' / ' + nameOf(state.color) : ''}`;
+    $('stageTag').textContent = `${def[L()]}${L() === 'en' ? ', ' : '، '}${TECHS[state.tech][L()]}`;
   }
 
   /* ---------------- download + order ---------------- */
@@ -396,12 +380,21 @@ function init() {
     a.click();
   });
 
-  $('orderBtn').addEventListener('click', () => {
+  // "order this": the order form gets the product, method, color and this exact mockup
+  $('orderBtn').addEventListener('click', (e) => {
+    e.preventDefault();
+    view.set({ box: false });
+    view.render();
     const def = byId(state.pid);
-    const sel = document.getElementById('contactProduct');
-    if (sel) sel.value = def.contact;
-    const details = document.querySelector('#contactForm textarea');
-    if (details && !details.value) details.value = ui().orderNote(def[L()], TECHS[state.tech][L()]);
+    const label = $('stageTag').textContent + (state.color ? (L() === 'en' ? ', ' : '، ') + nameOf(state.color) : '');
+    const out = document.createElement('canvas');
+    out.width = out.height = Math.min(1200, canvas.width);
+    out.getContext('2d').drawImage(canvas, 0, 0, out.width, out.height);
+    out.toBlob((blob) => {
+      document.dispatchEvent(new CustomEvent('order:prefill', {
+        detail: { pid: def.id, tech: state.tech, color: state.color, blob, label }
+      }));
+    }, 'image/jpeg', 0.88);
   });
 
   document.addEventListener('langchange', renderUI);

@@ -256,8 +256,8 @@ export class MockupView {
     if (mipmap) gl.generateMipmap(gl.TEXTURE_2D);
   }
 
-  /* Show a loaded product (from loadProduct). */
-  setProduct(prod) {
+  /* Show a loaded product (from loadProduct). pick: false skips the CPU copy used for dragging. */
+  setProduct(prod, { pick = true } = {}) {
     this.product = prod;
     const [w, h] = prod.meta.size;
     this.canvas.width = w;
@@ -268,6 +268,7 @@ export class MockupView {
     this._texture(3, prod.uv, { nearest: true });
     this._texture(4, prod.mask, { nearest: true });
     this._texture(6, prod.spec, { nearest: true });
+    if (!pick) { this._uv = this._mask = null; return; }
     // CPU copy of uv + mask for pointer picking
     const c = document.createElement('canvas');
     c.width = w; c.height = h;

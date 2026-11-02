@@ -1,0 +1,265 @@
+{
+ "cards": {
+  "tee": {
+   "tint": "#f2f1ee",
+   "tech": "dtf",
+   "ink": null,
+   "crop": 0.86,
+   "place": null
+  },
+  "polo": {
+   "tint": "#1f2b4a",
+   "tech": "stitch",
+   "ink": "#f6f4ef",
+   "crop": 0.93,
+   "place": null
+  },
+  "polo_ls": {
+   "tint": "#f2f1ee",
+   "tech": "stitch",
+   "ink": null,
+   "crop": 0.93,
+   "place": null
+  },
+  "hoodie": {
+   "tint": null,
+   "tech": "dtf",
+   "ink": null,
+   "crop": 0.93,
+   "place": "chest"
+  },
+  "apron": {
+   "tint": "#262626",
+   "tech": "dtf",
+   "ink": "#f6f4ef",
+   "crop": 0.86,
+   "place": null
+  },
+  "cap": {
+   "tint": "#1f2b4a",
+   "tech": "stitch",
+   "ink": "#f6f4ef",
+   "crop": 1.0,
+   "place": null
+  },
+  "zipper": {
+   "tint": "#262626",
+   "tech": "laser",
+   "ink": null,
+   "crop": 0.86,
+   "place": null
+  },
+  "label": {
+   "tint": "#262626",
+   "tech": "woven",
+   "ink": "#f6f4ef",
+   "crop": 0.86,
+   "place": null
+  },
+  "patch": {
+   "tint": "#b07a4b",
+   "tech": "laser",
+   "ink": null,
+   "crop": 0.86,
+   "place": null
+  },
+  "hangtag": {
+   "tint": "#c7a97f",
+   "tech": "digital",
+   "ink": "#141414",
+   "crop": 0.86,
+   "place": null
+  },
+  "notebook": {
+   "tint": "#262626",
+   "tech": "foil",
+   "ink": "#d4af37",
+   "crop": 0.86,
+   "place": null
+  },
+  "pen": {
+   "tint": "#262626",
+   "tech": "laser",
+   "ink": null,
+   "crop": 0.86,
+   "place": null
+  },
+  "flag": {
+   "tint": "#1f2b4a",
+   "tech": "dtf",
+   "ink": "#f6f4ef",
+   "crop": 0.86,
+   "place": null
+  },
+  "cards": {
+   "tint": "#f4f3ef",
+   "tech": "digital",
+   "ink": null,
+   "crop": 0.86,
+   "place": null
+  },
+  "mug": {
+   "tint": "#f4f3ef",
+   "tech": "sub",
+   "ink": null,
+   "crop": 0.86,
+   "place": null
+  },
+  "mousepad": {
+   "tint": "#f2f1ee",
+   "tech": "sub",
+   "ink": null,
+   "crop": 0.86,
+   "place": null
+  },
+  "keychain": {
+   "tint": null,
+   "tech": "laser",
+   "ink": null,
+   "crop": 0.86,
+   "place": null
+  },
+  "tote": {
+   "tint": "#e8dcc4",
+   "tech": "screen",
+   "ink": "#141414",
+   "crop": 0.86,
+   "place": null
+  },
+  "tumbler": {
+   "tint": "#1f2b4a",
+   "tech": "laser",
+   "ink": null,
+   "crop": 0.86,
+   "place": null
+  }
+ },
+ "hero": [
+  {
+   "id": "polo",
+   "tint": "#1f2b4a",
+   "tech": "stitch",
+   "ink": "#f6f4ef",
+   "place": null
+  },
+  {
+   "id": "hoodie",
+   "tint": null,
+   "tech": "dtf",
+   "ink": null,
+   "place": "chest"
+  },
+  {
+   "id": "cap",
+   "tint": "#1f2b4a",
+   "tech": "stitch",
+   "ink": "#f6f4ef",
+   "place": null
+  },
+  {
+   "id": "tee",
+   "tint": "#f2f1ee",
+   "tech": "dtf",
+   "ink": null,
+   "place": null
+  },
+  {
+   "id": "zipper",
+   "tint": "#262626",
+   "tech": "laser",
+   "ink": null,
+   "place": null
+  },
+  {
+   "id": "label",
+   "tint": "#262626",
+   "tech": "woven",
+   "ink": "#f6f4ef",
+   "place": null
+  },
+  {
+   "id": "mug",
+   "tint": "#f4f3ef",
+   "tech": "sub",
+   "ink": null,
+   "place": null
+  },
+  {
+   "id": "notebook",
+   "tint": "#262626",
+   "tech": "foil",
+   "ink": "#d4af37",
+   "place": null
+  },
+  {
+   "id": "patch",
+   "tint": "#b07a4b",
+   "tech": "laser",
+   "ink": null,
+   "place": null
+  },
+  {
+   "id": "polo_ls",
+   "tint": "#f2f1ee",
+   "tech": "stitch",
+   "ink": null,
+   "place": null
+  },
+  {
+   "id": "apron",
+   "tint": "#262626",
+   "tech": "dtf",
+   "ink": "#f6f4ef",
+   "place": null
+  },
+  {
+   "id": "tumbler",
+   "tint": "#1f2b4a",
+   "tech": "laser",
+   "ink": null,
+   "place": null
+  },
+  {
+   "id": "cards",
+   "tint": "#161616",
+   "tech": "foil",
+   "ink": "#d4af37",
+   "place": null
+  },
+  {
+   "id": "hangtag",
+   "tint": "#c7a97f",
+   "tech": "digital",
+   "ink": "#141414",
+   "place": null
+  },
+  {
+   "id": "tote",
+   "tint": "#e8dcc4",
+   "tech": "screen",
+   "ink": "#141414",
+   "place": null
+  },
+  {
+   "id": "pen",
+   "tint": "#262626",
+   "tech": "laser",
+   "ink": null,
+   "place": null
+  },
+  {
+   "id": "flag",
+   "tint": "#1f2b4a",
+   "tech": "sub",
+   "ink": "#f6f4ef",
+   "place": null
+  },
+  {
+   "id": "keychain",
+   "tint": null,
+   "tech": "laser",
+   "ink": null,
+   "place": null
+  }
+ ]
+}

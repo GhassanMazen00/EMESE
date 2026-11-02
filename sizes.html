@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ar-EG" dir="rtl" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>المقاسات | EMESE</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#e2dfd9">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+  <script>
+    (function () {
+      var d = document.documentElement, t = null, l = null;
+      try { t = localStorage.getItem('emese-theme'); l = localStorage.getItem('emese-lang'); } catch (e) {}
+      d.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
+      if (l === 'en') { d.setAttribute('lang', 'en'); d.setAttribute('dir', 'ltr'); }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body class="page">
+  <a class="skip" href="#main" data-i18n="skip">اقفز للمحتوى</a>
+  <div id="header"></div>
+  <main id="main" class="page-main">
+    <p id="loading" class="page-loading" role="status" data-i18n="sz.loading">بنفتح القايمة…</p>
+    <section id="problem" class="page-card" hidden>
+      <h1 id="problemTitle"></h1>
+      <p class="sub" id="problemText"></p>
+    </section>
+
+    <!-- an employee adds their size -->
+    <section id="fill" class="page-card" hidden>
+      <p class="sz-company" id="fillCompany"></p>
+      <h1 id="fillTitle"></h1>
+      <p class="sub" id="fillSub"></p>
+      <form id="sizeForm" class="sz-form" novalidate>
+        <label class="field"><span data-i18n="sz.name">اسمك</span><input id="szName" name="name" autocomplete="name" required><small class="err"></small></label>
+        <fieldset class="sz-sizes">
+          <legend data-i18n="sz.size">مقاسك</legend>
+          <div class="sz-options" id="szOptions"></div>
+          <small class="err" id="szSizeErr"></small>
+        </fieldset>
+        <div class="grid2">
+          <label class="field"><span data-i18n="sz.qty">عدد القطع</span><input id="szQty" name="qty" type="number" inputmode="numeric" min="1" max="50" value="1"><small class="err"></small></label>
+          <label class="field"><span><span data-i18n="sz.note">ملاحظة</span> <em data-i18n="order.optional">اختياري</em></span><input id="szNote" name="note" autocomplete="off" data-i18n-attr="placeholder:sz.notePh" placeholder="مثلًا: كم طويل"><small class="err"></small></label>
+        </div>
+        <p class="form-error" role="alert" id="szError" hidden></p>
+        <button class="btn btn-ink btn-block" type="submit" id="szSubmit"><span data-i18n="sz.send">سجّل مقاسي</span></button>
+      </form>
+      <div id="szDone" class="sz-done" tabindex="-1" hidden>
+        <p class="done-kicker" data-i18n="sz.doneTitle">اتسجّل مقاسك</p>
+        <p id="szDoneText"></p>
+        <button type="button" class="btn btn-ghost" id="szAgain" data-i18n="sz.again">سجّل لحد تاني</button>
+      </div>
+    </section>
+
+    <!-- the client's manager: everyone's sizes -->
+    <section id="report" class="page-card page-wide" hidden>
+      <p class="sz-company" id="repCompany"></p>
+      <h1 id="repTitle"></h1>
+      <div class="sz-totals" id="repTotals"></div>
+      <div class="sz-share">
+        <p data-i18n="sz.shareText">ابعت اللينك ده للموظفين عشان كل واحد يسجّل مقاسه:</p>
+        <div class="share-row">
+          <input id="shareLink" readonly dir="ltr" aria-label="Link" data-i18n-attr="aria-label:sz.shareLabel">
+          <button type="button" class="btn btn-ink btn-sm" id="shareCopy"><span data-i18n="order.copy">انسخ اللينك</span></button>
+          <a class="btn btn-ghost btn-sm" id="shareWa" target="_blank" rel="noopener" data-i18n="sz.shareWa">ابعته على واتساب</a>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="sz-table">
+          <thead><tr><th data-i18n="sz.colName">الاسم</th><th data-i18n="sz.colSize">المقاس</th><th data-i18n="sz.colQty">العدد</th><th data-i18n="sz.colNote">ملاحظة</th></tr></thead>
+          <tbody id="repRows"></tbody>
+        </table>
+      </div>
+      <p class="sub" id="repEmpty" hidden data-i18n="sz.empty">لسه محدش سجّل. ابعت اللينك للموظفين.</p>
+      <div class="report-actions">
+        <button type="button" class="btn btn-ink" id="repCsv" data-i18n="sz.csv">نزّل الشيت (CSV)</button>
+        <button type="button" class="btn btn-ghost" id="repRefresh" data-i18n="sz.refresh">حدّث</button>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="js/sizes.js"></script>
+</body>
+</html>

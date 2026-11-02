@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ar-EG" dir="rtl" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>تابع طلبك | EMESE</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#e2dfd9">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+  <script>
+    (function () {
+      var d = document.documentElement, t = null, l = null;
+      try { t = localStorage.getItem('emese-theme'); l = localStorage.getItem('emese-lang'); } catch (e) {}
+      d.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
+      if (l === 'en') { d.setAttribute('lang', 'en'); d.setAttribute('dir', 'ltr'); }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body class="page">
+  <a class="skip" href="#main" data-i18n="skip">اقفز للمحتوى</a>
+  <div id="header"></div>
+  <main id="main" class="page-main">
+    <!-- no link in the address: look up an order saved on this device -->
+    <section id="lookup" class="page-card" hidden>
+      <h1 data-i18n="tr.lookupTitle">تابع طلبك</h1>
+      <p class="sub" data-i18n="tr.lookupSub">افتح اللينك اللي وصلك لما بعت الطلب. لو بعته من الجهاز ده، هتلاقيه هنا.</p>
+      <ul class="saved-orders" id="savedOrders"></ul>
+      <a class="btn btn-ink" href="./#order" data-i18n="tr.newOrder">اطلب عرض سعر</a>
+    </section>
+
+    <p id="loading" class="page-loading" role="status" data-i18n="tr.loading">بنجيب طلبك…</p>
+    <section id="problem" class="page-card" hidden>
+      <h1 id="problemTitle"></h1>
+      <p class="sub" id="problemText"></p>
+      <a class="btn btn-ink" href="./" data-i18n="tr.home">الصفحة الرئيسية</a>
+    </section>
+
+    <article id="order" class="track" hidden>
+      <header class="track-head">
+        <p class="track-code" translate="no" id="code"></p>
+        <h1 id="statusTitle"></h1>
+        <p class="sub" id="statusText"></p>
+      </header>
+
+      <ol class="progress" id="progress" aria-label="مراحل الطلب" data-i18n-attr="aria-label:tr.stages"></ol>
+
+      <section class="track-block" id="proofBlock" hidden aria-labelledby="proofTitle">
+        <h2 id="proofTitle" data-i18n="tr.proofTitle">التصميم</h2>
+        <div id="proofs"></div>
+      </section>
+
+      <section class="track-block" id="quoteBlock" hidden aria-labelledby="quoteTitle">
+        <h2 id="quoteTitle" data-i18n="tr.quoteTitle">السعر</h2>
+        <p class="quote-amount" id="quoteAmount"></p>
+        <p class="sub" id="quoteNote"></p>
+      </section>
+
+      <section class="track-block" aria-labelledby="detailsTitle">
+        <h2 id="detailsTitle" data-i18n="tr.details">تفاصيل الطلب</h2>
+        <dl class="details" id="details"></dl>
+        <div class="track-files" id="files"></div>
+      </section>
+
+      <section class="track-block" aria-labelledby="historyTitle">
+        <h2 id="historyTitle" data-i18n="tr.history">اللي حصل لحد دلوقتي</h2>
+        <ol class="history" id="history"></ol>
+      </section>
+
+      <p class="track-help"><span data-i18n="tr.help">عندك سؤال؟</span> <a id="waHelp" href="#" target="_blank" rel="noopener" data-i18n="tr.helpLink">كلّمنا على واتساب</a></p>
+    </article>
+  </main>
+  <script type="module" src="js/track.js"></script>
+</body>
+</html>

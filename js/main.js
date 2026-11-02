@@ -1,26 +1,18 @@
-/* EMESE: page interactions (theme, language, reveal, marquee, steps, contact) */
+/* EMESE: page interactions (theme, language, steps, the load moment, offline app) */
 import { applyLang, setLang, lang, ui } from './i18n.js';
 import { initEverything } from './everything.js';
 
-// ⚠️ Replace with the real business WhatsApp number (country code, no "+" or spaces).
-const WHATSAPP_NUMBER = '201000000000';
-
-/* ---------- language: Arabic by default, English on request ---------- */
-if (lang() === 'en') applyLang('en');
+/* ---------- language: Arabic by default, English on request ----------
+ * Module scripts run in order, so the other modules (brand, order...) have added their
+ * strings once the document has finished loading. */
+if (lang() === 'en') {
+  if (document.readyState === 'complete') applyLang('en');
+  else addEventListener('DOMContentLoaded', () => applyLang('en'), { once: true });
+}
 document.getElementById('langToggle')?.addEventListener('click', () => setLang(lang() === 'en' ? 'ar' : 'en'));
 
 /* ---------- the full range: "try it" opens the studio on that product ---------- */
 initEverything({ onTry: (pid) => document.dispatchEvent(new CustomEvent('studio:open', { detail: { pid } })) });
-
-/* ---------- marquee (rebuilt per language) ---------- */
-function buildMarquee() {
-  const track = document.getElementById('marqueeTrack');
-  if (!track) return;
-  const words = ui().marquee.map(w => `<span>${w}</span><i>✦</i>`).join('');
-  track.innerHTML = words + words;
-}
-buildMarquee();
-document.addEventListener('langchange', buildMarquee);
 
 /* ---------- light / dark toggle ---------- */
 (() => {
@@ -29,7 +21,7 @@ document.addEventListener('langchange', buildMarquee);
   const meta = document.querySelector('meta[name="theme-color"]');
   const sync = () => {
     const dark = root.getAttribute('data-theme') === 'dark';
-    if (meta) meta.setAttribute('content', dark ? '#121110' : '#f4efe6');
+    if (meta) meta.setAttribute('content', getComputedStyle(root).getPropertyValue('--bg').trim() || (dark ? '#22211f' : '#e2dfd9'));
     btn?.setAttribute('aria-pressed', String(dark));
   };
   sync();
@@ -39,18 +31,6 @@ document.addEventListener('langchange', buildMarquee);
     try { localStorage.setItem('emese-theme', next); } catch (e) { /* storage blocked: still switches for this visit */ }
     sync();
   });
-})();
-
-/* ---------- reveal on scroll ---------- */
-(() => {
-  const els = document.querySelectorAll('.reveal');
-  if (!('IntersectionObserver' in window)) { els.forEach(e => e.classList.add('in')); return; }
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(en => {
-      if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
-    });
-  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
-  els.forEach(e => io.observe(e));
 })();
 
 /* ---------- step-by-step visual ---------- */
@@ -147,25 +127,16 @@ document.addEventListener('langchange', buildMarquee);
   onScroll();
 })();
 
-/* ---------- contact → WhatsApp ---------- */
+/* ---------- the one load moment: the slogan prints in three plates, then registers ---------- */
 (() => {
-  const form = document.getElementById('contactForm');
-  if (!form) return;
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const d = new FormData(form);
-    const w = ui().wa;
-    const sel = form.querySelector('select[name="product"]');
-    const product = sel ? sel.options[sel.selectedIndex].textContent : '';
-    const lines = [
-      w.hi,
-      `${w.name}: ${d.get('name') || ''}`,
-      `${w.product}: ${product}`,
-      d.get('qty') ? `${w.qty}: ${d.get('qty')}` : '',
-      d.get('details') ? `${w.details}: ${d.get('details')}` : '',
-      window.__emeseMockup ? `${w.studio}: ${window.__emeseMockup}` : ''
-    ].filter(Boolean);
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join('\n'))}`;
-    window.open(url, '_blank', 'noopener');
-  });
+  const press = document.querySelector('.press');
+  if (!press) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { press.classList.add('registered'); return; }
+  requestAnimationFrame(() => requestAnimationFrame(() => press.classList.add('printing')));
+  setTimeout(() => press.classList.add('registered'), 1700);
 })();
+
+/* ---------- works offline and installs like an app ---------- */
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { /* not critical */ }));
+}

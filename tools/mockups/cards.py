@@ -296,6 +296,15 @@ def main():
         img = make(pid, tint, tech, ink, *extra).resize((960, 960), Image.LANCZOS)
         img.save(os.path.join(MOCK, pid, 'hero.webp'), quality=80, method=6)
         print('hero', pid)
+    # the same looks for the browser, which redraws them with a visitor's own logo (js/brand.js)
+    show = {
+        'cards': {pid: {'tint': t, 'tech': tech, 'ink': ink, 'crop': CARD_CROP.get(pid, 0.86),
+                        'place': (extra[0].get('place') if extra else None)}
+                  for pid, (t, tech, ink, *extra) in CARDS.items()},
+        'hero': [{'id': pid, 'tint': t, 'tech': tech, 'ink': ink, 'place': (extra[0].get('place') if extra else None)}
+                 for pid, t, tech, ink, *extra in HERO],
+    }
+    json.dump(show, open(os.path.join(MOCK, 'showcase.json'), 'w'), indent=1)
 
 
 if __name__ == '__main__':

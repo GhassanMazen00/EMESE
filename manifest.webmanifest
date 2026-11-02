@@ -1,0 +1,22 @@
+{
+  "name": "EMESE",
+  "short_name": "EMESE",
+  "description": "توريدات مخصّصة من مصر: يونيفورمات، كابات، كشاكيل، أقلام وهدايا شركات بلوجو شركتك.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#e2dfd9",
+  "theme_color": "#e2dfd9",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "اطلب عرض سعر", "url": "./#order" },
+    { "name": "تابع طلبك", "url": "./track.html" },
+    { "name": "دخول الفريق", "url": "./admin.html" }
+  ]
+}
