@@ -16,8 +16,8 @@ varying vec2 vUv;
 void main() { vUv = aPos * 0.5 + 0.5; gl_Position = vec4(aPos, 0.0, 1.0); }`;
 
 const FRAG = `
-#ifdef GL_OES_standard_derivatives
-#extension GL_OES_standard_derivatives : enable
+#ifdef GL_EXT_shader_texture_lod
+#extension GL_EXT_shader_texture_lod : enable
 #endif
 precision highp float;
 varying vec2 vUv;
@@ -69,9 +69,34 @@ vec2 designT(vec2 uv) {
   float W = uWidth * uAspect;
   return d / W + 0.5;
 }
-float designA(vec2 t) {
-  if (t.x < 0.0 || t.y < 0.0 || t.x > 1.0 || t.y > 1.0) return 0.0;
-  return texture2D(uDesign, vec2(t.x, 1.0 - t.y)).a;
+/* The design is sampled with gradients we measure ourselves (neighbouring texels of the print uv).
+ * The GPU's own estimate breaks wherever the print area ends (a seam, a drawcord, the edge of a
+ * mug's print zone): it would pick a blurred mip level and smear the whole logo into those pixels. */
+#ifdef GL_EXT_shader_texture_lod
+#define DTEX(c, gx, gy) texture2DGradEXT(uDesign, c, gx, gy)
+#else
+#define DTEX(c, gx, gy) texture2D(uDesign, c)
+#endif
+vec4 design(vec2 t, vec2 gx, vec2 gy) {
+  if (t.x < 0.0 || t.y < 0.0 || t.x > 1.0 || t.y > 1.0) return vec4(0.0);
+  return DTEX(vec2(t.x, 1.0 - t.y), vec2(gx.x, -gx.y), vec2(gy.x, -gy.y));
+}
+float designA(vec2 t, vec2 gx, vec2 gy) { return design(t, gx, gy).a; }
+// print uv at a neighbouring texel, when it has one
+bool uvAt(vec2 q, out vec2 uv) {
+  uv = vec2(0.0);
+  if (texture2D(uMask, q).b < 0.5) return false;
+  uv = decodeUV(q);
+  return true;
+}
+// change of the design coordinate per screen pixel along one axis, from the two neighbours; the
+// smaller side wins, so a fold or seam next to this pixel does not count as a jump
+vec2 designStep(vec2 t, bool ha, vec2 ua, bool hb, vec2 ub) {
+  vec2 a = designT(ua), b = designT(ub);
+  if (ha && hb) return length(a - t) < length(t - b) ? a - t : t - b;
+  if (ha) return a - t;
+  if (hb) return t - b;
+  return vec2(0.0);
 }
 
 void main() {
@@ -94,19 +119,26 @@ void main() {
 
   vec2 uv;
   if (uDesignOn > 0.5 && m.r > 0.001 && printUV(p, uv)) {
+    vec2 px1 = 1.0 / uSize, uR, uL, uU, uD;
+    bool hR = uvAt(p + vec2(px1.x, 0.0), uR), hL = uvAt(p - vec2(px1.x, 0.0), uL);
+    bool hU = uvAt(p + vec2(0.0, px1.y), uU), hD = uvAt(p - vec2(0.0, px1.y), uD);
     vec2 t = designT(uv);
-    vec4 dz = vec4(0.0);
-    if (t.x >= 0.0 && t.y >= 0.0 && t.x <= 1.0 && t.y <= 1.0) dz = texture2D(uDesign, vec2(t.x, 1.0 - t.y));
+    vec2 gx = designStep(t, hR, uR, hL, uL), gy = designStep(t, hU, uU, hD, uD);
+    vec4 dz = design(t, gx, gy);
     float a = dz.a * m.r;
-    vec3 dcol = uUseInk > 0.5 ? uInk : toLin(dz.rgb / max(dz.a, 0.001));
+    // the design texture is premultiplied (clean edges and mipmaps): undo it for the ink colour
+    vec3 dcol = uUseInk > 0.5 ? uInk : toLin(clamp(dz.rgb / max(dz.a, 0.004), 0.0, 1.0));
 
-    // relief: how the design edge catches the key light (from top left)
+    // relief: how the design edge catches the key light (from top left). Measured in screen pixels:
+    // a raised or engraved edge is a hairline highlight and shadow, never a shifted copy of the logo.
     float physW = max(uWidth * uPhysW, 0.001);           // metres across the design
-    float e = 0.0009 / physW;                            // ~1 mm in design space
-    float gx = designA(t + vec2(e, 0.0)) - designA(t - vec2(e, 0.0));
-    float gy = designA(t + vec2(0.0, e)) - designA(t - vec2(0.0, e));
-    float relief = (-gx + gy) * 0.5;
+    float px = max(length(gx), length(gy));               // design units per screen pixel
+    float e = clamp(px, 0.0005, max(0.0005, min(0.0004 / physW, 0.012)));   // one pixel, never more than 0.4 mm or 1.2%
+    float rx = designA(t + vec2(e, 0.0), gx, gy) - designA(t - vec2(e, 0.0), gx, gy);
+    float ry = designA(t + vec2(0.0, e), gx, gy) - designA(t - vec2(0.0, e), gx, gy);
+    float relief = (-rx + ry) * 0.5;
     float hl = clamp(lum(L) / 1.2, 0.0, 1.0);
+    float glossy = clamp(lum(spec) * 5.0, 0.0, 1.0);    // the surface already shines (mugs, metal)
 
     if (uMode == 0) {            // DTF / screen / digital: ink film on top
       base = mix(alb, dcol, a * 0.97);
@@ -117,18 +149,18 @@ void main() {
     } else if (uMode == 2) {     // UV / UV DTF: raised, glossy
       base = mix(alb, dcol, a);
       mod_ = 1.0 + relief * 0.45;
-      extra = vec3(a * uGloss * pow(hl, 4.0));
+      extra = vec3(a * uGloss * 0.35 * pow(hl, 6.0) * (1.0 - glossy));
     } else if (uMode == 3) {     // embroidery: satin stitches, raised thread
       float n = physW / uPitch;
       float sc = (t.x * cos(0.8) + t.y * sin(0.8)) * n;
       float st = fract(sc);
       float thread = 0.72 + 0.28 * smoothstep(0.0, 0.5, st) * smoothstep(1.0, 0.5, st);
-#ifdef GL_OES_standard_derivatives
       // threads finer than the pixels would alias into broken letters: average them out
-      thread = mix(thread, 0.86, clamp((fwidth(sc) - 0.3) / 0.3, 0.0, 1.0));
-#endif
+      vec2 dir = vec2(cos(0.8), sin(0.8)) * n;
+      float fw = abs(dot(gx, dir)) + abs(dot(gy, dir));
+      thread = mix(thread, 0.86, clamp((fw - 0.3) / 0.3, 0.0, 1.0));
       base = mix(alb, dcol * thread, a);
-      float shadow = designA(t + vec2(-e * 1.4, e * 1.4)) * (1.0 - a);
+      float shadow = designA(t + vec2(-e * 1.5, e * 1.5), gx, gy) * (1.0 - a);
       mod_ = (1.0 + relief * 0.9 * uRelief) * (1.0 - shadow * 0.35 * uRelief);
       extra = vec3(a * 0.05 * hl * thread);
     } else if (uMode == 4) {     // laser: no ink, the surface itself changes
@@ -204,7 +236,8 @@ export class MockupView {
     this.canvas = canvas;
     const gl = canvas.getContext('webgl', { preserveDrawingBuffer: true, premultipliedAlpha: false, antialias: false });
     if (!gl) throw new Error('WebGL unavailable');
-    gl.getExtension('OES_standard_derivatives');   // lets embroidery threads anti-alias
+    gl.getExtension('EXT_shader_texture_lod');     // design sampled with our own gradients (see FRAG)
+    this.aniso = gl.getExtension('EXT_texture_filter_anisotropic') || gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic');
     this.gl = gl;
     const sh = (type, src) => {
       const s = gl.createShader(type);
@@ -239,18 +272,20 @@ export class MockupView {
     this.product = null;
   }
 
-  _texture(unit, source, { nearest = false, mipmap = false } = {}) {
+  _texture(unit, source, { nearest = false, mipmap = false, premultiply = false } = {}) {
     const gl = this.gl;
     gl.activeTexture(gl.TEXTURE0 + unit);
     let t = this.tex[unit];
     if (!t) { t = this.tex[unit] = gl.createTexture(); }
     gl.bindTexture(gl.TEXTURE_2D, t);
     gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
-    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, premultiply);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
     const f = nearest ? gl.NEAREST : gl.LINEAR;
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, f);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mipmap ? gl.LINEAR_MIPMAP_LINEAR : f);
+    // logos on surfaces seen at an angle (cap front, tilted labels) stay sharp along the slant
+    if (mipmap && this.aniso) gl.texParameterf(gl.TEXTURE_2D, this.aniso.TEXTURE_MAX_ANISOTROPY_EXT, 8);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     if (mipmap) gl.generateMipmap(gl.TEXTURE_2D);
@@ -282,7 +317,8 @@ export class MockupView {
 
   /* The design must be a square, power-of-two canvas (e.g. 1024×1024). */
   setDesign(canvas) {
-    this._texture(5, canvas, { mipmap: true });
+    this._texture(5, canvas, { mipmap: true, premultiply: true });
+    this.designAspect = canvas.logoAspect || 1;
   }
 
   set(patch) {
@@ -335,15 +371,59 @@ export class MockupView {
   }
 }
 
-/* Draw an image (logo) into a square power-of-two canvas, centred with padding. */
+/* The visible part of an image: the box around pixels that are not (nearly) transparent. */
+function opaqueBox(img) {
+  const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+  const k = Math.min(1, 512 / Math.max(w, h));            // measure on a small copy, it's fast
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(w * k));
+  c.height = Math.max(1, Math.round(h * k));
+  const x = c.getContext('2d', { willReadFrequently: true });
+  x.drawImage(img, 0, 0, c.width, c.height);
+  const d = x.getImageData(0, 0, c.width, c.height).data;
+  let x0 = c.width, y0 = c.height, x1 = -1, y1 = -1;
+  for (let y = 0; y < c.height; y++) {
+    for (let i = 0; i < c.width; i++) {
+      if (d[(y * c.width + i) * 4 + 3] > 10) {
+        if (i < x0) x0 = i; if (i > x1) x1 = i;
+        if (y < y0) y0 = y; if (y > y1) y1 = y;
+      }
+    }
+  }
+  if (x1 < 0) return { x: 0, y: 0, w, h };
+  const pad = 1;
+  return {
+    x: Math.max(0, (x0 - pad) / k), y: Math.max(0, (y0 - pad) / k),
+    w: Math.min(w, (x1 + 1 + pad) / k) - Math.max(0, (x0 - pad) / k),
+    h: Math.min(h, (y1 + 1 + pad) / k) - Math.max(0, (y0 - pad) / k)
+  };
+}
+
+/* A square design canvas with the image's visible part centred and as large as it fits.
+ * Empty margins around an uploaded logo are trimmed, so its size and position are what you see.
+ * The canvas remembers the logo's shape (width / height) for fitting it to a print area. */
 export function designFromImage(img, size = 1024, pad = 0.02) {
   const c = document.createElement('canvas');
   c.width = c.height = size;
   const x = c.getContext('2d');
-  const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
-  const k = (size * (1 - pad * 2)) / Math.max(iw, ih);
-  x.drawImage(img, (size - iw * k) / 2, (size - ih * k) / 2, iw * k, ih * k);
+  x.imageSmoothingQuality = 'high';
+  const b = opaqueBox(img);
+  const k = (size * (1 - pad * 2)) / Math.max(b.w, b.h);
+  x.drawImage(img, b.x, b.y, b.w, b.h, (size - b.w * k) / 2, (size - b.h * k) / 2, b.w * k, b.h * k);
+  c.logoAspect = b.w / b.h;
   return c;
+}
+
+/* Where a design goes for a placement (preset) of a product, scaled down if needed so its real
+ * shape fits inside the print area: a square or tall logo on a cap front must not run into the
+ * brim or the button. `place` is {u, v, w} from the product's manifest. */
+export function fitPlace(meta, place, logoAspect = 1, margin = 0.92) {
+  const pa = meta.printAspect || 1;                       // print area width / height
+  const hAvail = Math.max(0.05, 2 * Math.min(place.v, 1 - place.v) * margin);   // in print heights
+  const hPerW = pa * Math.min(1, 1 / Math.max(logoAspect, 0.01));             // logo height per unit of w
+  const hMax = place.maxH ? Math.min(place.maxH, hAvail) : hAvail;          // maxH: a product's own limit
+  const w = Math.min(place.w, hMax / hPerW);
+  return { u: place.u, v: place.v, w };
 }
 
 /* Text design: one or two lines, fitted to the square. */
@@ -363,9 +443,12 @@ export function designFromText(text, { font = '"Alexandria", sans-serif', weight
   };
   while (!fits() && fs > 10) fs *= 0.94;
   const lh = fs * 1.25;
+  let maxW = 0;
   lines.forEach((l, i) => {
     x.direction = /[؀-ۿ]/.test(l) ? 'rtl' : 'ltr';
     x.fillText(l, size / 2, size / 2 + (i - (lines.length - 1) / 2) * lh);
+    maxW = Math.max(maxW, x.measureText(l).width);
   });
+  c.logoAspect = maxW / (lh * lines.length);
   return c;
 }

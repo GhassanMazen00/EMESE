@@ -1,7 +1,7 @@
 /* EMESE: offline support. Pages and code: network first (always fresh), cached copy when offline.
  * Product images: cache first (they only change when re-rendered; bump VERSION then).
  * Order data (Supabase) is never cached. */
-const VERSION = 'emese-v1';
+const VERSION = 'emese-v2';
 const CORE = [
   './', 'index.html', 'track.html', 'sizes.html', 'admin.html', 'bulk.html', 'manifest.webmanifest',
   'css/style.css', 'css/pages.css', 'assets/favicon.svg', 'assets/logo.png', 'assets/icons/icon-192.png',

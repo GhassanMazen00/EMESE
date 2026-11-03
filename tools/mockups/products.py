@@ -623,8 +623,10 @@ def build_pen():
     lib.area_light((0.0, -0.05, 0.35), (0, 0, 0), 0.7, 0.04, size_y=0.5, color=(1, 1, 1))
     lib.camera((0.0, -0.16, 0.31), (-0.004, 0.0, 0.0), lens=82)
     return dict(tintable=True, print_aspect=(z1 - z0) / (2 * math.pi * R),
-                default={'u': 0.5, 'v': 0.25, 'w': 0.6},
-                extra={'presets': {'center': {'u': 0.5, 'v': 0.25, 'w': 0.6}}})
+                # maxH: a pad print covers the front of the barrel, about a fifth of the way round;
+                # any taller and it would run round the sides out of sight
+                default={'u': 0.5, 'v': 0.25, 'w': 0.6, 'maxH': 0.22},
+                extra={'presets': {'center': {'u': 0.5, 'v': 0.25, 'w': 0.6, 'maxH': 0.22}}})
 
 
 # ----------------------------------------------------------------- cards ---

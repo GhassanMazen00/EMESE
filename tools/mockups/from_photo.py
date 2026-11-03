@@ -40,7 +40,8 @@ PHOTOS = {
         'cut': [([(563, 284), (572, 300), (575, 400), (577, 500), (578, 600), (578, 707)], 11),     # drawcords
                 ([(672, 287), (667, 300), (664, 400), (661, 500), (661, 600), (662, 709)], 11)],
         'uv': {'cx': 615, 'bottom': 1065, 'W': 500, 'H': 740, 'R': 330, 'displace': 4.0},
-        'default': {'u': 0.5, 'v': 0.76, 'w': 0.46},
+        # left chest by default: a centre print sits behind the drawcords, which is right but reads as a glitch
+        'default': {'u': 0.762, 'v': 0.842, 'w': 0.27},
         'presets': {'center': {'u': 0.5, 'v': 0.76, 'w': 0.46},
                     'chest': {'u': 0.762, 'v': 0.842, 'w': 0.27},
                     'big': {'u': 0.5, 'v': 0.68, 'w': 0.68}},

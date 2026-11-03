@@ -300,6 +300,21 @@ def make_thumb(photo, path, size=240):
 
 
 # ------------------------------------------------------------- driver ---
+def uv_seam(u, v, valid, jump=0.12):
+    """Texels on a uv seam (where a print wraps round a pen barrel or a bottle): anti-aliasing
+    averages both sides into a value that belongs to neither, so the browser would draw a random
+    bit of the logo there. A texel whose every neighbour is far away in uv is one of those."""
+    U = np.stack([u, v], -1)
+    best = np.full(u.shape, np.inf)
+    for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+        n = np.roll(U, (dy, dx), (0, 1))
+        nv = np.roll(valid, (dy, dx), (0, 1))
+        d = np.linalg.norm(U - n, axis=-1)
+        d[~nv] = np.inf
+        best = np.minimum(best, d)
+    return valid & (best > jump) & np.isfinite(best)
+
+
 def render_product(pid, out_dir, *, tintable, print_aspect, default, extra=None, samples=128, quick=False, preview=False,
                    spec_blur=0.6):
     """Render all passes for the current scene and write web assets."""
@@ -352,6 +367,7 @@ def render_product(pid, out_dir, *, tintable, print_aspect, default, extra=None,
     v = np.clip(uvr[..., 1], 0, 1) * 4095 + 0.5
     u = u.astype(np.uint16); v = v.astype(np.uint16)
     covered = uvr[..., 3] > 0.5
+    covered &= ~uv_seam(uvr[..., 0], uvr[..., 1], covered)
     uv_enc = np.zeros(uvr.shape[:2] + (3,), np.uint8)
     uv_enc[..., 0] = (u >> 4) & 255
     uv_enc[..., 1] = (v >> 4) & 255

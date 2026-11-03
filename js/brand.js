@@ -1,6 +1,6 @@
 /* EMESE: "your logo on everything". The visitor picks their logo once (it stays on their device) and
  * every product shot on the page is redrawn with it: the hero slides and the product cards. */
-import { MockupView, loadProduct, designFromImage } from './mockup.js';
+import { MockupView, loadProduct, designFromImage, fitPlace } from './mockup.js';
 import { TECHS, byId, luminance } from './catalog.js';
 import { ui, addStrings } from './i18n.js';
 import { readLogoFile, setLogo, clearLogo, getLogo, restoreLogo, logoLuminance } from './logo.js';
@@ -79,7 +79,8 @@ async function init() {
     view.setProduct(prod, { pick: false });
     view.setDesign(design);
     const tech = TECHS[look.tech];
-    const place = (look.place && prod.meta.presets && prod.meta.presets[look.place]) || prod.meta.default;
+    const spot = (look.place && prod.meta.presets && prod.meta.presets[look.place]) || prod.meta.default;
+    const place = fitPlace(prod.meta, spot, design.logoAspect || 1);
     view.set({
       tint: look.tint, mode: tech.mode, gloss: tech.gloss || 0.15, pitch: tech.pitch, relief: tech.relief,
       ink: tech.mode === 'foil' ? null : inkFor(look, logoLum), foil: tech.mode === 'foil' ? (look.ink || '#d4af37') : '#d4af37',
@@ -90,6 +91,7 @@ async function init() {
     const src = view.canvas;
     const out = document.createElement('canvas');
     const x = out.getContext('2d');
+    x.imageSmoothingQuality = 'high';
     if (t.kind === 'card') {
       const c = Math.round(src.width * (look.crop || 0.86));
       out.width = out.height = 640;

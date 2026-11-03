@@ -3,21 +3,68 @@ const KEY = 'emese-logo';
 const MAX = 1200;                  // longest side kept (px)
 let current = null;                // { canvas, dataUrl, name }
 
-/* JPEGs have no transparency: drop a near-white background. */
-export function knockOutWhite(source) {
+/* Logos often come on a white background (every JPEG, and many PNGs). Drop that background so
+ * the product shows through, as a printer would: every area of the background colour goes, also
+ * the inside of letters like A and O. Edge pixels, a mix of logo and background, become partly
+ * transparent with the background taken out of their colour, so there is no white halo on a dark
+ * shirt. A logo that fills its image with colour (a square badge) or already has transparency is
+ * kept as it is. */
+export function removeBackground(source) {
+  const w = source.naturalWidth || source.width, h = source.naturalHeight || source.height;
   const c = document.createElement('canvas');
-  c.width = source.naturalWidth || source.width;
-  c.height = source.naturalHeight || source.height;
+  c.width = w; c.height = h;
   const x = c.getContext('2d', { willReadFrequently: true });
   x.drawImage(source, 0, 0);
-  const d = x.getImageData(0, 0, c.width, c.height);
-  for (let i = 0; i < d.data.length; i += 4) {
-    const m = Math.min(d.data[i], d.data[i + 1], d.data[i + 2]);
-    if (m > 235) d.data[i + 3] = Math.max(0, (255 - m) * 12);
+  const img = x.getImageData(0, 0, w, h);
+  const d = img.data, n = w * h;
+
+  let clear = 0;
+  for (let i = 3; i < d.length; i += 4) if (d[i] < 250) clear++;
+  if (clear > n * 0.01) return c;                       // already transparent around the logo
+
+  // background colour: the most common colour on the border (coarse buckets)
+  const counts = new Map();
+  const border = [];
+  for (let i = 0; i < w; i++) border.push(i, (h - 1) * w + i);
+  for (let j = 1; j < h - 1; j++) border.push(j * w, j * w + w - 1);
+  const bucket = (p) => ((d[p * 4] >> 4) << 8) | ((d[p * 4 + 1] >> 4) << 4) | (d[p * 4 + 2] >> 4);
+  for (const p of border) counts.set(bucket(p), (counts.get(bucket(p)) || 0) + 1);
+  let best = 0, bestN = 0;
+  counts.forEach((v, k) => { if (v > bestN) { bestN = v; best = k; } });
+  if (bestN < border.length * 0.5) return c;            // no plain background: leave the image alone
+  let br = 0, bg = 0, bb = 0, m = 0;
+  for (const p of border) {
+    if (bucket(p) === best) { br += d[p * 4]; bg += d[p * 4 + 1]; bb += d[p * 4 + 2]; m++; }
   }
-  x.putImageData(d, 0, 0);
+  br /= m; bg /= m; bb /= m;
+  // only a light, neutral background (paper white, light grey); a logo on black keeps its black
+  if (Math.min(br, bg, bb) < 200 || Math.max(br, bg, bb) - Math.min(br, bg, bb) > 30) return c;
+
+  const LO = 24, HI = 90;                               // fully background / fully logo
+  const dist = new Float32Array(n);
+  for (let p = 0; p < n; p++) {
+    dist[p] = Math.max(Math.abs(d[p * 4] - br), Math.abs(d[p * 4 + 1] - bg), Math.abs(d[p * 4 + 2] - bb));
+  }
+  const isBg = (p) => dist[p] < LO;
+  for (let p = 0; p < n; p++) {
+    if (isBg(p)) { d[p * 4 + 3] = 0; continue; }
+    if (dist[p] >= HI) continue;
+    // a pixel between logo and background: only on an edge (next to background), never a pale
+    // colour inside the logo
+    const px = p % w, py = (p - px) / w;
+    const edge = (px > 0 && isBg(p - 1)) || (px < w - 1 && isBg(p + 1)) ||
+                 (py > 0 && isBg(p - w)) || (py < h - 1 && isBg(p + w));
+    if (!edge) continue;
+    const a = (dist[p] - LO) / (HI - LO);
+    d[p * 4] = Math.min(255, Math.max(0, (d[p * 4] - br * (1 - a)) / a));
+    d[p * 4 + 1] = Math.min(255, Math.max(0, (d[p * 4 + 1] - bg * (1 - a)) / a));
+    d[p * 4 + 2] = Math.min(255, Math.max(0, (d[p * 4 + 2] - bb * (1 - a)) / a));
+    d[p * 4 + 3] = Math.round(a * 255);
+  }
+  x.putImageData(img, 0, 0);
   return c;
 }
+export const knockOutWhite = removeBackground;
 
 function toCanvas(img) {
   const w = img.naturalWidth || img.width || 1024, h = img.naturalHeight || img.height || 1024;   // SVGs may have no size
@@ -44,8 +91,8 @@ export async function readLogoFile(file) {
   const url = URL.createObjectURL(file);
   try {
     const img = await loadImg(url);
-    const src = file.type === 'image/jpeg' ? knockOutWhite(img) : img;
-    return toCanvas(src);
+    // SVGs keep their own transparency; everything else loses a plain background if it has one
+    return toCanvas(file.type === 'image/svg+xml' ? img : removeBackground(toCanvas(img)));
   } finally {
     URL.revokeObjectURL(url);
   }

@@ -129,13 +129,44 @@ def bilinear(img, x, y):
     return a * (1 - fy) + b * fy
 
 
-def logo_square(size=1024, pad=0.02):
-    img = Image.open(os.path.join(ROOT, 'assets', 'logo.png')).convert('RGBA')
+def premultiplied(img):
+    """RGBA image -> float array with colour multiplied by alpha (clean edges when sampled or shrunk)."""
+    a = np.array(img.convert('RGBA')).astype(np.float32) / 255.0
+    a[..., :3] *= a[..., 3:4]
+    return a
+
+
+def shrink(arr, n):
+    """Resize a premultiplied RGBA array channel by channel (PIL would treat it as straight alpha)."""
+    return np.stack([np.asarray(Image.fromarray(arr[..., k], 'F').resize((n, n), Image.LANCZOS))
+                     for k in range(4)], -1).clip(0, 1)
+
+
+def trim_square(img, size=1024, pad=0.02):
+    """Like designFromImage in js/mockup.js: the visible part of the image (transparent margins
+    trimmed), centred in a square, premultiplied. Returns it with the logo's width / height."""
+    img = img.convert('RGBA')
+    box = img.getchannel('A').point(lambda v: 255 if v > 10 else 0).getbbox() or (0, 0, img.width, img.height)
+    img = img.crop(box)
     k = size * (1 - 2 * pad) / max(img.size)
-    img = img.resize((max(1, int(img.width * k)), max(1, int(img.height * k))), Image.LANCZOS)
+    img = img.resize((max(1, round(img.width * k)), max(1, round(img.height * k))), Image.LANCZOS)
     sq = Image.new('RGBA', (size, size), (0, 0, 0, 0))
     sq.paste(img, ((size - img.width) // 2, (size - img.height) // 2), img)
-    return np.array(sq).astype(np.float32) / 255.0
+    return premultiplied(sq), (box[2] - box[0]) / (box[3] - box[1])
+
+
+def fit_place(meta, place, aspect=1.0, margin=0.92):
+    """fitPlace in js/mockup.js: shrink a placement so the logo's real shape stays inside the print area."""
+    pa = meta.get('printAspect') or 1
+    h_avail = max(0.05, 2 * min(place['v'], 1 - place['v']) * margin)
+    h_per_w = pa * min(1, 1 / max(aspect, 0.01))
+    h_max = min(place['maxH'], h_avail) if place.get('maxH') else h_avail
+    w = min(place['w'], h_max / h_per_w)
+    return {'u': place['u'], 'v': place['v'], 'w': w}
+
+
+def logo_square():
+    return trim_square(Image.open(os.path.join(ROOT, 'assets', 'logo.png')))
 
 
 def design(logo, tx, ty, alpha_only=False):
@@ -150,14 +181,10 @@ def design(logo, tx, ty, alpha_only=False):
 
 
 def design_square(path):
-    img = Image.open(os.path.join(ROOT, path)).convert('RGBA')
-    side = max(img.size)
-    sq = Image.new('RGBA', (side, side), (0, 0, 0, 0))
-    sq.paste(img, ((side - img.width) // 2, (side - img.height) // 2), img)
-    return np.array(sq.resize((1024, 1024), Image.LANCZOS)).astype(np.float32) / 255.0
+    return trim_square(Image.open(os.path.join(ROOT, path)))
 
 
-def composite(pid, meta, tint, tech, ink, logo, width_m=0.3, reveal=False, place=None):
+def composite(pid, meta, tint, tech, ink, logo, width_m=0.3, reveal=False, place=None, logo_aspect=1.0):
     photo = to_lin(load(pid, 'photo.webp'))
     L = to_lin(load(pid, 'light.webp')) * meta['lightScale']
     alb0 = to_lin(load(pid, 'albedo.webp'))
@@ -187,7 +214,7 @@ def composite(pid, meta, tint, tech, ink, logo, width_m=0.3, reveal=False, place
         ok |= take
     if meta.get('flipV'):
         v = 1 - v
-    d = (meta.get('presets') or {}).get(place) or meta['default']
+    d = fit_place(meta, (meta.get('presets') or {}).get(place) or meta['default'], logo_aspect)
     aspect = meta['printAspect']
     W = d['w'] * aspect
     ddx = u - d['u']
@@ -195,15 +222,17 @@ def composite(pid, meta, tint, tech, ink, logo, width_m=0.3, reveal=False, place
     tx = ddx / W + 0.5
     ty = (v - d['v']) / W + 0.5
     on = ok & (pm > 0.001)
+    # design units per output pixel, per pixel (the shader measures the same from its neighbours)
+    tyx, txx = np.gradient(np.where(on, tx, np.nan))
+    tyy, txy = np.gradient(np.where(on, ty, np.nan))
+    step_px = np.maximum(np.hypot(txx, txy), np.hypot(tyx, tyy))
+    step = float(np.nanmedian(step_px[on])) if on.sum() > 16 else 0.001
+    step_px = np.where(np.isfinite(step_px), step_px, step)
     # like the studio's mipmaps: shrink the design to about the size it lands on the photo,
     # so thin strokes average out instead of breaking up
-    if on.sum() > 16:
-        gy, gx = np.gradient(np.where(on, tx, np.nan))
-        step = np.nanmedian(np.hypot(gx, gy)[on])
-        want = int(np.clip(2.0 / max(step, 1e-6), 64, logo.shape[0]))
-        if want < logo.shape[0]:
-            logo = np.asarray(Image.fromarray((logo * 255 + 0.5).astype(np.uint8), 'RGBA')
-                              .resize((want, want), Image.LANCZOS)).astype(np.float32) / 255.0
+    want = int(np.clip(2.0 / max(step, 1e-6), 64, logo.shape[0]))
+    if want < logo.shape[0]:
+        logo = shrink(logo, want)
 
     dz = np.zeros(photo.shape[:2] + (4,), np.float32)
     dz[on] = design(logo, tx[on], ty[on])
@@ -214,17 +243,20 @@ def composite(pid, meta, tint, tech, ink, logo, width_m=0.3, reveal=False, place
         dcol = to_lin(np.clip(dz[..., :3] / np.maximum(dz[..., 3:4], 1e-3), 0, 1) * 255)
 
     phys = max(d['w'] * width_m, 0.001)
-    e = 0.0009 / phys
+    # relief: a one-pixel hairline highlight and shadow on the design edge, never a shifted copy
+    e = np.clip(step_px, 0.0005, max(0.0005, min(0.0004 / phys, 0.012)))
     relief = np.zeros(photo.shape[:2], np.float32)
 
     def A(ox, oy):
         r = np.zeros(photo.shape[:2], np.float32)
-        r[on] = design(logo, tx[on] + ox, ty[on] + oy, alpha_only=True)
+        ox = np.broadcast_to(ox, tx.shape); oy = np.broadcast_to(oy, tx.shape)
+        r[on] = design(logo, tx[on] + ox[on], ty[on] + oy[on], alpha_only=True)
         return r
     if mode != 'dye':
         relief = (-(A(e, 0) - A(-e, 0)) + (A(0, e) - A(0, -e))) * 0.5
     relief = relief[..., None]
     hl = np.clip(lum(L) / 1.2, 0, 1)[..., None]
+    glossy = np.clip(lum(spec) * 5, 0, 1)[..., None]    # the surface already shines (mugs, metal)
 
     base, mod, extra, glow = alb, 1.0, 0.0, 0.0
     if mode == 'print':
@@ -237,7 +269,7 @@ def composite(pid, meta, tint, tech, ink, logo, width_m=0.3, reveal=False, place
     elif mode == 'uv':
         base = alb * (1 - a) + dcol * a
         mod = 1 + relief * 0.45
-        extra = a * opts.get('gloss', 0.15) * hl ** 4
+        extra = a * opts.get('gloss', 0.15) * 0.35 * hl ** 6 * (1 - glossy)
     elif mode == 'stitch':
         pitch, rel = opts.get('pitch', 0.0011), opts.get('relief', 1.0)
         n = phys / pitch
@@ -249,7 +281,7 @@ def composite(pid, meta, tint, tech, ink, logo, width_m=0.3, reveal=False, place
         fw = np.where(on, np.minimum(np.abs(gx) + np.abs(gy), 5.0), 0.0)[..., None]
         thread = thread + (0.86 - thread) * np.clip((fw - 0.3) / 0.3, 0, 1)
         base = alb * (1 - a) + dcol * thread * a
-        shadow = A(-e * 1.4, e * 1.4)[..., None] * (1 - a)
+        shadow = A(-e * 1.5, e * 1.5)[..., None] * (1 - a)
         mod = (1 + relief * 0.9 * rel) * (1 - shadow * 0.35 * rel)
         extra = a * 0.05 * hl * thread
     elif mode == 'laser':
@@ -274,13 +306,14 @@ def composite(pid, meta, tint, tech, ink, logo, width_m=0.3, reveal=False, place
 def main():
     man = json.load(open(os.path.join(MOCK, 'manifest.json')))
     cat = catalog()
-    logo = logo_square()
+    logo, logo_aspect = logo_square()
     ready = lambda pid: pid in man and os.path.exists(os.path.join(MOCK, pid, 'spec.webp'))
 
     def make(pid, tint, tech, ink, extra=None):
         w, rv = cat.get(pid, (0.3, False))
-        art = design_square(extra['design']) if extra else logo
-        return composite(pid, man[pid], tint, tech, ink, art, w, rv, place=extra and extra.get('place'))
+        art, aspect = design_square(extra['design']) if extra else (logo, logo_aspect)
+        return composite(pid, man[pid], tint, tech, ink, art, w, rv, place=extra and extra.get('place'),
+                         logo_aspect=aspect)
     for pid, (tint, tech, ink, *extra) in CARDS.items():
         if not ready(pid):
             continue

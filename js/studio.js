@@ -1,5 +1,5 @@
 /* EMESE: mockup studio. Real product renders + the visitor's own logo or text. */
-import { MockupView, loadProduct, designFromImage, designFromText } from './mockup.js';
+import { MockupView, loadProduct, designFromImage, designFromText, fitPlace } from './mockup.js';
 import { PRODUCTS, TECHS, COLOR_NAMES, INKS, FOILS, CATS, byId, luminance } from './catalog.js';
 import { lang, ui } from './i18n.js';
 import { readLogoFile, setLogo, getLogo } from './logo.js';
@@ -81,7 +81,11 @@ function init() {
   }
   function refreshDesign() {
     const d = currentDesign();
-    if (d) { view.setDesign(d); draw(); }
+    if (!d) return;
+    view.setDesign(d);
+    // a new logo of another shape re-fits the chosen spot, unless the visitor placed it by hand
+    if (prod && !state.moved) { applyPlace(state.place, false); syncRanges(); }
+    draw();
   }
 
   // the visitor's logo is shared with the hero and the order form (js/logo.js)
@@ -137,12 +141,15 @@ function init() {
     }
   }
 
-  function applyPlace(name) {
+  // a placement scales the design so its real shape fits that spot on the product
+  function applyPlace(name, redraw = true) {
     const presets = (prod && prod.meta.presets) || {};
     const pr = presets[name] || prod.meta.default;
+    const d = currentDesign();
     state.place = name;
-    Object.assign(state, { u: pr.u, v: pr.v, w: pr.w, rot: 0 });
-    draw();
+    state.moved = false;
+    Object.assign(state, fitPlace(prod.meta, pr, (d && d.logoAspect) || 1), { rot: 0 });
+    if (redraw) draw();
   }
 
   // Keep the default logo readable: light ink on dark products unless the visitor chose one.
@@ -199,6 +206,7 @@ function init() {
     if (pinch && pointers.size === 2) {
       const [a, b] = [...pointers.values()];
       const d = Math.hypot(a.x - b.x, a.y - b.y);
+      state.moved = true;
       state.w = clampW(pinch.w * d / pinch.d);
       state.rot = pinch.rot + (Math.atan2(b.y - a.y, b.x - a.x) - pinch.ang);
       syncRanges(); draw();
@@ -209,6 +217,7 @@ function init() {
       drag.last = uv;
       let du = uv.u - drag.start.u;
       du -= Math.round(du); // wrap on cylinders
+      state.moved = true;
       state.u = drag.u + du;
       state.v = Math.min(1.1, Math.max(-0.1, drag.v + (uv.v - drag.start.v)));
       draw();
@@ -229,6 +238,7 @@ function init() {
   canvas.addEventListener('wheel', (e) => {
     if (!overDesign(e.clientX, e.clientY)) return; // let the page scroll elsewhere
     e.preventDefault();
+    state.moved = true;
     state.w = clampW(state.w * Math.exp(-e.deltaY * 0.0015));
     syncRanges(); draw();
   }, { passive: false });
@@ -251,9 +261,9 @@ function init() {
   canvas.addEventListener('keydown', (e) => {
     const step = e.shiftKey ? 0.05 : 0.01;
     const k = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, step], ArrowDown: [0, -step] }[e.key];
-    if (k) { e.preventDefault(); state.u += k[0]; state.v += k[1]; draw(); }
-    if (e.key === '+' || e.key === '=') { state.w = clampW(state.w * 1.08); syncRanges(); draw(); }
-    if (e.key === '-') { state.w = clampW(state.w / 1.08); syncRanges(); draw(); }
+    if (k) { e.preventDefault(); state.moved = true; state.u += k[0]; state.v += k[1]; draw(); }
+    if (e.key === '+' || e.key === '=') { state.moved = true; state.w = clampW(state.w * 1.08); syncRanges(); draw(); }
+    if (e.key === '-') { state.moved = true; state.w = clampW(state.w / 1.08); syncRanges(); draw(); }
   });
 
   /* ---------------- controls ---------------- */
@@ -262,8 +272,8 @@ function init() {
     sizeRange.value = Math.round(state.w * 100);
     rotRange.value = Math.round((((state.rot * 180) / Math.PI + 540) % 360) - 180);
   }
-  sizeRange.addEventListener('input', () => { state.w = clampW(sizeRange.value / 100); draw(); });
-  rotRange.addEventListener('input', () => { state.rot = (rotRange.value * Math.PI) / 180; draw(); });
+  sizeRange.addEventListener('input', () => { state.moved = true; state.w = clampW(sizeRange.value / 100); draw(); });
+  rotRange.addEventListener('input', () => { state.moved = true; state.rot = (rotRange.value * Math.PI) / 180; draw(); });
   $('artText').addEventListener('input', (e) => { state.text = e.target.value; refreshDesign(); });
 
   function radio(container, items, selected, onPick, opts = {}) {
