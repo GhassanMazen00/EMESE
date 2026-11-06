@@ -21,33 +21,48 @@ light/
     نفس التصميم بخلفية فاتحة، لو حبيت بديل.
 
 fonts/
-    خط Alexandria (مجاني، رخصة OFL في OFL.txt). لازم بس للنسخة اللي بتتعدّل.
+    خطوط Alexandria و DM Serif Display (مجانية، رخصة OFL في OFL.txt).
+    لازم بس للنسخة اللي بتتعدّل.
+
+التصميم
+-------
+يمين: ايميز بخط عريض مع النقطة الماجنتا بتاعة لوجو EMESE، وجنبها "لتوريدات الملابس"،
+وتحتهم خط فيه علامات ألوان الطباعة (سماوي، ماجنتا، أصفر) وسطر الخدمات:
+يونيفورمات • طباعة • تطريز • كابات.
+شمال: بادج زي الباتش المنسوج (EMESE، علامة E. ، UNIFORMS • PRINT • EMBROIDERY)
+فوق شريط مازورة خياطة أصفر. ورا كل ده نسيج قماش خفيف، وحوالين البانر خياطة زي تيكت الهدوم.
 
 لو هتعدّل الكلام
 ---------------
 1. سطّب Alexandria-Black.ttf و Alexandria-SemiBold.ttf من فولدر fonts.
 2. افتح emese-banner-editable.svg. كل عنصر ليه اسم:
-   brand (ايميز)، line1 (لتوريدات)، line2 (الملابس)، dot (النقطة الماجنتا)،
-   stitch (الخياطة اللي حوالين)، background (الخلفية).
+   brand (ايميز)، line1 (لتوريدات)، line2 (الملابس)، services (سطر الخدمات)، dot (النقطة الماجنتا)،
+   rule (الخط وعلامات الألوان)، badge (البادج: badge-top و badge-bottom هم الكلام اللي على الدايرة)،
+   tape (المازورة)، weave (نسيج القماش)، stitch (الخياطة اللي حوالين)، background (الخلفية).
+   تقدر تمسح أي عنصر مش عايزه، أو تغيّر كلام الخدمات زي ما تحب.
 3. في Illustrator: لو الحروف العربي ظهرت مفكوكة أو بالعكس، اختار النص وخلّي الـ Composer
    "Middle Eastern & South Asian" (من قايمة Paragraph).
 
 الألوان
 -------
 النسخة الأساسية (غامقة):
-    الخلفية      #111111   (للمطبعة: C60 M40 Y40 K100)
-    ايميز        #FFFFFF
-    السطرين      #DCD8D1
-    النقطة       #E6007E   (ماجنتا: C0 M100 Y0 K0)
-    الخياطة      #ECE7DF بشفافية 62%
+    الخلفية           #121212   (للمطبعة: C60 M40 Y40 K100)
+    ايميز             #FFFFFF
+    السطرين والخدمات  #D9D5CE
+    النقطة            #E6007E   (ماجنتا: C0 M100 Y0 K0)
+    المازورة          #FFE500   (أصفر: C0 M0 Y100 K0)
+    علامات الألوان    #00A3E0 سماوي، #E6007E ماجنتا، #FFE500 أصفر
+    البادج            #F3F1EC و #111111
+    الخياطة           #ECE7DF بشفافية 55%
 النسخة الفاتحة:
-    الخلفية #F3F1EC، ايميز #000000، السطرين #3A3834، النقطة #E6007E، الخياطة #000000 بشفافية 38%
-الخط: Alexandria Black لكلمة ايميز، و Alexandria SemiBold للسطرين.
+    الخلفية #F1EEE8، ايميز #000000، السطرين والخدمات #3A3834، والباقي زي الغامقة.
+الخطوط: Alexandria Black لكلمة ايميز و EMESE اللي على البادج، Alexandria SemiBold للباقي،
+DM Serif Display لعلامة E. (متحوّلة لشكل).
 
 للمطبعة
 -------
 الكلام بعيد عن حرف البانر بمسافة كفاية للعيون (الحلقات) أو الثنية.
-لو المطبعة طلبت bleed: الخلفية لون واحد، فينفع تتمدّ براحتها.
+لو المطبعة طلبت bleed: الخلفية نسيج متكرر والمازورة طالعة برا الحرف، فينفع يتمدّوا براحتهم.
 
 
 EMESE store banner, 300 x 100 (English)
@@ -57,12 +72,18 @@ emese-banner-editable.svg     Same design with live, editable text. Install the 
 emese-banner-300x100cm.pdf    Vector PDF at 300 x 100 cm for a print shop; prints at any size with the same 3:1 ratio.
 emese-banner-*.png            300 x 100 px for screens, plus 2x, 3x and 10x sizes.
 light/                        The same design on a light background.
-fonts/                        Alexandria (free, SIL Open Font License).
+fonts/                        Alexandria and DM Serif Display (free, SIL Open Font License).
+
+Design: the name, the magenta dot of the EMESE logo and "لتوريدات الملابس" on the right, over a rule with
+C M Y print marks and a line of services. On the left a woven-patch badge on a yellow measuring tape. A fine
+twill weave behind, and a stitched border like a sewn-in label. Every part is a named layer in the editable
+file (brand, line1, line2, services, dot, rule, badge, badge-top, badge-bottom, tape, weave, stitch).
 
 In Illustrator, if the Arabic letters look disconnected, select the text and set the paragraph composer
 to "Middle Eastern & South Asian".
 
-Colours (main): background #111111, brand #FFFFFF, lines #DCD8D1, dot #E6007E, stitch #ECE7DF at 62%.
-Light: background #F3F1EC, brand #000000, lines #3A3834, dot #E6007E, stitch #000000 at 38%.
+Colours (main): background #121212, name #FFFFFF, lines and services #D9D5CE, dot #E6007E, tape #FFE500,
+print marks #00A3E0 / #E6007E / #FFE500, badge #F3F1EC and #111111, stitch #ECE7DF at 55%.
+Light: background #F1EEE8, name #000000, lines and services #3A3834, the rest the same.
 
 To rebuild every file from source: python src/build.py && node src/export.js
