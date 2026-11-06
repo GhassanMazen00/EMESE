@@ -27,8 +27,7 @@ fonts/
 التصميم
 -------
 يمين: ايميز بخط عريض مع النقطة الماجنتا بتاعة لوجو EMESE، وجنبها "لتوريدات الملابس"،
-وتحتهم خط فيه علامات ألوان الطباعة (سماوي، ماجنتا، أصفر) وسطر الخدمات:
-يونيفورمات • طباعة • تطريز • كابات.
+وتحتهم خط فيه علامات ألوان الطباعة (سماوي، ماجنتا، أصفر).
 شمال: تيكت هدوم متعلّق بخيط (لوجو EMESE. ، UNIFORMS / PRINT / EMBROIDERY، وشريط ماجنتا CUSTOM SUPPLIES)
 فوق شريط مازورة خياطة أصفر. ورا كل ده نسيج قماش خفيف، وحوالين البانر خياطة زي تيكت الهدوم.
 
@@ -36,10 +35,10 @@ fonts/
 ---------------
 1. سطّب Alexandria-Black.ttf و Alexandria-SemiBold.ttf من فولدر fonts.
 2. افتح emese-banner-editable.svg. كل عنصر ليه اسم:
-   brand (ايميز)، line1 (لتوريدات)، line2 (الملابس)، services (سطر الخدمات)، dot (النقطة الماجنتا)،
+   brand (ايميز)، line1 (لتوريدات)، line2 (الملابس)، dot (النقطة الماجنتا)،
    rule (الخط وعلامات الألوان)، tag (التيكت: tag-logo اللوجو، tag-line1 و tag-line2 و tag-line3 الكلام، tag-band-text كلام الشريط الماجنتا، tag-cord الخيط)،
    tape (المازورة)، weave (نسيج القماش)، stitch (الخياطة اللي حوالين)، background (الخلفية).
-   تقدر تمسح أي عنصر مش عايزه، أو تغيّر كلام الخدمات زي ما تحب.
+   تقدر تمسح أي عنصر مش عايزه، أو تغيّر أي كلام زي ما تحب.
 3. في Illustrator: لو الحروف العربي ظهرت مفكوكة أو بالعكس، اختار النص وخلّي الـ Composer
    "Middle Eastern & South Asian" (من قايمة Paragraph).
 
@@ -48,14 +47,14 @@ fonts/
 النسخة الأساسية (غامقة):
     الخلفية           #121212   (للمطبعة: C60 M40 Y40 K100)
     ايميز             #FFFFFF
-    السطرين والخدمات  #D9D5CE
+    السطرين           #D9D5CE
     النقطة            #E6007E   (ماجنتا: C0 M100 Y0 K0)
     المازورة          #FFE500   (أصفر: C0 M0 Y100 K0)
     علامات الألوان    #00A3E0 سماوي، #E6007E ماجنتا، #FFE500 أصفر
     التيكت            #F3F1EC و #111111، والخيط #D8CDB6
     الخياطة           #ECE7DF بشفافية 55%
 النسخة الفاتحة:
-    الخلفية #F1EEE8، ايميز #000000، السطرين والخدمات #3A3834، والباقي زي الغامقة.
+    الخلفية #F1EEE8، ايميز #000000، السطرين #3A3834، والباقي زي الغامقة.
 الخطوط: Alexandria Black لكلمة ايميز، Alexandria SemiBold للباقي،
 DM Serif Display للوجو EMESE. اللي على التيكت (متحوّل لشكل).
 
@@ -75,17 +74,17 @@ light/                        The same design on a light background.
 fonts/                        Alexandria and DM Serif Display (free, SIL Open Font License).
 
 Design: the name, the magenta dot of the EMESE logo and "لتوريدات الملابس" on the right, over a rule with
-C M Y print marks and a line of services. On the left a clothing hang tag (the EMESE. logo, uniforms / print / embroidery, a magenta band) on its
+C M Y print marks. On the left a clothing hang tag (the EMESE. logo, uniforms / print / embroidery, a magenta band) on its
 cord, over a yellow measuring tape. A fine
 twill weave behind, and a stitched border like a sewn-in label. Every part is a named layer in the editable
-file (brand, line1, line2, services, dot, rule, tag, tag-logo, tag-line1..3, tag-band-text, tag-cord, tape,
+file (brand, line1, line2, dot, rule, tag, tag-logo, tag-line1..3, tag-band-text, tag-cord, tape,
 weave, stitch).
 
 In Illustrator, if the Arabic letters look disconnected, select the text and set the paragraph composer
 to "Middle Eastern & South Asian".
 
-Colours (main): background #121212, name #FFFFFF, lines and services #D9D5CE, dot #E6007E, tape #FFE500,
+Colours (main): background #121212, name #FFFFFF, lines #D9D5CE, dot #E6007E, tape #FFE500,
 print marks #00A3E0 / #E6007E / #FFE500, tag #F3F1EC and #111111, cord #D8CDB6, stitch #ECE7DF at 55%.
-Light: background #F1EEE8, name #000000, lines and services #3A3834, the rest the same.
+Light: background #F1EEE8, name #000000, lines #3A3834, the rest the same.
 
 To rebuild every file from source: python src/build.py && node src/export.js

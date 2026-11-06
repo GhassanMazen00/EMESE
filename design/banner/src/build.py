@@ -1,7 +1,7 @@
 """EMESE store banner, 300 x 100 (3:1): "ايميز لتوريدات الملابس".
 
-Right: the name, the magenta dot of the EMESE logo, "لتوريدات الملابس", and a line of services under a rule
-with C M Y print marks. Left: a clothing hang tag (the EMESE. logo, uniforms / print / embroidery, a magenta
+Right: the name, the magenta dot of the EMESE logo and "لتوريدات الملابس", over a rule with C M Y print
+marks. Left: a clothing hang tag (the EMESE. logo, uniforms / print / embroidery, a magenta
 band) on its cord, over a tailor's measuring tape. Behind it all a fine twill weave, and a stitched border like
 a sewn-in label.
 
@@ -30,7 +30,6 @@ W, H = 300, 100                                 # 1 unit = 1 px at 300 x 100, or
 
 BRAND = 'ايميز'
 LINES = ['لتوريدات', 'الملابس']                 # read right to left: name, then these two, top to bottom
-SERVICES = 'يونيفورمات  •  طباعة  •  تطريز  •  كابات'
 TAG_LINES = ['UNIFORMS', 'PRINT', 'EMBROIDERY']
 TAG_BAND = 'CUSTOM SUPPLIES'
 
@@ -197,16 +196,15 @@ def tag(c, live):
 
 
 def text_layout(right=286):
-    """Name on the right, dot, the two lines stacked to its left; a rule with C M Y marks and the services."""
-    big, small, svc = 45, 15.5, 8.2
+    """Name on the right, dot, the two lines stacked to its left; a rule with C M Y marks underneath."""
+    big, small = 45, 15.5
     _, wb, bb = HEAVY.run(BRAND, big)
     r = big * 0.085
     g_dot, g_lines = big * 0.09, big * 0.26
     ws = max(SEMI.run(t, small)[1] for t in LINES)
     total = wb + g_dot + 2 * r + g_lines + ws
-    _, wsv, bsv = SEMI.run(SERVICES, svc)
-    gap1, gap2 = 4.5, 4.0
-    top = (H - ((bb[3] - bb[1]) + gap1 + gap2 + (bsv[3] - bsv[1]))) / 2
+    gap1, mark = 5.5, 2.3                       # name to rule, height of the C M Y marks
+    top = (H - ((bb[3] - bb[1]) + gap1 + mark)) / 2
     base = top - bb[1]
     xb = right - wb
     items = [{'id': 'brand', 'face': HEAVY, 'size': big, 'text': BRAND, 'x': xb, 'w': wb, 'base': base, 'role': 'brand'}]
@@ -217,8 +215,6 @@ def text_layout(right=286):
                       'base': base - (len(LINES) - 1 - i) * small * 1.3, 'role': 'lines'})
     left = right - total
     y_rule = top + (bb[3] - bb[1]) + gap1
-    items.append({'id': 'services', 'face': SEMI, 'size': svc, 'text': SERVICES, 'x': right - wsv, 'w': wsv,
-                  'base': y_rule + gap2 - bsv[1] + 0.5, 'role': 'lines'})
     return items, {'cx': xb - g_dot - r, 'cy': base - r, 'r': r}, {'x': left, 'y': y_rule, 'w': total}
 
 
