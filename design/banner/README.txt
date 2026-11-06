@@ -87,4 +87,4 @@ Colours (main): background #121212, name #FFFFFF, lines #D9D5CE, dot #E6007E, ta
 print marks #00A3E0 / #E6007E / #FFE500, tag #F3F1EC and #111111, cord #D8CDB6, stitch #ECE7DF at 55%.
 Light: background #F1EEE8, name #000000, lines #3A3834, the rest the same.
 
-To rebuild every file from source: python src/build.py && node src/export.js
+To rebuild every file from source: python src/build.py && node src/export.js && python src/exact_pdf.py

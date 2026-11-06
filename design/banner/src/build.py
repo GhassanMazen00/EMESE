@@ -11,7 +11,7 @@ Writes, for each colourway (dark = main, light = alternative):
 Then export.js makes the PDF and PNG files.
 
     pip install uharfbuzz fonttools
-    python design/banner/src/build.py && node design/banner/src/export.js
+    python design/banner/src/build.py && node design/banner/src/export.js && python design/banner/src/exact_pdf.py
 """
 import base64
 import math
