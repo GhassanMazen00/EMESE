@@ -1,9 +1,8 @@
 """EMESE store banner, 300 x 100 (3:1): "ايميز لتجارة الملابس".
 
 Right: the name, the magenta dot of the EMESE logo and "لتجارة الملابس", over a rule with C M Y print
-marks. Left: a clothing hang tag (the EMESE. logo over a magenta band)
-on its cord, over a tailor's measuring tape. Behind it all a fine twill weave, and a stitched border like
-a sewn-in label.
+marks. Left: a clothing hang tag (a hanger and the EMESE. logo over a
+magenta band) on its cord, over a tailor's measuring tape. Behind it all a fine twill weave.
 
 Writes, for each colourway (dark = main, light = alternative):
   emese-banner.svg           everything as shapes: looks the same in every app, scales to any size
@@ -34,9 +33,9 @@ LINES = ['لتجارة', 'الملابس']                   # read right to lef
 MAGENTA, CYAN, YELLOW = '#e6007e', '#00a3e0', '#ffe500'
 COLOURWAYS = {
     'dark': {'bg': '#121212', 'brand': '#ffffff', 'lines': '#d9d5ce', 'weave': ('#ffffff', 0.045),
-             'shade': True, 'stitch': ('#ece7df', 0.55), 'drop': 0.45},
+             'shade': True, 'drop': 0.45},
     'light': {'bg': '#f1eee8', 'brand': '#000000', 'lines': '#3a3834', 'weave': ('#000000', 0.05),
-              'shade': False, 'stitch': ('#000000', 0.35), 'drop': 0.14},
+              'shade': False, 'drop': 0.14},
 }
 CARD, CARD_INK = '#f3f1ec', '#111111'           # the hang tag is the same in both colourways
 CORD = '#d8cdb6'                                # natural twine
@@ -127,13 +126,6 @@ def tape(x=14, y=112, length=140, angle=-61, width=9.0):
         n += 1
     out.append('</g>\n</g>\n')
     return ''.join(out)
-
-
-def border(c):
-    color, op = c['stitch']
-    i = 5
-    return (f'<rect id="stitch" x="{i}" y="{i}" width="{W - 2 * i}" height="{H - 2 * i}" rx="3" fill="none" '
-            f'stroke="{color}" stroke-opacity="{op}" stroke-width="1" stroke-dasharray="1.6 2.6" stroke-linecap="round"/>\n')
 
 
 # ---------------------------------------------------------------- layout
@@ -253,7 +245,7 @@ def document(c, title, defs_extra, text_svg, tag_svg, layout):
             '<g id="art" clip-path="url(#edge)">\n' + weave(c) + shade(c) + tape() + tag_svg + '</g>\n'
             '<g id="text">\n' + text_svg +
             f'<circle id="dot" cx="{num(dot["cx"])}" cy="{num(dot["cy"])}" r="{num(dot["r"])}" fill="{MAGENTA}"/>\n'
-            + rule(rl, c) + '</g>\n' + border(c) + '</svg>\n')
+            + rule(rl, c) + '</g>\n</svg>\n')
 
 
 def outlined(c, layout):

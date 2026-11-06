@@ -29,7 +29,7 @@ fonts/
 يمين: ايميز بخط عريض مع النقطة الماجنتا بتاعة لوجو EMESE، وجنبها "لتجارة الملابس"،
 وتحتهم خط فيه علامات ألوان الطباعة (سماوي، ماجنتا، أصفر).
 شمال: تيكت هدوم متعلّق بخيط، عليه شماعة هدوم صغيرة وتحتها لوجو EMESE.، وتحته شريط ماجنتا،
-فوق شريط مازورة خياطة أصفر. ورا كل ده نسيج قماش خفيف، وحوالين البانر خياطة زي تيكت الهدوم.
+فوق شريط مازورة خياطة أصفر. ورا كل ده نسيج قماش خفيف.
 
 لو هتعدّل الكلام
 ---------------
@@ -37,7 +37,7 @@ fonts/
 2. افتح emese-banner-editable.svg. كل عنصر ليه اسم:
    brand (ايميز)، line1 (لتجارة)، line2 (الملابس)، dot (النقطة الماجنتا)،
    rule (الخط وعلامات الألوان)، tag (التيكت: tag-icon الشماعة، tag-logo اللوجو، tag-band الشريط الماجنتا، tag-cord الخيط)،
-   tape (المازورة)، weave (نسيج القماش)، stitch (الخياطة اللي حوالين)، background (الخلفية).
+   tape (المازورة)، weave (نسيج القماش)، background (الخلفية).
    تقدر تمسح أي عنصر مش عايزه، أو تغيّر أي كلام زي ما تحب.
 3. في Illustrator: لو الحروف العربي ظهرت مفكوكة أو بالعكس، اختار النص وخلّي الـ Composer
    "Middle Eastern & South Asian" (من قايمة Paragraph).
@@ -52,7 +52,6 @@ fonts/
     المازورة          #FFE500   (أصفر: C0 M0 Y100 K0)
     علامات الألوان    #00A3E0 سماوي، #E6007E ماجنتا، #FFE500 أصفر
     التيكت            #F3F1EC و #111111، والخيط #D8CDB6
-    الخياطة           #ECE7DF بشفافية 55%
 النسخة الفاتحة:
     الخلفية #F1EEE8، ايميز #000000، السطرين #3A3834، والباقي زي الغامقة.
 الخطوط: Alexandria Black لكلمة ايميز، Alexandria SemiBold للباقي،
@@ -75,15 +74,15 @@ fonts/                        Alexandria and DM Serif Display (free, SIL Open Fo
 
 Design: the name, the magenta dot of the EMESE logo and "لتجارة الملابس" on the right, over a rule with
 C M Y print marks. On the left a clothing hang tag with a small hanger over the EMESE. logo
-and a magenta band, on its cord, over a yellow measuring tape. A fine twill weave behind, and a stitched border like a sewn-in label. Every part is a named layer in the editable
+and a magenta band, on its cord, over a yellow measuring tape. A fine twill weave behind. Every part is a named layer in the editable
 file (brand, line1, line2, dot, rule, tag, tag-icon, tag-logo, tag-band, tag-cord, tape,
-weave, stitch).
+weave).
 
 In Illustrator, if the Arabic letters look disconnected, select the text and set the paragraph composer
 to "Middle Eastern & South Asian".
 
 Colours (main): background #121212, name #FFFFFF, lines #D9D5CE, dot #E6007E, tape #FFE500,
-print marks #00A3E0 / #E6007E / #FFE500, tag #F3F1EC and #111111, cord #D8CDB6, stitch #ECE7DF at 55%.
+print marks #00A3E0 / #E6007E / #FFE500, tag #F3F1EC and #111111, cord #D8CDB6.
 Light: background #F1EEE8, name #000000, lines #3A3834, the rest the same.
 
 To rebuild every file from source: python src/build.py && node src/export.js && python src/exact_pdf.py
