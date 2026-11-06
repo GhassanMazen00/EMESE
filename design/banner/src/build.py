@@ -30,7 +30,7 @@ W, H = 300, 100                                 # 1 unit = 1 px at 300 x 100, or
 
 BRAND = 'ايميز'
 LINES = ['لتوريدات', 'الملابس']                 # read right to left: name, then these two, top to bottom
-TAG_LINES = ['يونيفورمات', 'طباعة', 'تطريز']     # under the EMESE. logo on the hang tag
+TAG_LINES = ['يونيفورمات', 'كاجوال', 'كابات']     # under the EMESE. logo on the hang tag
 TAG_BAND = 'توريدات مخصّصة'                     # the magenta band at its foot
 
 MAGENTA, CYAN, YELLOW = '#e6007e', '#00a3e0', '#ffe500'

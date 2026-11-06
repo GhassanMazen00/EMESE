@@ -28,7 +28,7 @@ fonts/
 -------
 يمين: ايميز بخط عريض مع النقطة الماجنتا بتاعة لوجو EMESE، وجنبها "لتوريدات الملابس"،
 وتحتهم خط فيه علامات ألوان الطباعة (سماوي، ماجنتا، أصفر).
-شمال: تيكت هدوم متعلّق بخيط (لوجو EMESE. ، وتحته يونيفورمات / طباعة / تطريز، وشريط ماجنتا مكتوب عليه توريدات مخصّصة)
+شمال: تيكت هدوم متعلّق بخيط (لوجو EMESE. ، وتحته يونيفورمات / كاجوال / كابات، وشريط ماجنتا مكتوب عليه توريدات مخصّصة)
 فوق شريط مازورة خياطة أصفر. ورا كل ده نسيج قماش خفيف، وحوالين البانر خياطة زي تيكت الهدوم.
 
 لو هتعدّل الكلام
@@ -74,7 +74,7 @@ light/                        The same design on a light background.
 fonts/                        Alexandria and DM Serif Display (free, SIL Open Font License).
 
 Design: the name, the magenta dot of the EMESE logo and "لتوريدات الملابس" on the right, over a rule with
-C M Y print marks. On the left a clothing hang tag (the EMESE. logo; under it, in Arabic, uniforms / printing / embroidery and a magenta band) on its
+C M Y print marks. On the left a clothing hang tag (the EMESE. logo; under it, in Arabic, uniforms / casual wear / caps and a magenta band) on its
 cord, over a yellow measuring tape. A fine
 twill weave behind, and a stitched border like a sewn-in label. Every part is a named layer in the editable
 file (brand, line1, line2, dot, rule, tag, tag-logo, tag-line1..3, tag-band-text, tag-cord, tape,
