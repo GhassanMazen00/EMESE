@@ -1,8 +1,8 @@
-"""EMESE store banner, 300 x 100 (3:1): "ايميز لتوريدات الملابس".
+"""EMESE store banner, 300 x 100 (3:1): "ايميز لتجارة الملابس".
 
-Right: the name, the magenta dot of the EMESE logo and "لتوريدات الملابس", over a rule with C M Y print
-marks. Left: a clothing hang tag (the EMESE. logo, uniforms / print / embroidery, a magenta
-band) on its cord, over a tailor's measuring tape. Behind it all a fine twill weave, and a stitched border like
+Right: the name, the magenta dot of the EMESE logo and "لتجارة الملابس", over a rule with C M Y print
+marks. Left: a clothing hang tag (the EMESE. logo over a magenta band)
+on its cord, over a tailor's measuring tape. Behind it all a fine twill weave, and a stitched border like
 a sewn-in label.
 
 Writes, for each colourway (dark = main, light = alternative):
@@ -29,9 +29,7 @@ FONTS = os.path.join(ROOT, 'fonts')
 W, H = 300, 100                                 # 1 unit = 1 px at 300 x 100, or 1 cm on a 300 x 100 cm print
 
 BRAND = 'ايميز'
-LINES = ['لتوريدات', 'الملابس']                 # read right to left: name, then these two, top to bottom
-TAG_LINES = ['يونيفورمات', 'كاجوال', 'كابات']     # under the EMESE. logo on the hang tag
-TAG_BAND = 'توريدات مخصّصة'                     # the magenta band at its foot
+LINES = ['لتجارة', 'الملابس']                   # read right to left: name, then these two, top to bottom
 
 MAGENTA, CYAN, YELLOW = '#e6007e', '#00a3e0', '#ffe500'
 COLOURWAYS = {
@@ -142,25 +140,6 @@ def border(c):
 TAG = {'cx': 46, 'cy': 53, 'w': 46, 'h': 66, 'angle': 7, 'clip': 9, 'hole': 7}
 
 
-def spaced(id_, text, cx, base, size, fill, track, live):
-    """A short line centred on cx, as live text or shapes. Latin capitals may be letter-spaced (track);
-    Arabic never is, spacing would pull its joined letters apart."""
-    if live:
-        rtl = any('\u0600' <= ch <= '\u06ff' for ch in text)
-        # letter-spacing also follows the last letter: shift by half of it to stay centred
-        spacing = f'letter-spacing="{track}" ' if track else ''
-        return (f'<text id="{id_}" x="{num(cx + track / 2)}" y="{num(base)}" font-family="Alexandria, sans-serif" '
-                f'font-weight="{SEMI.weight}" font-size="{size}" {spacing}fill="{fill}" text-anchor="middle"'
-                f'{' direction="rtl"' if rtl else ''}>{text}</text>\n')
-    gl, k = SEMI.glyphs(text, size)
-    x = cx - (sum(a for _, a, _, _ in gl) + track * (len(gl) - 1)) / 2
-    pen = SVGPathPen(SEMI.gs, ntos=num)
-    for g, a, xo, yo in gl:
-        SEMI.gs[g].draw(TransformPen(pen, (k, 0, 0, -k, x + xo, base - yo)))
-        x += a + track
-    return f'<path id="{id_}" d="{pen.getCommands()}" fill="{fill}"><title>{text}</title></path>\n'
-
-
 def wordmark(cx, cy, size):
     """EMESE. as in the logo: DM Serif Display capitals and the magenta dot on the baseline, centred."""
     _, w, bx = SERIF.run('EMESE', size)
@@ -187,12 +166,9 @@ def tag(c, live):
            f'<path d="{shape}" transform="translate(0.9 1.6)" fill="#000" fill-opacity="{c["drop"]}"/>\n',
            f'<path d="{shape}" fill="{CARD}"/>\n',
            f'<path id="tag-band" d="M{num(x0)} {num(y1 - 9)}H{num(x1)}V{num(y1)}H{num(x0)}Z" fill="{MAGENTA}"/>\n',
-           spaced('tag-band-text', TAG_BAND, 0, y1 - 3.2, 4.3, '#ffffff', 0, live),
            f'<g id="tag-eyelet"><circle cy="{num(hy0)}" r="3.3" fill="#c7c2b8"/><circle cy="{num(hy0)}" r="2.4" '
            f'fill="#8f8a81"/><circle cy="{num(hy0)}" r="1.8" fill="{c["bg"]}"/></g>\n',
-           wordmark(0, -6.8, 11.2),
-           f'<path id="tag-rule" d="M-14 1.4H14" stroke="{CARD_INK}" stroke-width="0.4" stroke-opacity="0.6"/>\n']
-    out += [spaced(f'tag-line{i + 1}', line, 0, 7.6 + i * 5.9, 4.1, CARD_INK, 0, live) for i, line in enumerate(TAG_LINES)]
+           wordmark(0, (hy0 + 3.3 + y1 - 9) / 2, 11.8)]     # centred between the eyelet and the band
     out += ['</g>\n', f'<path id="tag-cord" d="{cord}" stroke="{CORD}" stroke-width="1.3" fill="none" '
             f'stroke-linecap="round"/>\n', '</g>\n']
     return ''.join(out)
@@ -253,7 +229,7 @@ def outlined(c, layout):
     for it in items:
         d, _, _ = it['face'].run(it['text'], it['size'], it['x'], it['base'])
         text_svg += f'<path id="{it["id"]}" d="{d}" fill="{c[it["role"]]}"><title>{it["text"]}</title></path>\n'
-    return document(c, 'ايميز لتوريدات الملابس | EMESE banner', '', text_svg, tag(c, live=False), layout)
+    return document(c, 'ايميز لتجارة الملابس | EMESE banner', '', text_svg, tag(c, live=False), layout)
 
 
 def editable(c, layout):
@@ -269,7 +245,7 @@ def editable(c, layout):
         text_svg += (f'<text id="{it["id"]}" x="{num(it["x"] + it["w"] / 2)}" y="{num(it["base"])}" '
                      f'font-family="Alexandria, sans-serif" font-weight="{it["face"].weight}" font-size="{it["size"]}" '
                      f'fill="{c[it["role"]]}" text-anchor="middle" direction="rtl" xml:space="preserve">{it["text"]}</text>\n')
-    return document(c, 'ايميز لتوريدات الملابس | EMESE banner (editable)', f'<style>{faces}</style>\n',
+    return document(c, 'ايميز لتجارة الملابس | EMESE banner (editable)', f'<style>{faces}</style>\n',
                     text_svg, tag(c, live=True), layout)
 
 

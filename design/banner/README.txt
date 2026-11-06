@@ -1,4 +1,4 @@
-ايميز لتوريدات الملابس | بانر 300×100
+ايميز لتجارة الملابس | بانر 300×100
 =====================================
 
 الملفات
@@ -26,17 +26,17 @@ fonts/
 
 التصميم
 -------
-يمين: ايميز بخط عريض مع النقطة الماجنتا بتاعة لوجو EMESE، وجنبها "لتوريدات الملابس"،
+يمين: ايميز بخط عريض مع النقطة الماجنتا بتاعة لوجو EMESE، وجنبها "لتجارة الملابس"،
 وتحتهم خط فيه علامات ألوان الطباعة (سماوي، ماجنتا، أصفر).
-شمال: تيكت هدوم متعلّق بخيط (لوجو EMESE. ، وتحته يونيفورمات / كاجوال / كابات، وشريط ماجنتا مكتوب عليه توريدات مخصّصة)
+شمال: تيكت هدوم متعلّق بخيط، عليه لوجو EMESE. بس، وتحته شريط ماجنتا،
 فوق شريط مازورة خياطة أصفر. ورا كل ده نسيج قماش خفيف، وحوالين البانر خياطة زي تيكت الهدوم.
 
 لو هتعدّل الكلام
 ---------------
 1. سطّب Alexandria-Black.ttf و Alexandria-SemiBold.ttf من فولدر fonts.
 2. افتح emese-banner-editable.svg. كل عنصر ليه اسم:
-   brand (ايميز)، line1 (لتوريدات)، line2 (الملابس)، dot (النقطة الماجنتا)،
-   rule (الخط وعلامات الألوان)، tag (التيكت: tag-logo اللوجو، tag-line1 و tag-line2 و tag-line3 الكلام، tag-band-text كلام الشريط الماجنتا، tag-cord الخيط)،
+   brand (ايميز)، line1 (لتجارة)، line2 (الملابس)، dot (النقطة الماجنتا)،
+   rule (الخط وعلامات الألوان)، tag (التيكت: tag-logo اللوجو، tag-band الشريط الماجنتا، tag-cord الخيط)،
    tape (المازورة)، weave (نسيج القماش)، stitch (الخياطة اللي حوالين)، background (الخلفية).
    تقدر تمسح أي عنصر مش عايزه، أو تغيّر أي كلام زي ما تحب.
 3. في Illustrator: لو الحروف العربي ظهرت مفكوكة أو بالعكس، اختار النص وخلّي الـ Composer
@@ -73,11 +73,10 @@ emese-banner-*.png            300 x 100 px for screens, plus 2x, 3x and 10x size
 light/                        The same design on a light background.
 fonts/                        Alexandria and DM Serif Display (free, SIL Open Font License).
 
-Design: the name, the magenta dot of the EMESE logo and "لتوريدات الملابس" on the right, over a rule with
-C M Y print marks. On the left a clothing hang tag (the EMESE. logo; under it, in Arabic, uniforms / casual wear / caps and a magenta band) on its
-cord, over a yellow measuring tape. A fine
-twill weave behind, and a stitched border like a sewn-in label. Every part is a named layer in the editable
-file (brand, line1, line2, dot, rule, tag, tag-logo, tag-line1..3, tag-band-text, tag-cord, tape,
+Design: the name, the magenta dot of the EMESE logo and "لتجارة الملابس" on the right, over a rule with
+C M Y print marks. On the left a clothing hang tag with only the EMESE. logo
+and a magenta band, on its cord, over a yellow measuring tape. A fine twill weave behind, and a stitched border like a sewn-in label. Every part is a named layer in the editable
+file (brand, line1, line2, dot, rule, tag, tag-logo, tag-band, tag-cord, tape,
 weave, stitch).
 
 In Illustrator, if the Arabic letters look disconnected, select the text and set the paragraph composer

@@ -19,7 +19,7 @@ for path in (os.path.join(ROOT, 'emese-banner-300x100cm.pdf'), os.path.join(ROOT
     out = pymupdf.open()
     page = out.new_page(width=W, height=H)
     page.show_pdf_page(page.rect, src, 0, keep_proportion=False)
-    out.set_metadata({'title': 'ايميز لتوريدات الملابس | EMESE banner 300 x 100 cm', 'creator': 'EMESE'})
+    out.set_metadata({'title': 'ايميز لتجارة الملابس | EMESE banner 300 x 100 cm', 'creator': 'EMESE'})
     data = out.tobytes(garbage=3, deflate=True)
     src.close()
     out.close()

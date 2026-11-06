@@ -14,7 +14,7 @@ const SCALES = [1, 2, 3, 10];
   const browser = await chromium.launch();
   for (const dir of [ROOT, path.join(ROOT, 'light')]) {
     const svg = fs.readFileSync(path.join(dir, 'emese-banner.svg'), 'utf8').replace(/<\?xml[^>]*>\s*/, '');
-    const page = (scale) => `<!doctype html><html><head><meta charset="utf-8"><title>ايميز لتوريدات الملابس</title>
+    const page = (scale) => `<!doctype html><html><head><meta charset="utf-8"><title>ايميز لتجارة الملابس</title>
       <style>@page{size:300cm 100cm;margin:0}html,body{margin:0;width:100%;height:100%;overflow:hidden}svg{display:block;width:100%;height:100%}</style>
       </head><body>${svg.replace(/width="\d+" height="\d+"/, '')}</body></html>`;
     for (const s of SCALES) {
