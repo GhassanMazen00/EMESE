@@ -30,8 +30,8 @@ W, H = 300, 100                                 # 1 unit = 1 px at 300 x 100, or
 
 BRAND = 'ايميز'
 LINES = ['لتوريدات', 'الملابس']                 # read right to left: name, then these two, top to bottom
-TAG_LINES = ['UNIFORMS', 'PRINT', 'EMBROIDERY']
-TAG_BAND = 'CUSTOM SUPPLIES'
+TAG_LINES = ['يونيفورمات', 'طباعة', 'تطريز']     # under the EMESE. logo on the hang tag
+TAG_BAND = 'توريدات مخصّصة'                     # the magenta band at its foot
 
 MAGENTA, CYAN, YELLOW = '#e6007e', '#00a3e0', '#ffe500'
 COLOURWAYS = {
@@ -143,12 +143,15 @@ TAG = {'cx': 46, 'cy': 53, 'w': 46, 'h': 66, 'angle': 7, 'clip': 9, 'hole': 7}
 
 
 def spaced(id_, text, cx, base, size, fill, track, live):
-    """A line of small capitals with letter spacing, centred on cx: live text or shapes."""
+    """A short line centred on cx, as live text or shapes. Latin capitals may be letter-spaced (track);
+    Arabic never is, spacing would pull its joined letters apart."""
     if live:
+        rtl = any('\u0600' <= ch <= '\u06ff' for ch in text)
         # letter-spacing also follows the last letter: shift by half of it to stay centred
+        spacing = f'letter-spacing="{track}" ' if track else ''
         return (f'<text id="{id_}" x="{num(cx + track / 2)}" y="{num(base)}" font-family="Alexandria, sans-serif" '
-                f'font-weight="{SEMI.weight}" font-size="{size}" letter-spacing="{track}" fill="{fill}" '
-                f'text-anchor="middle">{text}</text>\n')
+                f'font-weight="{SEMI.weight}" font-size="{size}" {spacing}fill="{fill}" text-anchor="middle"'
+                f'{' direction="rtl"' if rtl else ''}>{text}</text>\n')
     gl, k = SEMI.glyphs(text, size)
     x = cx - (sum(a for _, a, _, _ in gl) + track * (len(gl) - 1)) / 2
     pen = SVGPathPen(SEMI.gs, ntos=num)
@@ -184,12 +187,12 @@ def tag(c, live):
            f'<path d="{shape}" transform="translate(0.9 1.6)" fill="#000" fill-opacity="{c["drop"]}"/>\n',
            f'<path d="{shape}" fill="{CARD}"/>\n',
            f'<path id="tag-band" d="M{num(x0)} {num(y1 - 9)}H{num(x1)}V{num(y1)}H{num(x0)}Z" fill="{MAGENTA}"/>\n',
-           spaced('tag-band-text', TAG_BAND, 0, y1 - 3.4, 3.3, '#ffffff', 0.5, live),
+           spaced('tag-band-text', TAG_BAND, 0, y1 - 3.2, 4.3, '#ffffff', 0, live),
            f'<g id="tag-eyelet"><circle cy="{num(hy0)}" r="3.3" fill="#c7c2b8"/><circle cy="{num(hy0)}" r="2.4" '
            f'fill="#8f8a81"/><circle cy="{num(hy0)}" r="1.8" fill="{c["bg"]}"/></g>\n',
            wordmark(0, -6.8, 11.2),
            f'<path id="tag-rule" d="M-14 1.4H14" stroke="{CARD_INK}" stroke-width="0.4" stroke-opacity="0.6"/>\n']
-    out += [spaced(f'tag-line{i + 1}', line, 0, 6.8 + i * 4.6, 3.2, CARD_INK, 0.55, live) for i, line in enumerate(TAG_LINES)]
+    out += [spaced(f'tag-line{i + 1}', line, 0, 7.6 + i * 5.9, 4.1, CARD_INK, 0, live) for i, line in enumerate(TAG_LINES)]
     out += ['</g>\n', f'<path id="tag-cord" d="{cord}" stroke="{CORD}" stroke-width="1.3" fill="none" '
             f'stroke-linecap="round"/>\n', '</g>\n']
     return ''.join(out)
