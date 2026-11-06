@@ -28,7 +28,7 @@ fonts/
 -------
 يمين: ايميز بخط عريض مع النقطة الماجنتا بتاعة لوجو EMESE، وجنبها "لتجارة الملابس"،
 وتحتهم خط فيه علامات ألوان الطباعة (سماوي، ماجنتا، أصفر).
-شمال: تيكت هدوم متعلّق بخيط، عليه لوجو EMESE. بس، وتحته شريط ماجنتا،
+شمال: تيكت هدوم متعلّق بخيط، عليه شماعة هدوم صغيرة وتحتها لوجو EMESE.، وتحته شريط ماجنتا،
 فوق شريط مازورة خياطة أصفر. ورا كل ده نسيج قماش خفيف، وحوالين البانر خياطة زي تيكت الهدوم.
 
 لو هتعدّل الكلام
@@ -36,7 +36,7 @@ fonts/
 1. سطّب Alexandria-Black.ttf و Alexandria-SemiBold.ttf من فولدر fonts.
 2. افتح emese-banner-editable.svg. كل عنصر ليه اسم:
    brand (ايميز)، line1 (لتجارة)، line2 (الملابس)، dot (النقطة الماجنتا)،
-   rule (الخط وعلامات الألوان)، tag (التيكت: tag-logo اللوجو، tag-band الشريط الماجنتا، tag-cord الخيط)،
+   rule (الخط وعلامات الألوان)، tag (التيكت: tag-icon الشماعة، tag-logo اللوجو، tag-band الشريط الماجنتا، tag-cord الخيط)،
    tape (المازورة)، weave (نسيج القماش)، stitch (الخياطة اللي حوالين)، background (الخلفية).
    تقدر تمسح أي عنصر مش عايزه، أو تغيّر أي كلام زي ما تحب.
 3. في Illustrator: لو الحروف العربي ظهرت مفكوكة أو بالعكس، اختار النص وخلّي الـ Composer
@@ -74,9 +74,9 @@ light/                        The same design on a light background.
 fonts/                        Alexandria and DM Serif Display (free, SIL Open Font License).
 
 Design: the name, the magenta dot of the EMESE logo and "لتجارة الملابس" on the right, over a rule with
-C M Y print marks. On the left a clothing hang tag with only the EMESE. logo
+C M Y print marks. On the left a clothing hang tag with a small hanger over the EMESE. logo
 and a magenta band, on its cord, over a yellow measuring tape. A fine twill weave behind, and a stitched border like a sewn-in label. Every part is a named layer in the editable
-file (brand, line1, line2, dot, rule, tag, tag-logo, tag-band, tag-cord, tape,
+file (brand, line1, line2, dot, rule, tag, tag-icon, tag-logo, tag-band, tag-cord, tape,
 weave, stitch).
 
 In Illustrator, if the Arabic letters look disconnected, select the text and set the paragraph composer

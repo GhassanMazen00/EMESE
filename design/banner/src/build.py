@@ -40,6 +40,7 @@ COLOURWAYS = {
 }
 CARD, CARD_INK = '#f3f1ec', '#111111'           # the hang tag is the same in both colourways
 CORD = '#d8cdb6'                                # natural twine
+TAG_ICON = 'hanger'                             # the little drawing above EMESE. on the tag: shirt, hanger or button
 
 
 def num(v):
@@ -150,6 +151,32 @@ def wordmark(cx, cy, size):
             f'<circle cx="{num(bx[2] + gap + r)}" cy="{num(base - r)}" r="{num(r)}" fill="{MAGENTA}"/></g>\n')
 
 
+def icon(kind, cx, cy, h):
+    """A small clothing drawing, h units tall, centred on (cx, cy)."""
+    if kind == 'shirt':                         # a T-shirt, solid
+        k = h / 22
+        d = ('M-4.6 -11C-3.2 -7.8 3.2 -7.8 4.6 -11L12 -7.6L9.6 -1.6L6.8 -2.8V11H-6.8V-2.8L-9.6 -1.6L-12 -7.6Z')
+        return (f'<path id="tag-icon" d="{d}" transform="translate({num(cx)} {num(cy)}) scale({num(k)})" '
+                f'fill="{CARD_INK}"/>\n')
+    if kind == 'hanger':                        # a clothes hanger, drawn in one line
+        k = h / 19.4
+        d = ('M0 -1.4V-3C0 -4.6 2.4 -5 2.4 -7C2.4 -8.6 1.3 -9.6 0 -9.6C-1.3 -9.6 -2.4 -8.7 -2.4 -7.4'
+             'M0 -1.6L-13 7Q-14 8.4 -12.4 8.4H12.4Q14 8.4 13 7Z')
+        return (f'<path id="tag-icon" d="{d}" transform="translate({num(cx)} {num(cy)}) scale({num(k)})" fill="none" '
+                f'stroke="{CARD_INK}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>\n')
+    # a four-hole sewing button, stitched on with magenta thread
+    r = h / 2
+    holes = [(sx * r * 0.26, sy * r * 0.26) for sx in (-1, 1) for sy in (-1, 1)]
+    out = [f'<g id="tag-icon" transform="translate({num(cx)} {num(cy)})">',
+           f'<circle r="{num(r)}" fill="{CARD_INK}"/>',
+           f'<circle r="{num(r * 0.78)}" fill="none" stroke="{CARD}" stroke-opacity="0.35" stroke-width="{num(r * 0.05)}"/>']
+    out += [f'<circle cx="{num(x)}" cy="{num(y)}" r="{num(r * 0.13)}" fill="{CARD}"/>' for x, y in holes]
+    q = r * 0.26
+    out.append(f'<path d="M{num(-q)} {num(-q)}L{num(q)} {num(q)}M{num(q)} {num(-q)}L{num(-q)} {num(q)}" '
+               f'stroke="{MAGENTA}" stroke-width="{num(r * 0.13)}" stroke-linecap="round"/></g>\n')
+    return ''.join(out)
+
+
 def tag(c, live):
     """A clothing swing tag: clipped top corners, a metal eyelet, the cord running up off the banner."""
     t = TAG
@@ -168,7 +195,13 @@ def tag(c, live):
            f'<path id="tag-band" d="M{num(x0)} {num(y1 - 9)}H{num(x1)}V{num(y1)}H{num(x0)}Z" fill="{MAGENTA}"/>\n',
            f'<g id="tag-eyelet"><circle cy="{num(hy0)}" r="3.3" fill="#c7c2b8"/><circle cy="{num(hy0)}" r="2.4" '
            f'fill="#8f8a81"/><circle cy="{num(hy0)}" r="1.8" fill="{c["bg"]}"/></g>\n',
-           wordmark(0, (hy0 + 3.3 + y1 - 9) / 2, 11.8)]     # centred between the eyelet and the band
+           ]
+    # the drawing above EMESE., the two centred together between the eyelet and the band
+    size, ih, gap = 11.2, 11.0, 3.6
+    _, _, bx = SERIF.run('EMESE', size)
+    cap = bx[3] - bx[1]
+    top = (hy0 + 3.3 + y1 - 9) / 2 - (ih + gap + cap) / 2
+    out += [icon(TAG_ICON, 0, top + ih / 2, ih), wordmark(0, top + ih + gap + cap / 2, size)]
     out += ['</g>\n', f'<path id="tag-cord" d="{cord}" stroke="{CORD}" stroke-width="1.3" fill="none" '
             f'stroke-linecap="round"/>\n', '</g>\n']
     return ''.join(out)
