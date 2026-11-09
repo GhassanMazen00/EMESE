@@ -29,6 +29,8 @@ import accessories              # noqa: E402
 
 SCENES = {**products.SCENES, **accessories.SCENES}
 SKIP = {'tee'}                                      # the T-shirt comes from garments.py now
+# in the studio only clothing is 3D; accessories and office products keep their photo previews
+DEFAULT = ['apron']
 BACKDROP = {'ground', 'sweep', 'fabric', 'denim'}
 FIXED = {'chrome', 'steel', 'pages', 'band', 'ribbon', 'lid', 'eyelet', 'string', 'teeth', 'tape', 'grip'}
 OFF = (-4.0, -4.0)
@@ -249,7 +251,7 @@ def build(pid, out):
 
 def main():
     out = sys.argv[1]
-    ids = sys.argv[2:] or [k for k in SCENES if k not in SKIP]
+    ids = sys.argv[2:] or DEFAULT
     mpath = os.path.join(out, 'models.json')
     meta = json.load(open(mpath)) if os.path.exists(mpath) else {}
     for pid in ids:
