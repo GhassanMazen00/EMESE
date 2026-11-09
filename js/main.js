@@ -21,7 +21,7 @@ initEverything({ onTry: (pid) => document.dispatchEvent(new CustomEvent('studio:
   const meta = document.querySelector('meta[name="theme-color"]');
   const sync = () => {
     const dark = root.getAttribute('data-theme') === 'dark';
-    if (meta) meta.setAttribute('content', getComputedStyle(root).getPropertyValue('--bg').trim() || (dark ? '#22211f' : '#e2dfd9'));
+    if (meta) meta.setAttribute('content', getComputedStyle(root).getPropertyValue('--bg').trim() || (dark ? '#121212' : '#f1eee8'));
     btn?.setAttribute('aria-pressed', String(dark));
   };
   sync();
@@ -48,6 +48,31 @@ initEverything({ onTry: (pid) => document.dispatchEvent(new CustomEvent('studio:
   sheet.addEventListener('click', (e) => { if (e.target.closest('a') || e.target === sheet) set(false); });
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && !sheet.hidden) { set(false); btn.focus(); } });
   matchMedia('(min-width: 861px)').addEventListener('change', (e) => { if (e.matches) set(false); });
+})();
+
+/* ---------- banner details: measuring tapes, the techniques strip, "try it in 360" ---------- */
+(() => {
+  // a tailor's tape: centimetre ticks are CSS, the numbers are spans
+  document.querySelectorAll('.tape').forEach((t) => {
+    const from = 40 + Math.floor(Math.random() * 40);
+    t.innerHTML = '<span class="tape-n">' + Array.from({ length: 60 }, (_, i) => `<b>${from + i}</b>`).join('') + '</span>';
+  });
+  const MQ = {
+    ar: ['تطريز', 'DTF', 'سلك سكرين', 'ليزر', 'UV', 'سبلميشن', 'فويل', 'نسيج', 'يونيفورمات', 'كابات', 'هوديز', 'هدايا شركات'],
+    en: ['Embroidery', 'DTF', 'Screen print', 'Laser', 'UV', 'Sublimation', 'Foil', 'Weaving', 'Uniforms', 'Caps', 'Hoodies', 'Corporate gifts']
+  };
+  const track = document.querySelector('.mq-track');
+  const fill = () => {
+    if (!track) return;
+    const row = MQ[lang() === 'en' ? 'en' : 'ar'].map(t => `<span>${t}</span><i></i>`).join('');
+    track.innerHTML = `<div class="mq-row">${row}</div><div class="mq-row">${row}</div>`;
+  };
+  fill();
+  document.addEventListener('langchange', fill);
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('.tag-try');
+    if (b) document.dispatchEvent(new CustomEvent('studio:open', { detail: { pid: b.dataset.pid } }));
+  });
 })();
 
 /* ---------- step-by-step visual ---------- */

@@ -15,6 +15,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const BASE = new URL('../assets/3d/', import.meta.url).href;
 const MODES = { print: 0, dye: 1, uv: 2, stitch: 3, laser: 4, foil: 5 };
+const WHITE = new THREE.Color(1, 1, 1);
 
 let metaP = null;
 export const models = () => (metaP ||= fetch(BASE + 'models.json').then(r => r.json()));
@@ -163,16 +164,16 @@ export class View3D {
     r.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
     r.outputColorSpace = THREE.SRGBColorSpace;
     r.toneMapping = THREE.ACESFilmicToneMapping;
-    r.toneMappingExposure = 1.05;
+    r.toneMappingExposure = 0.93;
     this.scene = new THREE.Scene();
     const pm = new THREE.PMREMGenerator(r);
     this.scene.environment = pm.fromScene(new RoomEnvironment(r), 0.04).texture;
     pm.dispose();
     // a warm key from the top left, like the photo studio's softbox
-    const key = new THREE.DirectionalLight(0xfff4e8, 1.6);
+    const key = new THREE.DirectionalLight(0xfff4e8, 1.9);
     key.position.set(-1.2, 2.0, 1.6);
     this.scene.add(key);
-    this.scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8478, 0.35));
+    this.scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8478, 0.25));
     this.camera = new THREE.PerspectiveCamera(30, 1, 0.01, 50);
     this.shadow = contactShadow();
     this.scene.add(this.shadow);
@@ -225,11 +226,13 @@ export class View3D {
       const mats = Array.isArray(o.material) ? o.material : [o.material];
       o.material = mats.map((m) => {
         const c = m.clone();
+        // tint:... takes the chosen colour and can carry the logo; print:... carries it in its own colour
         c.userData.tint = /^tint:/.test(m.name);
-        if (c.userData.tint) {
-          c.userData.base = c.color.clone();
-          decal(c, this.uniforms);
-        }
+        c.userData.base = c.color.clone();
+        c.envMapIntensity = 0.78;
+        // cloth sheen: subtle, and in the cloth's own colour (a white sheen turns every colour pastel)
+        if (c.userData.tint && 'sheen' in c) c.sheen = Math.min(c.sheen, 0.12);
+        if (/^(tint|print):/.test(m.name) && o.geometry.attributes.uv1) decal(c, this.uniforms);
         return c;
       });
       if (o.material.length === 1) o.material = o.material[0];
@@ -256,7 +259,14 @@ export class View3D {
     const fit = radius / Math.sin(Math.min(fov, fov * this.camera.aspect) / 2) * 1.02;
     const target = new THREE.Vector3(0, s.y * 0.5, 0);
     const dir = this.camera.position.clone().sub(this.controls.target);
-    if (dir.lengthSq() < 1e-6 || !this._framed) dir.set(0, 0.12, 1);
+    if (dir.lengthSq() < 1e-6 || !this._framed) {
+      const v = this.product.meta.viewDir;          // the angle of the product's photo, if it has one
+      if (v) dir.set(v[0], v[1], v[2]); else dir.set(0, 0.12, 1);
+    }
+    // flat things (cards, notebook) are seen from above; standing ones from the side
+    const flat = s.y < 0.35 * Math.max(s.x, s.z);
+    this.controls.minPolarAngle = flat ? 0.04 * Math.PI : 0.18 * Math.PI;
+    this.controls.maxPolarAngle = flat ? 0.47 * Math.PI : 0.62 * Math.PI;
     this.controls.target.copy(target);
     this.camera.position.copy(target).add(dir.normalize().multiplyScalar(fit));
     this.controls.minDistance = fit * 0.45;
@@ -310,7 +320,7 @@ export class View3D {
     u.uPitch.value = s.pitch || 0.0004;
     u.uRelief.value = s.relief ?? 1;
     u.uReveal.value = s.reveal ? 1 : 0;
-    u.uPhysW.value = Math.max(0.005, s.w * ((meta && meta.printWidthM) || 0.3));
+    u.uPhysW.value = Math.max(0.005, s.w * ((meta && (meta.printWidthM || meta.widthM)) || 0.3));
     if (this.product) {
       this.product.scene.traverse((o) => {
         if (!o.isMesh) return;
@@ -318,6 +328,7 @@ export class View3D {
           if (!m.userData.tint) continue;
           if (s.tint) m.color.set(s.tint);
           else m.color.copy(m.userData.base);
+          if ('sheen' in m) m.sheenColor.copy(m.color).lerp(WHITE, 0.25);
         }
       });
     }
