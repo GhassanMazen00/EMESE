@@ -5,6 +5,7 @@ import { lang, ui } from './i18n.js';
 import { readLogoFile, setLogo, getLogo } from './logo.js';
 
 const canvas = document.getElementById('mockCanvas');
+const canvas3d = document.getElementById('mock3d');
 const section = document.getElementById('studio');
 const body = document.getElementById('studioBody');
 const openBtn = document.getElementById('studioOpen');
@@ -42,17 +43,46 @@ if (canvas && body) {
   });
 }
 
+/* Which products have a 3D model (assets/3d/models.json): read without loading three.js itself. */
+let list3dP = null;
+const list3d = () => (list3dP ||= fetch('assets/3d/models.json').then(r => (r.ok ? r.json() : {})).catch(() => ({})));
+
 function init() {
-  let view;
-  try { view = new MockupView(canvas); }
+  // two renderers with the same surface: the 3D one (360°) for products with a model,
+  // the photo compositor for the rest. `view` is whichever is showing.
+  let view2d;
+  try { view2d = new MockupView(canvas); }
   catch (e) {
     canvas.insertAdjacentHTML('afterend', `<p class="stage-fallback">${ui().fallback}</p>`);
     canvas.remove();
     return null;
   }
+  let view = view2d;
+  let view3d = null, mod3d = null, failed3d = false;
+  async function get3d() {
+    if (view3d || failed3d) return view3d;
+    try {
+      mod3d = await import('./view3d.js');
+      view3d = new mod3d.View3D(canvas3d);
+      hook3d();
+    } catch (e) {
+      console.warn('[EMESE studio] 3D unavailable, using photos', e);
+      failed3d = true;
+    }
+    return view3d;
+  }
 
   const $ = (id) => document.getElementById(id);
   const loading = $('stageLoading');
+  const tools = $('stageTools');
+  function show3d(on) {
+    view = on ? view3d : view2d;
+    canvas.hidden = on;
+    canvas3d.hidden = !on;
+    tools.hidden = !on;
+    $('stageHint').textContent = on ? ui().hint3d : ui().hint2d;
+    if (on) view3d.resize();
+  }
   const FONTS = {
     modern: { family: '"Alexandria", sans-serif', weight: 800 },
     classic: { family: '"DM Serif Display", serif', weight: 400 },
@@ -83,6 +113,7 @@ function init() {
     const d = currentDesign();
     if (!d) return;
     view.setDesign(d);
+    if (view3d && view !== view3d) view3d.setDesign(d);
     // a new logo of another shape re-fits the chosen spot, unless the visitor placed it by hand
     if (prod && !state.moved) { applyPlace(state.place, false); syncRanges(); }
     draw();
@@ -114,11 +145,14 @@ function init() {
     loading.classList.add('on');
     renderUI();
     try {
-      const p = await loadProduct(pid);
+      const has3d = (await list3d())[pid] && await get3d();
+      const p = has3d ? await mod3d.loadModel(pid) : await loadProduct(pid);
       if (state.pid !== pid) return; // another product was picked meanwhile
       p.meta.widthM = def.widthM;
       prod = p;
+      show3d(!!has3d);
       view.setProduct(p);
+      if (has3d) view.front();
       // start where this product is usually decorated (chest on polos, centre on tees...)
       const d = p.meta.default, pres = p.meta.presets || {};
       const natural = Object.keys(pres).find(k => Math.abs(pres[k].u - d.u) < 1e-3 && Math.abs(pres[k].v - d.v) < 1e-3 && Math.abs(pres[k].w - d.w) < 1e-3);
@@ -258,13 +292,77 @@ function init() {
 
   // keyboard nudging for accessibility
   canvas.tabIndex = 0;
-  canvas.addEventListener('keydown', (e) => {
+  function onKey(e) {
     const step = e.shiftKey ? 0.05 : 0.01;
     const k = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, step], ArrowDown: [0, -step] }[e.key];
     if (k) { e.preventDefault(); state.moved = true; state.u += k[0]; state.v += k[1]; draw(); }
     if (e.key === '+' || e.key === '=') { state.moved = true; state.w = clampW(state.w * 1.08); syncRanges(); draw(); }
     if (e.key === '-') { state.moved = true; state.w = clampW(state.w / 1.08); syncRanges(); draw(); }
-  });
+  }
+  canvas.addEventListener('keydown', onKey);
+
+  /* 3D stage: a drag that starts on the logo moves the logo; any other drag turns the product
+   * (OrbitControls), pinch and wheel zoom. Listeners sit on the stage in the capture phase, so they
+   * decide before the orbit controls see the event. */
+  let drag3 = null;
+  function hook3d() {
+    const wrap = canvas3d.parentElement;
+    wrap.addEventListener('pointerdown', (e) => {
+      if (view !== view3d || e.target !== canvas3d || !e.isPrimary || !view3d.onDesign(e.clientX, e.clientY)) return;
+      const uv = view3d.uvAt(e.clientX, e.clientY);
+      drag3 = { id: e.pointerId, start: uv, u: state.u, v: state.v, last: uv };
+      view3d.controls.enabled = false;
+      canvas3d.setPointerCapture(e.pointerId);
+      hint.classList.add('hide');
+      e.stopPropagation();
+      e.preventDefault();
+    }, true);
+    wrap.addEventListener('pointermove', (e) => {
+      if (view !== view3d) return;
+      if (drag3 && e.pointerId === drag3.id) {
+        const uv = view3d.uvAt(e.clientX, e.clientY) || drag3.last;
+        drag3.last = uv;
+        let du = uv.u - drag3.start.u;
+        du -= Math.round(du);
+        state.moved = true;
+        state.u = drag3.u + du;
+        state.v = Math.min(1.1, Math.max(-0.1, drag3.v + (uv.v - drag3.start.v)));
+        draw();
+        e.stopPropagation();
+      } else if (e.pointerType === 'mouse' && e.target === canvas3d) {
+        canvas3d.style.cursor = view3d.onDesign(e.clientX, e.clientY) ? 'grab' : 'ew-resize';
+      }
+    }, true);
+    const end = (e) => {
+      if (!drag3 || e.pointerId !== drag3.id) return;
+      drag3 = null;
+      view3d.controls.enabled = true;
+    };
+    wrap.addEventListener('pointerup', end, true);
+    wrap.addEventListener('pointercancel', end, true);
+    wrap.addEventListener('wheel', (e) => {
+      if (view !== view3d || e.target !== canvas3d || !view3d.onDesign(e.clientX, e.clientY)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      state.moved = true;
+      state.w = clampW(state.w * Math.exp(-e.deltaY * 0.0015));
+      syncRanges(); draw();
+    }, { capture: true, passive: false });
+    view3d.controls.addEventListener('start', () => hint.classList.add('hide'));
+    canvas3d.tabIndex = 0;
+    canvas3d.addEventListener('keydown', onKey);
+    const spin = $('stageSpin');
+    spin.addEventListener('click', () => {
+      view3d.controls.autoRotate = !view3d.controls.autoRotate;
+      spin.setAttribute('aria-pressed', String(view3d.controls.autoRotate));
+      view3d.requestRender();
+    });
+    $('stageFront').addEventListener('click', () => {
+      view3d.controls.autoRotate = false;
+      spin.setAttribute('aria-pressed', 'false');
+      view3d.front();
+    });
+  }
 
   /* ---------------- controls ---------------- */
   const sizeRange = $('sizeRange'), rotRange = $('rotRange');
@@ -370,13 +468,27 @@ function init() {
   }
 
   /* ---------------- download + order ---------------- */
-  $('snapBtn').addEventListener('click', () => {
+  // what is on the stage now, flattened onto a backdrop (the 3D view is transparent)
+  function stageImage(size) {
     view.set({ box: false });
     view.render();
+    const src = view === view3d ? canvas3d : canvas;
     const out = document.createElement('canvas');
-    out.width = canvas.width; out.height = canvas.height;
+    out.width = size || src.width; out.height = size ? Math.round(size * src.height / src.width) : src.height;
     const x = out.getContext('2d');
-    x.drawImage(canvas, 0, 0);
+    if (view === view3d) {
+      const g = x.createRadialGradient(out.width / 2, out.height * 0.42, 0, out.width / 2, out.height / 2, out.width * 0.75);
+      g.addColorStop(0, '#f1eee8'); g.addColorStop(1, '#d9d4cb');
+      x.fillStyle = g;
+      x.fillRect(0, 0, out.width, out.height);
+    }
+    x.drawImage(src, 0, 0, out.width, out.height);
+    return out;
+  }
+
+  $('snapBtn').addEventListener('click', () => {
+    const out = stageImage();
+    const x = out.getContext('2d');
     const u = out.width / 100;
     x.font = `400 ${u * 3.4}px "DM Serif Display", serif`;
     x.fillStyle = 'rgba(20,20,20,.55)';
@@ -393,13 +505,9 @@ function init() {
   // "order this": the order form gets the product, method, color and this exact mockup
   $('orderBtn').addEventListener('click', (e) => {
     e.preventDefault();
-    view.set({ box: false });
-    view.render();
     const def = byId(state.pid);
     const label = $('stageTag').textContent + (state.color ? (L() === 'en' ? ', ' : '، ') + nameOf(state.color) : '');
-    const out = document.createElement('canvas');
-    out.width = out.height = Math.min(1200, canvas.width);
-    out.getContext('2d').drawImage(canvas, 0, 0, out.width, out.height);
+    const out = stageImage(Math.min(1200, (view === view3d ? canvas3d : canvas).width));
     out.toBlob((blob) => {
       document.dispatchEvent(new CustomEvent('order:prefill', {
         detail: { pid: def.id, tech: state.tech, color: state.color, blob, label }
@@ -407,7 +515,10 @@ function init() {
     }, 'image/jpeg', 0.88);
   });
 
-  document.addEventListener('langchange', renderUI);
+  document.addEventListener('langchange', () => {
+    renderUI();
+    $('stageHint').textContent = view === view3d ? ui().hint3d : ui().hint2d;
+  });
 
   renderUI();
   return {

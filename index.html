@@ -23,6 +23,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <!-- three.js for the 360° studio, served from this site; only downloaded when the studio opens -->
+  <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.min.js", "three/addons/": "./vendor/three/addons/" } }</script>
 </head>
 <body>
   <a class="skip" href="#main" data-i18n="skip">اقفز للمحتوى</a>
@@ -255,7 +257,17 @@
       <div class="studio-body" id="studioBody" hidden>
         <div class="stage-wrap">
           <canvas id="mockCanvas" class="mock-canvas" role="img" data-i18n-attr="aria-label:studio.canvasLabel" aria-label="معاينة المنتج بالتصميم بتاعك"></canvas>
+          <canvas id="mock3d" class="mock-canvas mock-3d" role="img" hidden data-i18n-attr="aria-label:studio.canvasLabel" aria-label="معاينة المنتج بالتصميم بتاعك"></canvas>
           <div class="stage-tag" id="stageTag" aria-live="polite"></div>
+          <div class="stage-tools" id="stageTools" hidden>
+            <span class="stage-360" aria-hidden="true">360°</span>
+            <button type="button" class="stage-btn" id="stageSpin" aria-pressed="false" data-i18n-attr="aria-label:studio.spin;title:studio.spin" aria-label="لفّ المنتج لوحده" title="لفّ المنتج لوحده">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4h-4"/></svg>
+            </button>
+            <button type="button" class="stage-btn" id="stageFront" data-i18n-attr="aria-label:studio.front;title:studio.front" aria-label="رجّع الواجهة" title="رجّع الواجهة">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M10 9h4"/></svg>
+            </button>
+          </div>
           <div class="stage-hint" id="stageHint" data-i18n="studio.hint">اسحب التصميم عشان تحركه، وكبّره بصباعين أو بالعجلة</div>
           <div class="stage-loading" id="stageLoading" aria-hidden="true"><i></i></div>
         </div>
@@ -532,6 +544,7 @@
       <span data-i18n="footer.rights">© ٢٠٢٦ EMESE. كل الحقوق محفوظة.</span>
       <a href="#top"><span data-i18n="footer.top">فوق</span> ↑</a>
     </div>
+      <p class="footer-credits"><span data-i18n="footer.credits">موديلات الـ 3D من Sketchfab، برخصة CC BY 4.0 مع تعديل:</span> <a href="https://sketchfab.com/3d-models/5a21282b2e454d1696547148f617d3d0" target="_blank" rel="noopener" translate="no">Tshirt</a> <span translate="no">(Tabbuso)</span>, <a href="https://sketchfab.com/3d-models/e3bf919adaf345348921b0671043340b" target="_blank" rel="noopener" translate="no">Polo Shirt</a> <span translate="no">(muizgian)</span>, <a href="https://sketchfab.com/3d-models/a627549afa71416590085ee4f9285563" target="_blank" rel="noopener" translate="no">T-shirt Polo Lengan Panjang</a> <span translate="no">(Ikal.Ichwan)</span>, <a href="https://sketchfab.com/3d-models/97611a53e3b846f69e0655b210f72b2f" target="_blank" rel="noopener" translate="no">Hoodie</a> <span translate="no">(virtualpandora)</span>, <a href="https://sketchfab.com/3d-models/1c1d34d73fd94e6b9e8f82b1eb7194a0" target="_blank" rel="noopener" translate="no">Baseball Cap</a> <span translate="no">(vanart)</span>.</p>
   </footer>
 
   <script type="module" src="js/main.js"></script>

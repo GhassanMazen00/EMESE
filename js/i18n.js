@@ -9,6 +9,7 @@ const EN = {
   'nav.machines': 'Machines',
   'nav.contact': 'Get a quote',
   'nav.menu': 'Menu',
+  'footer.credits': '3D models from Sketchfab under CC BY 4.0, adapted:',
   'nav.track': 'Track your order',
   'nav.team': 'Team sign-in',
   'lang.other': 'ع',
@@ -77,6 +78,8 @@ const EN = {
   'studio.sub': 'Upload your logo or type your name, then pick the product, the method and the color. Drag the design to move it and make it as big or small as you like.',
   'studio.canvasLabel': 'Preview of the product with your design',
   'studio.hint': 'Drag the design to move it, pinch or scroll to resize',
+  'studio.spin': 'Spin it on its own',
+  'studio.front': 'Back to the front',
   'studio.l.product': '1. Product',
   'studio.l.design': '2. Design',
   'studio.l.tech': '3. Method',
@@ -162,7 +165,9 @@ const UI = {
     foilLegend: '٥. لون الفويل',
     inkOff: 'الليزر مالوش حبر',
     loading: 'بيحمّل',
-    fallback: 'المعاينة محتاجة متصفح بيدعم WebGL.'
+    fallback: 'المعاينة محتاجة متصفح بيدعم WebGL.',
+    hint3d: 'اسحب عشان تلف المنتج ٣٦٠°، واسحب اللوجو عشان تحركه',
+    hint2d: 'اسحب التصميم عشان تحركه، وكبّره بصباعين أو بالعجلة'
   },
   en: {
     title: 'EMESE | You imagine it, we make it.',
@@ -176,7 +181,9 @@ const UI = {
     foilLegend: '5. Foil color',
     inkOff: 'Laser uses no ink',
     loading: 'Loading',
-    fallback: 'The preview needs a browser with WebGL.'
+    fallback: 'The preview needs a browser with WebGL.',
+    hint3d: 'Drag to turn it 360°, drag the logo to move it',
+    hint2d: 'Drag the design to move it, pinch or scroll to resize'
   }
 };
 

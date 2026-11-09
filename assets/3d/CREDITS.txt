@@ -1,0 +1,8 @@
+3D models used on emese-eg.com, under Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/).
+Adapted by EMESE: resized, simplified, recoloured, fabric texture and a print area added.
+
+tee: "Tshirt" by Tabbuso, https://sketchfab.com/3d-models/5a21282b2e454d1696547148f617d3d0
+polo: "Polo Shirt" by muizgian, https://sketchfab.com/3d-models/e3bf919adaf345348921b0671043340b
+polo_ls: "T-shirt Polo Lengan Panjang" by Ikal.Ichwan, https://sketchfab.com/3d-models/a627549afa71416590085ee4f9285563
+hoodie: "Hoodie" by virtualpandora, https://sketchfab.com/3d-models/97611a53e3b846f69e0655b210f72b2f
+cap: "Baseball Cap" by vanart, https://sketchfab.com/3d-models/1c1d34d73fd94e6b9e8f82b1eb7194a0

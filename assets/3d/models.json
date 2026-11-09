@@ -1,0 +1,240 @@
+{
+ "tee": {
+  "file": "tee.glb",
+  "size": [
+   0.695,
+   0.311,
+   0.72
+  ],
+  "printAspect": 0.6559,
+  "printWidthM": 0.34,
+  "materials": {
+   "tint": [
+    "tint:FABRIC_1"
+   ],
+   "keep": []
+  },
+  "credit": {
+   "title": "Tshirt",
+   "author": "Tabbuso",
+   "license": "CC Attribution",
+   "url": "https://sketchfab.com/3d-models/5a21282b2e454d1696547148f617d3d0"
+  },
+  "presets": {
+   "center": {
+    "u": 0.5,
+    "v": 0.74,
+    "w": 0.62
+   },
+   "chest": {
+    "u": 0.75,
+    "v": 0.82,
+    "w": 0.27
+   },
+   "big": {
+    "u": 0.5,
+    "v": 0.6,
+    "w": 0.9
+   }
+  },
+  "default": {
+   "u": 0.5,
+   "v": 0.74,
+   "w": 0.62
+  }
+ },
+ "polo": {
+  "file": "polo.glb",
+  "size": [
+   0.583,
+   0.325,
+   0.74
+  ],
+  "printAspect": 0.6564,
+  "printWidthM": 0.34,
+  "materials": {
+   "tint": [
+    "tint:FABRIC_1",
+    "tint:hard",
+    "tint:PT_FABRIC"
+   ],
+   "keep": [
+    "keep:Material1299032"
+   ]
+  },
+  "presets": {
+   "chest": {
+    "u": 0.75,
+    "v": 0.84,
+    "w": 0.26
+   },
+   "center": {
+    "u": 0.5,
+    "v": 0.7,
+    "w": 0.6
+   },
+   "big": {
+    "u": 0.5,
+    "v": 0.58,
+    "w": 0.88
+   }
+  },
+  "default": {
+   "u": 0.75,
+   "v": 0.84,
+   "w": 0.26
+  },
+  "credit": {
+   "title": "Polo Shirt",
+   "author": "muizgian",
+   "license": "CC Attribution",
+   "url": "https://sketchfab.com/3d-models/e3bf919adaf345348921b0671043340b"
+  }
+ },
+ "polo_ls": {
+  "file": "polo_ls.glb",
+  "size": [
+   0.876,
+   0.325,
+   0.74
+  ],
+  "printAspect": 0.6178,
+  "printWidthM": 0.32,
+  "materials": {
+   "tint": [
+    "tint:Back",
+    "tint:Button",
+    "tint:Collar",
+    "tint:Front",
+    "tint:Lower_Left",
+    "tint:Lower_Right",
+    "tint:Upper_Left",
+    "tint:Upper_Right",
+    "tint:Pocket"
+   ],
+   "keep": []
+  },
+  "presets": {
+   "chest": {
+    "u": 0.26,
+    "v": 0.84,
+    "w": 0.27
+   },
+   "center": {
+    "u": 0.5,
+    "v": 0.7,
+    "w": 0.6
+   },
+   "big": {
+    "u": 0.5,
+    "v": 0.58,
+    "w": 0.88
+   }
+  },
+  "default": {
+   "u": 0.26,
+   "v": 0.84,
+   "w": 0.27
+  },
+  "credit": {
+   "title": "T-shirt Polo Lengan Panjang",
+   "author": "Ikal.Ichwan",
+   "license": "CC Attribution",
+   "url": "https://sketchfab.com/3d-models/a627549afa71416590085ee4f9285563"
+  }
+ },
+ "hoodie": {
+  "file": "hoodie.glb",
+  "size": [
+   0.449,
+   0.231,
+   0.74
+  ],
+  "printAspect": 1.0296,
+  "printWidthM": 0.32,
+  "materials": {
+   "tint": [
+    "tint:BTN_FABRIC",
+    "tint:Holes",
+    "tint:Knit_Fleece_Terry",
+    "tint:Rib_wide"
+   ],
+   "keep": [
+    "keep:Material125269",
+    "keep:Material2501413",
+    "keep:Material2501423",
+    "keep:Straps"
+   ]
+  },
+  "presets": {
+   "center": {
+    "u": 0.5,
+    "v": 0.55,
+    "w": 0.7
+   },
+   "chest": {
+    "u": 0.75,
+    "v": 0.72,
+    "w": 0.28
+   },
+   "big": {
+    "u": 0.5,
+    "v": 0.5,
+    "w": 0.95
+   }
+  },
+  "default": {
+   "u": 0.5,
+   "v": 0.55,
+   "w": 0.7
+  },
+  "credit": {
+   "title": "Hoodie",
+   "author": "virtualpandora",
+   "license": "CC Attribution",
+   "url": "https://sketchfab.com/3d-models/97611a53e3b846f69e0655b210f72b2f"
+  }
+ },
+ "cap": {
+  "file": "cap.glb",
+  "size": [
+   0.194,
+   0.27,
+   0.135
+  ],
+  "printAspect": 2.4007,
+  "printWidthM": 0.1821,
+  "materials": {
+   "tint": [
+    "tint:baseballCap",
+    "tint:blinn1SG"
+   ],
+   "keep": [
+    "keep:plastic"
+   ]
+  },
+  "presets": {
+   "center": {
+    "u": 0.5,
+    "v": 0.5,
+    "w": 0.55
+   },
+   "big": {
+    "u": 0.5,
+    "v": 0.5,
+    "w": 0.8
+   }
+  },
+  "default": {
+   "u": 0.5,
+   "v": 0.5,
+   "w": 0.55
+  },
+  "credit": {
+   "title": "Baseball Cap",
+   "author": "vanart",
+   "license": "CC Attribution",
+   "url": "https://sketchfab.com/3d-models/1c1d34d73fd94e6b9e8f82b1eb7194a0"
+  }
+ }
+}
