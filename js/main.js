@@ -33,6 +33,23 @@ initEverything({ onTry: (pid) => document.dispatchEvent(new CustomEvent('studio:
   });
 })();
 
+/* ---------- phone menu: the section links and the quote button in a sheet under the header ---------- */
+(() => {
+  const btn = document.getElementById('menuToggle');
+  const sheet = document.getElementById('menuSheet');
+  if (!btn || !sheet) return;
+  const set = (open) => {
+    sheet.hidden = !open;
+    btn.setAttribute('aria-expanded', String(open));
+    document.documentElement.classList.toggle('menu-open', open);
+    if (open) sheet.querySelector('a')?.focus({ preventScroll: true });
+  };
+  btn.addEventListener('click', () => set(sheet.hidden));
+  sheet.addEventListener('click', (e) => { if (e.target.closest('a') || e.target === sheet) set(false); });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && !sheet.hidden) { set(false); btn.focus(); } });
+  matchMedia('(min-width: 861px)').addEventListener('change', (e) => { if (e.matches) set(false); });
+})();
+
 /* ---------- step-by-step visual ---------- */
 (() => {
   const steps = [...document.querySelectorAll('.step')];

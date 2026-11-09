@@ -112,7 +112,8 @@ p { margin: 0; }
 .nav {
   position: sticky; top: 0; z-index: 50;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: 14px var(--gutter);
+  /* clear the notch and rounded corners on phones (viewport-fit=cover) */
+  padding: calc(14px + env(safe-area-inset-top)) max(var(--gutter), env(safe-area-inset-right)) 14px max(var(--gutter), env(safe-area-inset-left));
   background: color-mix(in srgb, var(--bg) 84%, transparent);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
@@ -142,9 +143,30 @@ p { margin: 0; }
 .theme-toggle .i-moon { display: none; }
 :root[data-theme="dark"] .theme-toggle .i-sun { display: none; }
 :root[data-theme="dark"] .theme-toggle .i-moon { display: block; }
-@media (max-width: 860px) { .nav-links { display: none; } }
 .nav-cta { white-space: nowrap; }
-@media (max-width: 420px) { .nav-cta { padding: 10px 14px; font-size: 14px; } .nav-actions { gap: 6px; } }
+.menu-toggle {
+  display: none; width: 42px; height: 42px; border-radius: 50%; padding: 0;
+  background: var(--fg); color: var(--bg); border: 0; cursor: pointer;
+  flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+}
+.menu-toggle span { display: block; width: 17px; height: 2px; border-radius: 2px; background: currentColor; transition: transform .3s var(--ease), opacity .2s; }
+.menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+.menu-sheet {
+  position: fixed; inset: 0; z-index: 49; padding: calc(96px + env(safe-area-inset-top)) var(--gutter) calc(28px + env(safe-area-inset-bottom));
+  background: var(--bg); display: flex; flex-direction: column; gap: 28px; overflow-y: auto;
+}
+.menu-sheet[hidden] { display: none; }
+.menu-links { display: grid; }
+.menu-links a { padding: 16px 0; border-bottom: 1px solid var(--line); text-decoration: none; font: 800 clamp(26px, 7vw, 34px)/1.2 var(--f-display); }
+:root.menu-open { overflow: hidden; }
+@media (max-width: 860px) {
+  .nav-links, .nav-cta { display: none; }
+  .menu-toggle { display: flex; }
+  .nav-actions { gap: 8px; }
+}
+@media (max-width: 360px) { .brand-word { font-size: 27px; } .nav { gap: 8px; } .nav-actions { gap: 6px; } }
 
 /* ---------- shared type ---------- */
 .section { padding: clamp(80px, 12vw, 150px) var(--gutter); max-width: var(--max); margin: 0 auto; }

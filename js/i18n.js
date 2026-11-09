@@ -8,6 +8,7 @@ const EN = {
   'nav.steps': 'How it works',
   'nav.machines': 'Machines',
   'nav.contact': 'Get a quote',
+  'nav.menu': 'Menu',
   'nav.track': 'Track your order',
   'nav.team': 'Team sign-in',
   'lang.other': 'ع',
