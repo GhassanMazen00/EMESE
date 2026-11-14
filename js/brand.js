@@ -35,7 +35,7 @@ async function init() {
   const file = document.getElementById('brandFile');
   const status = document.getElementById('brandStatus');
   const resetBtn = document.getElementById('brandReset');
-  const proof = document.querySelector('.proof-photo, .h3d');
+  const proof = document.querySelector('.proof-photo');
   let show = null;
   let view = null;
   let run = 0;
