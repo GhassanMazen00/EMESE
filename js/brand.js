@@ -3,6 +3,7 @@
 import { MockupView, loadProduct, designFromImage, fitPlace } from './mockup.js';
 import { TECHS, byId, luminance } from './catalog.js';
 import { ui, addStrings } from './i18n.js';
+import { GROUPS } from './bento.js';
 import { readLogoFile, setLogo, clearLogo, getLogo, restoreLogo, logoLuminance } from './logo.js';
 
 addStrings({
@@ -42,9 +43,8 @@ async function init() {
 
   // every image we may redraw, with its original source so "back to EMESE" is instant
   const targets = [];
-  document.querySelectorAll('.bento .tile img').forEach((img) => {
-    targets.push({ img, id: img.closest('.tile').dataset.id, kind: 'hero', orig: img.getAttribute('src') });
-  });
+  // the grid at the top shows every product of GROUPS in turn: render them all, js/bento.js shows them
+  [...new Set(GROUPS.flat())].forEach((id) => targets.push({ img: null, id, kind: 'hero' }));
   document.querySelectorAll('img.card-img').forEach((img) => {
     const m = /mockups\/([a-z_]+)\/card\.webp/.exec(img.getAttribute('src') || '');
     if (m) targets.push({ img, id: m[1], kind: 'card', orig: img.getAttribute('src') });
@@ -103,7 +103,8 @@ async function init() {
     if (!blob) return false;
     if (t.url) URL.revokeObjectURL(t.url);
     t.url = URL.createObjectURL(blob);
-    t.img.src = t.url;
+    if (t.img) t.img.src = t.url;
+    else document.dispatchEvent(new CustomEvent('brand:hero', { detail: { id: t.id, url: t.url } }));
     return true;
   }
 
@@ -111,6 +112,7 @@ async function init() {
   function order() {
     const vh = innerHeight;
     const score = (t) => {
+      if (!t.img) return document.querySelector(`.bento .tile[data-id="${t.id}"]`) ? -2 : 3;
       const r = t.img.getBoundingClientRect();
       const dist = r.bottom < 0 ? -r.bottom : r.top > vh ? r.top - vh : 0;
       return dist === 0 ? -1 : 2 + dist / vh;
@@ -145,7 +147,8 @@ async function init() {
   function resetAll() {
     run++;
     targets.forEach(t => {
-      t.img.src = t.orig;
+      if (t.img) t.img.src = t.orig;
+      else document.dispatchEvent(new CustomEvent('brand:hero', { detail: { id: t.id, url: null } }));
       if (t.url) { URL.revokeObjectURL(t.url); t.url = null; }
     });
     root.classList.remove('on');
