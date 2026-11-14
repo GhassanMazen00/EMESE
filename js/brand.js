@@ -35,15 +35,15 @@ async function init() {
   const file = document.getElementById('brandFile');
   const status = document.getElementById('brandStatus');
   const resetBtn = document.getElementById('brandReset');
-  const proof = document.querySelector('.proof-photo');
+  const proof = document.querySelector('.bento');
   let show = null;
   let view = null;
   let run = 0;
 
   // every image we may redraw, with its original source so "back to EMESE" is instant
   const targets = [];
-  document.querySelectorAll('.proof-slide img').forEach((img) => {
-    targets.push({ img, id: img.closest('.proof-slide').dataset.id, kind: 'hero', orig: img.getAttribute('src') });
+  document.querySelectorAll('.bento .tile img').forEach((img) => {
+    targets.push({ img, id: img.closest('.tile').dataset.id, kind: 'hero', orig: img.getAttribute('src') });
   });
   document.querySelectorAll('img.card-img').forEach((img) => {
     const m = /mockups\/([a-z_]+)\/card\.webp/.exec(img.getAttribute('src') || '');
@@ -57,8 +57,7 @@ async function init() {
 
   function looks(t, i) {
     if (t.kind === 'card') return show.cards[t.id];
-    const slides = [...document.querySelectorAll('.proof-slide')];
-    return show.hero.find(h => h.id === t.id) || show.hero[slides.indexOf(t.img.closest('.proof-slide'))];
+    return show.hero.find(h => h.id === t.id);
   }
 
   /* Ink for the visitor's logo on this product: its own colors, unless it would vanish. */
@@ -113,12 +112,6 @@ async function init() {
     const vh = innerHeight;
     const score = (t) => {
       const r = t.img.getBoundingClientRect();
-      if (t.kind === 'hero') {
-        const track = t.img.closest('.proof-track');
-        const tr = track.getBoundingClientRect();
-        const onSlide = Math.abs(r.left - tr.left) < tr.width / 2;
-        return onSlide ? -2 : 1 + Math.abs(r.left - tr.left) / tr.width * 0.01;
-      }
       const dist = r.bottom < 0 ? -r.bottom : r.top > vh ? r.top - vh : 0;
       return dist === 0 ? -1 : 2 + dist / vh;
     };

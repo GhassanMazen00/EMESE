@@ -67,7 +67,7 @@
 
     <!-- ===== Hero ===== -->
     <section class="hero">
-      <div class="hero-copy">
+      <div class="hero-copy" data-enter>
         <p class="kicker"><span class="cmy" aria-hidden="true"><i></i><i></i><i></i></span><span data-i18n="hero.kicker">توريدات مخصّصة من مصر</span></p>
         <h1 class="press">
           <span class="plate plate-c" aria-hidden="true" data-i18n-html="hero.title">إنت تتخيّل،<br>وإحنا ننفّذ<b class="dot">.</b></span>
@@ -92,37 +92,12 @@
         </div>
       </div>
 
-      <div class="proof">
-        <span class="crop c-tl" aria-hidden="true"></span><span class="crop c-tr" aria-hidden="true"></span><span class="crop c-bl" aria-hidden="true"></span><span class="crop c-br" aria-hidden="true"></span>
-        <div class="proof-photo">
-          <div class="proof-track" id="proofTrack" tabindex="0" role="group" aria-roledescription="carousel" data-i18n-attr="aria-label:hero.canvasLabel" aria-label="منتجات حقيقية عليها لوجو EMESE">
-            <figure class="proof-slide" data-id="polo"><img src="assets/mockups/polo/hero.webp" alt="بولو نص كم عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" fetchpriority="high" draggable="false"></figure>
-            <figure class="proof-slide" data-id="hoodie"><img src="assets/mockups/hoodie/hero.webp" alt="هودي عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="cap"><img src="assets/mockups/cap/hero.webp" alt="كاب بيسبول عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="tee"><img src="assets/mockups/tee/hero.webp" alt="تيشيرت عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="zipper"><img src="assets/mockups/zipper/hero.webp" alt="شدّاد سوستة عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="label"><img src="assets/mockups/label/hero.webp" alt="تيكت منسوج عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="mug"><img src="assets/mockups/mug/hero.webp" alt="مج عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="notebook"><img src="assets/mockups/notebook/hero.webp" alt="كشكول عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="patch"><img src="assets/mockups/patch/hero.webp" alt="باتش جلد عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="polo_ls"><img src="assets/mockups/polo_ls/hero.webp" alt="بولو كم طويل عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="apron"><img src="assets/mockups/apron/hero.webp" alt="مريلة عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="tumbler"><img src="assets/mockups/tumbler/hero.webp" alt="زمزمية عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="cards"><img src="assets/mockups/cards/hero.webp" alt="كروت عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="hangtag"><img src="assets/mockups/hangtag/hero.webp" alt="هانج تاج عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="tote"><img src="assets/mockups/tote/hero.webp" alt="شنطة قماش عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="pen"><img src="assets/mockups/pen/hero.webp" alt="قلم عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="flag"><img src="assets/mockups/flag/hero.webp" alt="علم مكتب عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-            <figure class="proof-slide" data-id="keychain"><img src="assets/mockups/keychain/hero.webp" alt="ميدالية خشب عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async" draggable="false"></figure>
-          </div>
-          <button class="proof-nav prev" id="heroPrev" type="button" data-i18n-attr="aria-label:hero.prev" aria-label="المنتج اللي قبله"><span aria-hidden="true"></span></button>
-          <button class="proof-nav next" id="heroNext" type="button" data-i18n-attr="aria-label:hero.next" aria-label="المنتج اللي بعده"><span aria-hidden="true"></span></button>
-          <span class="proof-id" id="proofId" aria-hidden="true">PROOF 01</span>
-        </div>
-        <div class="proof-bottom">
-          <span class="proof-label" id="proofLabel" aria-live="polite"></span>
-          <span class="proof-dots" id="proofDots"></span>
-        </div>
+      <div class="bento" data-i18n-attr="aria-label:hero.canvasLabel" aria-label="منتجات حقيقية عليها لوجو EMESE" role="group">
+        <a class="tile tile-big" href="#studio" data-try="polo" data-id="polo" style="--i:0"><img src="assets/mockups/polo/hero.webp" alt="بولو نص كم عليه لوجو EMESE" width="960" height="960" fetchpriority="high" loading="eager" decoding="async"><span class="tile-name" data-i18n="pick.polo">بولو نص كم</span></a>
+        <a class="tile" href="#studio" data-try="cap" data-id="cap" style="--i:1"><img src="assets/mockups/cap/hero.webp" alt="كاب بيسبول عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async"><span class="tile-name" data-i18n="pick.cap">كاب بيسبول</span></a>
+        <a class="tile" href="#studio" data-try="hoodie" data-id="hoodie" style="--i:2"><img src="assets/mockups/hoodie/hero.webp" alt="هودي عليه لوجو EMESE" width="960" height="960" loading="eager" decoding="async"><span class="tile-name" data-i18n="pick.hoodie">هودي</span></a>
+        <a class="tile" href="#studio" data-try="mug" data-id="mug" style="--i:3"><img src="assets/mockups/mug/hero.webp" alt="مج عليه لوجو EMESE" width="960" height="960" loading="lazy" decoding="async"><span class="tile-name" data-i18n="pick.mug">مج</span></a>
+        <a class="tile" href="#studio" data-try="notebook" data-id="notebook" style="--i:4"><img src="assets/mockups/notebook/hero.webp" alt="كشكول عليه لوجو EMESE" width="960" height="960" loading="lazy" decoding="async"><span class="tile-name" data-i18n="pick.notebook">كشكول</span></a>
       </div>
     </section>
 
@@ -142,7 +117,7 @@
           <h3 data-i18n="p1.t">يونيفورمات مطبوعة ومتطرّزة</h3>
           <p data-i18n="p1.d">تيشيرتات، بولو، هوديز، وأوفرولات شغل. طباعة بألوان كاملة تستحمل الغسيل، أو لوجو متطرّز على الصدر والكُم.</p>
           <ul class="chips"><li>DTF</li><li data-i18n="tech.screen">سلك سكرين</li><li data-i18n="tech.stitch">تطريز</li></ul>
-          <button type="button" class="tag-try" data-pid="polo"><span data-i18n="card.try">جرّب</span> 360°</button>
+          <button type="button" class="tag-try" data-pid="polo"><span data-i18n="card.try">جرّبه</span></button>
         </article>
         <article class="card card-photo" data-pid="cap" style="--accent: var(--m)">
           <img class="card-img" src="assets/mockups/cap/card.webp" alt="" width="640" height="640" loading="lazy">
@@ -150,70 +125,70 @@
           <p data-i18n="p2.d">مش بس كاب بيسبول: سناب باك، تراكر بشبك، كاب قماش طري، بوكيت هات، طواقي صوف، فيزور، برانيط شمس، وقبعات شيف وتخرج. بأي لون وباللوجو بتاعك.</p>
           <ul class="chips"><li data-i18n="tech.stitch">تطريز</li><li>DTF</li><li data-i18n="chip.patches">باتشات</li></ul>
           <a class="link ev-jump" href="#everything" data-group="headwear"><span data-i18n="p2.link">شوف كل الأنواع</span></a>
-          <button type="button" class="tag-try" data-pid="cap"><span data-i18n="card.try">جرّب</span> 360°</button>
+          <button type="button" class="tag-try" data-pid="cap"><span data-i18n="card.try">جرّبه</span></button>
         </article>
         <article class="card card-photo" data-pid="notebook" style="--accent: var(--y)">
           <img class="card-img" src="assets/mockups/notebook/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p3.t">كشاكيل وأجندات</h3>
           <p data-i18n="p3.d">غلاف بتصميمك، اسم محفور على جلد، أو طباعة UV على أي غلاف.</p>
           <ul class="chips"><li>UV</li><li data-i18n="tech.laser">ليزر</li><li data-i18n="tech.foil">فويل</li></ul>
-          <button type="button" class="tag-try" data-pid="notebook"><span data-i18n="card.try">جرّب</span> 360°</button>
+          <button type="button" class="tag-try" data-pid="notebook"><span data-i18n="card.try">جرّبه</span></button>
         </article>
         <article class="card card-photo" data-pid="pen" style="--accent: var(--c)">
           <img class="card-img" src="assets/mockups/pen/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p4.t">أقلام</h3>
           <p data-i18n="p4.d">أقلام معدن وبلاستيك عليها اسمك أو اللوجو، محفورة بالليزر أو مطبوعة UV.</p>
           <ul class="chips"><li data-i18n="tech.laser">ليزر</li><li>UV</li></ul>
-          <button type="button" class="tag-try" data-pid="pen"><span data-i18n="card.try">جرّب</span> 360°</button>
+          <button type="button" class="tag-try" data-pid="pen"><span data-i18n="card.try">جرّبه</span></button>
         </article>
         <article class="card card-photo" data-pid="flag" style="--accent: var(--m)">
           <img class="card-img" src="assets/mockups/flag/card.webp" alt="" width="640" height="640" loading="lazy" style="object-position: 50% 15%">
           <h3 data-i18n="p5.t">أعلام ورايات</h3>
           <p data-i18n="p5.d">أعلام مكاتب، رايات فعاليات، وبانرات بألوان فاقعة ما بتبهتش.</p>
           <ul class="chips"><li data-i18n="tech.sub">سبلميشن</li><li>DTF</li></ul>
-          <button type="button" class="tag-try" data-pid="flag"><span data-i18n="card.try">جرّب</span> 360°</button>
+          <button type="button" class="tag-try" data-pid="flag"><span data-i18n="card.try">جرّبه</span></button>
         </article>
         <article class="card card-photo" data-pid="cards" style="--accent: var(--y)">
           <img class="card-img" src="assets/mockups/cards/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p6.t">كروت</h3>
           <p data-i18n="p6.d">كروت بيزنس، دعوات، كروت شكر، وكروت خشب أو معدن محفورة.</p>
           <ul class="chips"><li>UV</li><li data-i18n="tech.foil">فويل</li><li data-i18n="tech.digital">ديجيتال</li></ul>
-          <button type="button" class="tag-try" data-pid="cards"><span data-i18n="card.try">جرّب</span> 360°</button>
+          <button type="button" class="tag-try" data-pid="cards"><span data-i18n="card.try">جرّبه</span></button>
         </article>
         <article class="card card-photo" data-pid="mug" style="--accent: var(--c)">
           <img class="card-img" src="assets/mockups/mug/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p7.t">مجات وزمزميات</h3>
           <p data-i18n="p7.d">التصميم بتاعك ملفوف حوالين المج أو الزمزمية، بلمعة وألوان عالية.</p>
           <ul class="chips"><li>UV DTF</li><li data-i18n="tech.sub">سبلميشن</li><li data-i18n="tech.laser">ليزر</li></ul>
-          <button type="button" class="tag-try" data-pid="mug"><span data-i18n="card.try">جرّب</span> 360°</button>
+          <button type="button" class="tag-try" data-pid="mug"><span data-i18n="card.try">جرّبه</span></button>
         </article>
         <article class="card card-photo" data-pid="tote" style="--accent: var(--m)">
           <img class="card-img" src="assets/mockups/tote/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p8.t">هدايا الشركات</h3>
           <p data-i18n="p8.d">ميداليات، شنط قماش، بوكسات، دروع، وكل اللي يتعمل «جيف أواي» للعملا والفريق.</p>
           <ul class="chips"><li data-i18n="tech.laser">ليزر</li><li>UV</li></ul>
-          <button type="button" class="tag-try" data-pid="tote"><span data-i18n="card.try">جرّب</span> 360°</button>
+          <button type="button" class="tag-try" data-pid="tote"><span data-i18n="card.try">جرّبه</span></button>
         </article>
         <article class="card card-photo" data-pid="hoodie" style="--accent: var(--y)">
           <img class="card-img" src="assets/mockups/hoodie/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p10.t">هوديز وسويت شيرت</h3>
           <p data-i18n="p10.d">هوديز تقيلة بطباعة أو تطريز، من أول الباترون لحد آخر غرزة.</p>
           <ul class="chips"><li>DTF</li><li data-i18n="tech.stitch">تطريز</li><li data-i18n="chip.sewing">تصنيع</li></ul>
-          <button type="button" class="tag-try" data-pid="hoodie"><span data-i18n="card.try">جرّب</span> 360°</button>
+          <button type="button" class="tag-try" data-pid="hoodie"><span data-i18n="card.try">جرّبه</span></button>
         </article>
         <article class="card card-photo" data-pid="zipper" style="--accent: var(--c)">
           <img class="card-img" src="assets/mockups/zipper/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p11.t">سوست وإكسسوارات</h3>
           <p data-i18n="p11.d">سوست بالمقاس واللون، شدّادات بلوجو، زراير، باتشات جلد وهانج تاج.</p>
           <ul class="chips"><li data-i18n="chip.zippers">سوست</li><li data-i18n="tech.laser">ليزر</li><li>UV</li></ul>
-          <button type="button" class="tag-try" data-pid="zipper"><span data-i18n="card.try">جرّب</span> 360°</button>
+          <button type="button" class="tag-try" data-pid="zipper"><span data-i18n="card.try">جرّبه</span></button>
         </article>
         <article class="card card-photo" data-pid="label" style="--accent: var(--m)">
           <img class="card-img" src="assets/mockups/label/card.webp" alt="" width="640" height="640" loading="lazy">
           <h3 data-i18n="p12.t">نسيج وتيكت</h3>
           <p data-i18n="p12.d">تيكت منسوج، شرايط بلوجو، وأقمشة بننسجها مخصوص لطلبك.</p>
           <ul class="chips"><li data-i18n="chip.weaving">نسيج</li><li data-i18n="tech.screen">سلك سكرين</li></ul>
-          <button type="button" class="tag-try" data-pid="label"><span data-i18n="card.try">جرّب</span> 360°</button>
+          <button type="button" class="tag-try" data-pid="label"><span data-i18n="card.try">جرّبه</span></button>
         </article>
         <article class="card card-wild">
           <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><path d="M24 24a8 8 0 1 1 12 7c-3 2-4 3-4 7M32 46v2"/><circle cx="32" cy="32" r="26"/></svg>
@@ -251,8 +226,6 @@
         </div>
       </div>
     </section>
-
-    <div class="tape tape-rule" aria-hidden="true"></div>
 
     <!-- ===== 02 Studio ===== -->
     <section class="studio" id="studio">
@@ -568,7 +541,6 @@
   </footer>
 
   <script type="module" src="js/main.js"></script>
-  <script type="module" src="js/hero.js"></script>
   <script type="module" src="js/studio.js"></script>
   <script type="module" src="js/brand.js"></script>
   <script type="module" src="js/order.js"></script>

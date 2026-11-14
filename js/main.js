@@ -70,8 +70,11 @@ initEverything({ onTry: (pid) => document.dispatchEvent(new CustomEvent('studio:
   fill();
   document.addEventListener('langchange', fill);
   document.addEventListener('click', (e) => {
-    const b = e.target.closest('.tag-try');
-    if (b) document.dispatchEvent(new CustomEvent('studio:open', { detail: { pid: b.dataset.pid } }));
+    const b = e.target.closest('.tag-try, [data-try]');
+    if (!b) return;
+    e.preventDefault();
+    const pid = b.dataset.pid || b.dataset.try;
+    if (pid) document.dispatchEvent(new CustomEvent('studio:open', { detail: { pid } }));
   });
 })();
 
