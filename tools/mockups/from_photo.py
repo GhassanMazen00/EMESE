@@ -46,17 +46,19 @@ PHOTOS = {
                     'chest': {'u': 0.762, 'v': 0.842, 'w': 0.27},
                     'big': {'u': 0.5, 'v': 0.68, 'w': 0.68}},
     },
-    # vector illustration (Vecteezy, 3D polo white t-shirt), front view rendered from the EPS
+    # AI photo (ChatGPT), navy piqué polo, 1254x1254, cut from its grey backdrop; dark garment, so its
+    # shading is lifted to a white base like polo_ls
     'polo': {
-        'height': 0.80, 'top': 0.07, 'neutral': True, 'grain': 0.018, 'exposure': 0.95, 'contrast': 1.35,
-        'drop': {'gap': 0.05, 'rx': 0.34, 'ry': 0.022, 'strength': 0.5},
-        'print': [(205, 225), (450, 125), (555, 300), (670, 210), (780, 300), (890, 125), (1140, 225),
-                  (1045, 690), (1062, 1700), (270, 1700), (295, 690)],
-        'cut': [([(670, 200), (670, 462)], 74)],                          # placket and buttons
-        'uv': {'cx': 670, 'bottom': 1700, 'W': 784, 'H': 1500, 'R': 520, 'displace': 4.0},
-        'default': {'u': 0.748, 'v': 0.853, 'w': 0.17},
-        'presets': {'chest': {'u': 0.748, 'v': 0.853, 'w': 0.17},
-                    'center': {'u': 0.5, 'v': 0.667, 'w': 0.42},
+        'height': 0.80, 'top': 0.08, 'neutral': True, 'normalize': 0.62, 'grain': 0.004, 'exposure': 0.92,
+        'contrast': 0.85, 'matte': (0.15, 0.9), 'bg_min': 0.40, 'core_erode': 2, 'own_shadow': False,
+        'drop': {'gap': 0.03, 'rx': 0.36, 'ry': 0.022, 'strength': 0.5},
+        'print': [(400, 190), (500, 215), (560, 228), (626, 236), (700, 228), (760, 215), (860, 190),
+                  (900, 330), (926, 560), (932, 1185), (310, 1185), (316, 560), (345, 330)],
+        'cut': [([(627, 160), (627, 415)], 72)],                          # placket and buttons
+        'uv': {'cx': 627, 'bottom': 1185, 'W': 620, 'H': 985, 'R': 430, 'displace': 3.0},
+        'default': {'u': 0.765, 'v': 0.855, 'w': 0.19},
+        'presets': {'chest': {'u': 0.765, 'v': 0.855, 'w': 0.19},
+                    'center': {'u': 0.5, 'v': 0.67, 'w': 0.42},
                     'big': {'u': 0.5, 'v': 0.6, 'w': 0.62}},
     },
     # stock render, navy, 540x665: AI-upscaled 2.25x (upscale.py, texture kept), cut from its grey

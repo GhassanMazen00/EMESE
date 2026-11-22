@@ -314,8 +314,9 @@ def main():
         art, aspect = design_square(extra['design']) if extra else (logo, logo_aspect)
         return composite(pid, man[pid], tint, tech, ink, art, w, rv, place=extra and extra.get('place'),
                          logo_aspect=aspect)
+    ai = lambda pid: any(os.path.exists(os.path.join(ROOT, 'tools', 'ai_photos', f'{pid}.{e}')) for e in ('webp', 'png', 'jpg'))
     for pid, (tint, tech, ink, *extra) in CARDS.items():
-        if not ready(pid):
+        if not ready(pid) or ai(pid):      # AI photos get their own (tools/ai_photos/display.js)
             continue
         img = make(pid, tint, tech, ink, *extra)
         s = img.size[0]
@@ -324,7 +325,7 @@ def main():
         img.save(os.path.join(MOCK, pid, 'card.webp'), quality=84, method=6)
         print('card', pid)
     for pid, tint, tech, ink, *extra in HERO:
-        if not ready(pid):
+        if not ready(pid) or ai(pid):
             continue
         img = make(pid, tint, tech, ink, *extra).resize((960, 960), Image.LANCZOS)
         img.save(os.path.join(MOCK, pid, 'hero.webp'), quality=80, method=6)

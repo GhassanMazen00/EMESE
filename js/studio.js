@@ -3,6 +3,7 @@ import { MockupView, loadProduct, designFromImage, designFromText, fitPlace } fr
 import { PRODUCTS, TECHS, COLOR_NAMES, INKS, FOILS, CATS, byId, luminance } from './catalog.js';
 import { lang, ui } from './i18n.js';
 import { readLogoFile, setLogo, getLogo } from './logo.js';
+import { thicken } from './photoprint.js';
 
 const canvas = document.getElementById('mockCanvas');
 const canvas3d = document.getElementById('mock3d');
@@ -95,6 +96,7 @@ function init() {
     u: 0.5, v: 0.5, w: 0.4, rot: 0, inkTouched: false, box: false
   };
   const designs = { logo: null, upload: null };
+  const thick = new WeakMap();
   let prod = null;
 
   /* ---------------- design texture ---------------- */
@@ -112,8 +114,10 @@ function init() {
   function refreshDesign() {
     const d = currentDesign();
     if (!d) return;
-    view.setDesign(d);
-    if (view3d && view !== view3d) view3d.setDesign(d);
+    // embroidery cannot sew hairlines: thin strokes are thickened, as a digitizer does
+    const sewn = TECHS[state.tech].mode === 'stitch' ? (thick.get(d) || thick.set(d, thicken(d, 5)).get(d)) : d;
+    view.setDesign(sewn);
+    if (view3d && view !== view3d) view3d.setDesign(sewn);
     // a new logo of another shape re-fits the chosen spot, unless the visitor placed it by hand
     if (prod && !state.moved) { applyPlace(state.place, false); syncRanges(); }
     draw();
@@ -431,7 +435,7 @@ function init() {
         state.color = def.colors.slice().sort((x, y) => luminance(y) - luminance(x))[0];
         autoInk();
       }
-      draw(); renderUI();
+      refreshDesign(); renderUI();
     });
     $('techNote').textContent = TECHS[state.tech][L() === 'en' ? 'noteEn' : 'noteAr'];
 

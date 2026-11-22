@@ -93,26 +93,27 @@ void main() {
     vec3 printed = ink * shade;
     float hl = smoothstep(0.62, 0.95, Lp);
     outc = mix(photo, mix(printed, photo, hl * 0.9), a);
-  } else if (uMode == 1) {                        // embroidery: satin threads laid side by side
-    float aS = smoothstep(0.3, 0.7, designA(t, 0.4)) * (1.0 - occl);
-    float body = designA(t, 2.2);                 // ~1 in the middle of a stroke, falling to the edges
-    vec2 thr = normalize(vec2(0.26, 0.97));       // the threads' direction (slightly off vertical)
+  } else if (uMode == 1) {                        // embroidery: dense satin, threads side by side
+    // the outline comes from a slightly softened copy, so small letters stay whole
+    float cov = designA(t, 0.0);
+    float aS = smoothstep(0.22, 0.6, cov) * (1.0 - occl);
+    float body = designA(t, 2.0);                 // 1 inside a stroke, lower near its edges
+    vec2 thr = normalize(vec2(0.28, 0.96));       // thread direction, a little off vertical
     vec2 nrm = vec2(thr.y, -thr.x);
     float q = dot(t, nrm) / uStitch;
-    float f = fract(q), row = floor(q);
-    // each thread is a little cylinder: lit on the side facing the light, dark where it meets the next
-    float across = sin(3.14159 * f);
-    float facing = 0.5 + 0.5 * sin(6.28318 * (f - 0.25)) * sign(dot(nrm, -lightDir));
-    float thread = (0.55 + 0.32 * pow(across, 0.6) + 0.2 * facing * across) * (0.92 + 0.14 * hash(row));
-    float aa = clamp(1.6 - fwidth(q) * 1.4, 0.0, 1.0);
-    thread = mix(0.82, thread, aa);
-    // raised: brighter on the crown of each stroke, sinking into the cloth at the edges
-    float dome = mix(0.7, 1.05, smoothstep(0.35, 0.95, body));
-    float rim = designA(t - lightDir * dpx * 2.0, 1.2) - designA(t + lightDir * dpx * 2.0, 1.2);
-    vec3 th = ink * shade * thread * dome * (1.0 - 0.3 * max(-rim, 0.0)) + vec3(0.05) * max(rim, 0.0) * shade;
-    th += vec3(0.04) * pow(across, 6.0) * facing * shade;         // a glint along each thread
-    float shadow = designA(t - lightDir * dpx * 3.5, 2.0) * (1.0 - aS) * (1.0 - occl);
-    outc = photo * (1.0 - 0.45 * shadow);
+    float f = fract(q);
+    float across = sin(3.14159 * f);              // each thread is round: bright on top, dark in the gaps
+    float thread = 0.8 + 0.2 * pow(across, 0.5);
+    thread = mix(0.9, thread, clamp(1.5 - fwidth(q) * 1.2, 0.0, 1.0));   // finer than a pixel: an even satin
+    // raised: the stroke's crown catches the light, its edges sink into the cloth
+    float crown = mix(0.82, 1.06, smoothstep(0.3, 0.95, body));
+    float lit = designA(t - lightDir * dpx * 1.5, 1.0) - designA(t + lightDir * dpx * 1.5, 1.0);
+    vec3 th = ink * mix(0.35, 1.0, clamp(shade, 0.0, 1.4)) * thread * crown;
+    th *= 1.0 - 0.22 * max(-lit, 0.0);
+    th += vec3(0.07) * max(lit, 0.0);
+    th += vec3(0.05) * pow(across, 8.0) * clamp(shade, 0.0, 1.0);     // a soft sheen along the threads
+    float shadow = designA(t - lightDir * dpx * 2.5, 1.5) * (1.0 - aS) * (1.0 - occl);
+    outc = photo * (1.0 - 0.35 * shadow);
     outc = mix(outc, th, aS);
   } else if (uMode == 2) {                        // engraving: the material itself, cut in
     float rim = designA(t + lightDir * dpx * 2.0, 1.0) - designA(t - lightDir * dpx * 2.0, 1.0);
@@ -285,6 +286,32 @@ export class PhotoPrint {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     return this.canvas;
   }
+}
+
+/* An embroidery-ready copy of a design: thin lines thickened by r pixels (of the design canvas), as
+ * a digitizer does, because thread cannot sew a hairline. Colours are kept. */
+export function thicken(design, r) {
+  const c = document.createElement('canvas');
+  c.width = design.width; c.height = design.height;
+  const x = c.getContext('2d');
+  const steps = 16;
+  for (let i = 0; i < steps; i++) {
+    const a = (i / steps) * Math.PI * 2;
+    x.drawImage(design, Math.cos(a) * r, Math.sin(a) * r);
+  }
+  x.drawImage(design, 0, 0);
+  c.logoAspect = design.logoAspect;
+  return c;
+}
+
+/* A photo drawn larger, so a small logo gets enough pixels; render, then scale the result down. */
+export function upscale(img, k = 2) {
+  const c = document.createElement('canvas');
+  c.width = (img.naturalWidth || img.width) * k; c.height = (img.naturalHeight || img.height) * k;
+  const x = c.getContext('2d');
+  x.imageSmoothingQuality = 'high';
+  x.drawImage(img, 0, 0, c.width, c.height);
+  return c;
 }
 
 let specsP = null;

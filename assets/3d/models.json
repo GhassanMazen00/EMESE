@@ -43,54 +43,6 @@
    "w": 0.62
   }
  },
- "polo": {
-  "file": "polo.glb",
-  "size": [
-   0.583,
-   0.325,
-   0.74
-  ],
-  "printAspect": 0.6564,
-  "printWidthM": 0.34,
-  "materials": {
-   "tint": [
-    "tint:FABRIC_1",
-    "tint:hard",
-    "tint:PT_FABRIC"
-   ],
-   "keep": [
-    "keep:Material1299032"
-   ]
-  },
-  "presets": {
-   "chest": {
-    "u": 0.75,
-    "v": 0.84,
-    "w": 0.26
-   },
-   "center": {
-    "u": 0.5,
-    "v": 0.7,
-    "w": 0.6
-   },
-   "big": {
-    "u": 0.5,
-    "v": 0.58,
-    "w": 0.88
-   }
-  },
-  "default": {
-   "u": 0.75,
-   "v": 0.84,
-   "w": 0.26
-  },
-  "credit": {
-   "title": "Polo Shirt",
-   "author": "muizgian",
-   "license": "CC Attribution",
-   "url": "https://sketchfab.com/3d-models/e3bf919adaf345348921b0671043340b"
-  }
- },
  "polo_ls": {
   "file": "polo_ls.glb",
   "size": [
