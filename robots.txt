@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /bulk.html
+
+Sitemap: https://emese-eg.com/sitemap.xml

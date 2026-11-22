@@ -9,6 +9,8 @@ const EN = {
   'nav.machines': 'Machines',
   'nav.contact': 'Get a quote',
   'nav.menu': 'Menu',
+  'contact.direct': 'Or message us directly:',
+  'contact.wa': 'Message us on WhatsApp',
   'hero.kicker': 'Custom supplies, made in Egypt',
   'hero.spin': 'Drag to turn',
   'hero.pick': 'Pick a product',

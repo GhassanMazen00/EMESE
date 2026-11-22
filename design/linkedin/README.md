@@ -74,7 +74,7 @@ Employee Gifts
 ### Details
 | Field | What to put |
 |---|---|
-| **Phone** | **YOU**: your company or WhatsApp number |
+| **Phone** | `+20 128 050 9299` |
 | **Year founded** | **YOU** |
 | **Locations** | **YOU**: your city and area (e.g. Cairo or Giza). Tick "primary". A street is optional. |
 
@@ -117,3 +117,4 @@ Use the launch set in `design/social/linkedin/` (8 images, 1200 x 1200) with the
 - Add the page as your **current job** on your personal profile (Experience, company: EMESE), so it links to the page.
 - Invite your contacts to follow the page (LinkedIn gives free invites each month: **Grow**, then **Invite to follow**).
 - Put the page link in the website footer once it exists; send it to me and I will add it.
+- Website 2 / links: Facebook https://www.facebook.com/profile.php?id=61595520390777 and Instagram https://www.instagram.com/emese.eg/

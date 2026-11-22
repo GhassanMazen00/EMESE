@@ -27,7 +27,7 @@ phone that has the business number. Items marked **YOU** are facts only you know
 | **Business hours** | **YOU**: suggestion: Saturday to Thursday, 10:00 to 18:00, Friday closed |
 | **Email** | **YOU** |
 | **Website 1** | `https://emese-eg.com` |
-| **Website 2** | your LinkedIn page, once it exists |
+| **Website 2** | `https://www.instagram.com/emese.eg/` |
 
 ### Description
 
@@ -123,5 +123,4 @@ Group them in **Collections**: `ملابس ويونيفورم` (01 to 06), `مك
 
 - **Short link**: Settings, Business tools, Short link. It gives `wa.me/...` you can share anywhere.
   Set its default message to: `أهلاً، عايز أطلب عرض سعر`
-- **Send me the business number** (with country code, e.g. 2010xxxxxxxx). The website's "send on WhatsApp"
-  buttons still use a placeholder number; I will put the real one in, and add it to the LinkedIn page and posts.
+- The website already uses this number (`+20 128 050 9299`): the order form, the floating WhatsApp button and the footer.
