@@ -190,34 +190,17 @@ function initRanges() {
   document.addEventListener('langchange', render);
 }
 
-/* ---------------- each technique, up close: the logo spot magnified ---------------- */
-const LOUPES = [
-  { id: 'polo', t: 'stitch' }, { id: 'label', t: 'woven' }, { id: 'keychain', t: 'laser' },
-  { id: 'mug', t: 'sub' }, { id: 'tote', t: 'screen' }, { id: 'helmet', t: 'uvdtf' }
-];
-function initLoupes() {
-  const wrap = document.getElementById('loupes');
-  if (!wrap) return;
-  function render() {
-    const l = L();
-    wrap.innerHTML = LOUPES.map((o, k) => {
-      const p = byId(o.id), T = TECHS[o.t];
-      return `<figure class="loupe${k === 0 ? ' loupe-lead' : ''}">
-        <div class="loupe-img"><img src="assets/closeups/${o.id}.webp" alt="${T[l ? 'en' : 'ar']}: ${p[l ? 'en' : 'ar']}" width="720" height="720" loading="lazy" decoding="async"><i class="crop" aria-hidden="true"></i></div>
-        <figcaption><b>${T[l ? 'en' : 'ar']}</b><span class="mono">${p[l ? 'en' : 'ar']}</span><span class="loupe-note">${T[l ? 'noteEn' : 'noteAr']}</span></figcaption>
-      </figure>`;
-    }).join('');
-    if ('IntersectionObserver' in window) {
-      const io = new IntersectionObserver((es) => es.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-      }), { rootMargin: '0px 0px -10% 0px' });
-      wrap.querySelectorAll('.loupe').forEach(f => io.observe(f));
-    } else wrap.querySelectorAll('.loupe').forEach(f => f.classList.add('in'));
-  }
-  render();
-  document.addEventListener('langchange', render);
+/* ---------------- machines: each strip plays once as it scrolls in ---------------- */
+function initMachines() {
+  const rows = document.querySelectorAll('.mx');
+  if (!rows.length) return;
+  if (!('IntersectionObserver' in window)) { rows.forEach(r => r.classList.add('in')); return; }
+  const io = new IntersectionObserver((es) => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), { rootMargin: '0px 0px -20% 0px' });
+  rows.forEach(r => io.observe(r));
 }
 
 initHero();
 initRanges();
-initLoupes();
+initMachines();
