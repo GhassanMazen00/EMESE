@@ -1,0 +1,11 @@
+{
+  "northStar": "A factory tech pack for the customer's own order",
+  "shadows": { "sheet": "0 18px 40px -24px rgba(20,20,20,.28)", "stepsCard": "0 16px 36px -22px rgba(20,20,20,.35)" },
+  "motion": { "easeOut": "cubic-bezier(.16, 1, .3, 1)", "leaderDraw": "900ms", "tagReveal": "600ms delay 550ms", "heroCycle": "5000ms" },
+  "breakpoints": { "phone": "560px", "tablet": "960px", "wide": "1000px" },
+  "components": {
+    "button-primary": { "html": "<a class=\"btn btn-ink\">اطلب عرض سعر</a>", "css": ".btn-ink{background:#141414;color:#fbfbfa;border:1.5px solid #141414;border-radius:2px;padding:16px 26px;font:700 16px/1 Alexandria,sans-serif}" },
+    "callout": { "html": "<span class=\"tag\"><b>تطريز</b><span class=\"mono\">الصدر الشمال · ٩ سم</span></span>", "css": ".tag{display:grid;padding:6px 9px;background:#fff;border:1px solid #141414;font-size:12.5px}.tag .mono{font-family:'IBM Plex Mono',monospace;font-size:11.5px}" }
+  },
+  "rules": ["CMY only as marks and the owner's kept colour blocks", "Square corners", "Mono only for measurements", "No eyebrow labels", "No em dash"]
+}

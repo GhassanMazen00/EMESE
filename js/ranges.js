@@ -145,7 +145,7 @@ function initRanges() {
     const l = L(), s = S();
     bar.innerHTML = RANGES.map(r =>
       `<a href="#r-${r.id}">${l ? r.en : r.ar}<small>${s.num(r.items.length)}</small></a>`).join('');
-    wrap.innerHTML = RANGES.map(r => `
+    wrap.innerHTML = RANGES.map((r, ri) => `
       <section class="rset" id="r-${r.id}" aria-labelledby="rh-${r.id}">
         <header class="range-head">
           <h3 id="rh-${r.id}">${l ? r.en : r.ar}</h3>
@@ -158,7 +158,7 @@ function initRanges() {
             const techs = p.techs.map(t => TECHS[t][l ? 'en' : 'ar']).join(' · ');
             return `<article class="spec${k === 0 ? ' spec-lead' : ''}" data-pid="${id}">
               <figure class="plate">
-                <img src="assets/products/${k === 0 ? id : id + '-s'}.webp" alt="${name}" width="${k === 0 ? 960 : 480}" height="${k === 0 ? 960 : 480}" loading="lazy" decoding="async">
+                <img src="assets/products/${k === 0 ? id : id + '-s'}.webp" alt="${name}" width="${k === 0 ? 960 : 480}" height="${k === 0 ? 960 : 480}" loading="${ri === 0 ? 'eager' : 'lazy'}" decoding="async">
                 <div class="plate-over">${pinHTML(id, k === 0)}</div>
                 <i class="crop" aria-hidden="true"></i>
               </figure>
