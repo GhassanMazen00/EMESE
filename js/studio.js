@@ -193,7 +193,8 @@ function init() {
   // Keep the default logo readable: light ink on dark products unless the visitor chose one.
   function autoInk() {
     if (state.inkTouched || state.source === 'upload') return;
-    const dark = state.color && luminance(state.color) < 0.18;
+    const def = byId(state.pid);
+    const dark = state.color ? luminance(state.color) < 0.18 : !!def.dark;
     state.ink = dark ? '#f6f4ef' : null;
   }
 
