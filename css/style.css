@@ -314,10 +314,13 @@ p { margin: 0; }
 .mq-row i { width: 12px; height: 12px; border-radius: 50%; background: var(--m); flex: none; }
 .mq-row i:nth-of-type(3n + 1) { background: var(--c); }
 .mq-row i:nth-of-type(3n + 2) { background: var(--y); }
-@media (prefers-reduced-motion: no-preference) {
-  .mq-track { animation: mq 46s linear infinite; }
+/* runs on every device (phones included); only a real mouse hover pauses it, never a tap */
+.marquee { direction: ltr; }
+.mq-track { animation: mq 46s linear infinite; will-change: transform; }
+@media (hover: hover) and (pointer: fine) {
   .marquee:hover .mq-track { animation-play-state: paused; }
 }
+@media (prefers-reduced-motion: reduce) { .mq-track { animation-duration: 90s; } }
 @keyframes mq { to { transform: translateX(-50%); } }
 
 /* =========================================================

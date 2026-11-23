@@ -152,7 +152,7 @@ const STR = {
         total: (n) => `${n} items`, num: (n) => String(n) }
 };
 
-export function initEverything({ onTry } = {}) {
+export function initEverything() {
   const root = document.getElementById('everything');
   if (!root) return;
   const filters = root.querySelector('.ev-filters');
@@ -195,7 +195,6 @@ export function initEverything({ onTry } = {}) {
         <ul>${items.map(it => `<li>
           <span class="ev-name">${it[l]}</span>
           <span class="ev-tags">${it[2].split(' ').map(c => `<i class="${c === active ? 'on' : ''}">${CAPS[c][l]}</i>`).join('')}</span>
-          ${it[3] ? `<button type="button" class="ev-try" data-mock="${it[3]}">${s.try} <span class="arr" aria-hidden="true"></span></button>` : ''}
         </li>`).join('')}</ul>
       </div>`;
     }).join('');
@@ -240,10 +239,6 @@ export function initEverything({ onTry } = {}) {
     if (!b) return;
     active = b.dataset.cap;
     render();
-  });
-  list.addEventListener('click', (e) => {
-    const b = e.target.closest('.ev-try');
-    if (b && onTry) onTry(b.dataset.mock);
   });
   document.addEventListener('langchange', render);
   render();

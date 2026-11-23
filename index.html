@@ -37,8 +37,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/techpack.css">
-  <!-- three.js for the 360° studio, served from this site; only downloaded when the studio opens -->
-  <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.min.js", "three/addons/": "./vendor/three/addons/" } }</script>
 </head>
 <body>
   <a class="skip" href="#main" data-i18n="skip">اقفز للمحتوى</a>
@@ -50,7 +48,7 @@
     </a>
     <nav class="nav-links" data-i18n-attr="aria-label:nav.label" aria-label="الأقسام">
       <a href="#products" data-i18n="nav.products">المنتجات</a>
-      <a href="#studio" data-i18n="nav.studio">الاستوديو</a>
+      <a href="#closeup" data-i18n="nav.closeup">عن قرب</a>
       <a href="#steps" data-i18n="nav.steps">إزاي بنشتغل</a>
       <a href="#machines" data-i18n="nav.machines">طرق التنفيذ</a>
       <a href="#catalogue" data-i18n="nav.catalogue">الكتالوج</a>
@@ -70,7 +68,7 @@
   <div class="menu-sheet" id="menuSheet" hidden>
     <nav class="menu-links" data-i18n-attr="aria-label:nav.label" aria-label="الأقسام">
       <a href="#products" data-i18n="nav.products">المنتجات</a>
-      <a href="#studio" data-i18n="nav.studio">الاستوديو</a>
+      <a href="#closeup" data-i18n="nav.closeup">عن قرب</a>
       <a href="#steps" data-i18n="nav.steps">إزاي بنشتغل</a>
       <a href="#machines" data-i18n="nav.machines">طرق التنفيذ</a>
       <a href="#catalogue" data-i18n="nav.catalogue">الكتالوج</a>
@@ -93,7 +91,7 @@
       </div>
 
       <div class="hero-sheet">
-        <figure class="plate plate-hero drawn" id="heroPlate" data-id="polo" data-i18n-attr="title:hero.plateTitle" title="جرّبه في الاستوديو">
+        <figure class="plate plate-hero drawn" id="heroPlate" data-id="polo">
           <img src="assets/products/polo.webp" alt="بولو نص كم" width="960" height="960" fetchpriority="high" decoding="async">
           <div class="plate-over"></div>
           <i class="crop" aria-hidden="true"></i>
@@ -115,7 +113,7 @@
     <section class="section" id="products">
       <div class="section-head">
         <h2 data-i18n-html="products.title">كل اللي شغلك محتاجه،<br>من مكان واحد.</h2>
-        <p class="sub" data-i18n="products.sub">منتجات متقسّمة على حسب شغلك. على كل صورة مكتوب اللوجو بيتعمل بإيه وفين، ودوس «جرّبه» عشان تحط اللوجو بتاعك عليه.</p>
+        <p class="sub" data-i18n="products.sub">منتجات متقسّمة على حسب شغلك. على كل صورة مكتوب اللوجو بيتعمل بإيه وفين، ودوس «اطلبه» عشان تبعت طلبك على طول.</p>
       </div>
       <nav class="range-bar" id="rangeBar" data-i18n-attr="aria-label:ranges.label" aria-label="المجموعات"></nav>
       <div id="ranges"></div>
@@ -125,95 +123,13 @@
       </div>
     </section>
 
-    <!-- ===== 02 Studio ===== -->
-    <section class="studio" id="studio">
-      <div class="studio-head">
-        <h2 data-i18n-html="studio.title">جرّب بنفسك.<br>حط اللوجو بتاعك على منتج حقيقي.</h2>
-        <p class="sub" data-i18n="studio.sub">ارفع اللوجو أو اكتب اسمك، واختار المنتج وطريقة التنفيذ واللون. اسحب التصميم على المنتج عشان تحركه، وكبّره أو صغّره زي ما تحب.</p>
+    <!-- ===== Techniques up close ===== -->
+    <section class="closeup" id="closeup" aria-labelledby="closeupTitle">
+      <div class="section-head">
+        <h2 id="closeupTitle" data-i18n-html="close.title">كل تقنية،<br>عن قرب.</h2>
+        <p class="sub" data-i18n="close.sub">التطريز ليه ملمس، والليزر ليه عمق، والنسيج ليه نعومة. قرّب على اللوجو وشوف الفرق بين كل طريقة.</p>
       </div>
-
-      <div class="studio-launch">
-        <button class="btn btn-y btn-lg" id="studioOpen" type="button" aria-expanded="false" aria-controls="studioBody">
-          <span data-i18n="studio.open">افتح الاستوديو</span>
-        </button>
-        <div class="launch-thumbs" aria-hidden="true">
-          <img src="assets/mockups/polo/thumb.webp" alt="" width="54" height="54" loading="lazy"><img src="assets/mockups/chef/thumb.webp" alt="" width="54" height="54" loading="lazy"><img src="assets/mockups/vest/thumb.webp" alt="" width="54" height="54" loading="lazy"><img src="assets/mockups/mug/thumb.webp" alt="" width="54" height="54" loading="lazy"><img src="assets/mockups/giftset/thumb.webp" alt="" width="54" height="54" loading="lazy"><img src="assets/mockups/lanyard/thumb.webp" alt="" width="54" height="54" loading="lazy">
-        </div>
-        <span class="launch-note" data-i18n="studio.count">٢٧ منتج و١٠ طرق تنفيذ</span>
-      </div>
-
-      <div class="studio-body" id="studioBody" hidden>
-        <div class="stage-wrap">
-          <canvas id="mockCanvas" class="mock-canvas" role="img" data-i18n-attr="aria-label:studio.canvasLabel" aria-label="معاينة المنتج بالتصميم بتاعك"></canvas>
-          <canvas id="mock3d" class="mock-canvas mock-3d" role="img" hidden data-i18n-attr="aria-label:studio.canvasLabel" aria-label="معاينة المنتج بالتصميم بتاعك"></canvas>
-          <div class="stage-tag" id="stageTag" aria-live="polite"></div>
-          <div class="stage-tools" id="stageTools" hidden>
-            <span class="stage-360" aria-hidden="true">360°</span>
-            <button type="button" class="stage-btn" id="stageSpin" aria-pressed="false" data-i18n-attr="aria-label:studio.spin;title:studio.spin" aria-label="لفّ المنتج لوحده" title="لفّ المنتج لوحده">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4h-4"/></svg>
-            </button>
-            <button type="button" class="stage-btn" id="stageFront" data-i18n-attr="aria-label:studio.front;title:studio.front" aria-label="رجّع الواجهة" title="رجّع الواجهة">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M10 9h4"/></svg>
-            </button>
-          </div>
-          <div class="stage-hint" id="stageHint" data-i18n="studio.hint">اسحب التصميم عشان تحركه، وكبّره بصباعين أو بالعجلة</div>
-          <div class="stage-loading" id="stageLoading" aria-hidden="true"><i></i></div>
-        </div>
-
-        <form class="panel" id="studioForm" onsubmit="return false">
-          <button class="panel-close" id="studioClose" type="button"><span data-i18n="studio.close">اقفل الاستوديو</span> <span aria-hidden="true">×</span></button>
-          <fieldset>
-            <legend data-i18n="studio.l.product">١. المنتج</legend>
-            <div class="seg seg-sm prod-tabs" id="productTabs" role="radiogroup"></div>
-            <div class="prod-grid" id="productGrid" role="radiogroup"></div>
-          </fieldset>
-
-          <fieldset>
-            <legend data-i18n="studio.l.design">٢. التصميم</legend>
-            <div class="seg" id="designTabs" role="radiogroup"></div>
-            <div class="design-row" id="designUpload" hidden>
-              <label class="upload">
-                <input type="file" id="designFile" accept="image/png,image/svg+xml,image/jpeg,image/webp">
-                <span data-i18n="studio.upload">اختار ملف اللوجو</span>
-              </label>
-              <small class="muted" data-i18n="studio.uploadNote">PNG أو SVG بخلفية شفافة أحسن حاجة. الملف بيفضل على جهازك.</small>
-            </div>
-            <div class="design-row" id="designText" hidden>
-              <input id="artText" class="text-in" type="text" maxlength="24" value="EMESE" autocomplete="off" spellcheck="false" data-i18n-attr="aria-label:studio.textLabel" aria-label="النص">
-              <div class="seg seg-sm" id="fontPicker" role="radiogroup"></div>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend data-i18n="studio.l.tech">٣. طريقة التنفيذ</legend>
-            <div class="seg" id="techPicker" role="radiogroup"></div>
-            <p class="tech-note" id="techNote"></p>
-          </fieldset>
-
-          <fieldset class="two">
-            <div>
-              <legend data-i18n="studio.l.color">٤. لون المنتج</legend>
-              <div class="swatches" id="baseSwatches" role="radiogroup"></div>
-            </div>
-            <div>
-              <legend id="inkLegend">٥. لون الطباعة</legend>
-              <div class="swatches" id="inkSwatches" role="radiogroup"></div>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend data-i18n="studio.l.place">٦. المكان والحجم</legend>
-            <div class="seg seg-sm" id="placePicker" role="radiogroup"></div>
-            <label class="range"><span data-i18n="studio.size">الحجم</span><input type="range" id="sizeRange" min="4" max="120" value="40"></label>
-            <label class="range"><span data-i18n="studio.rotate">اللفّ</span><input type="range" id="rotRange" min="-180" max="180" value="0"></label>
-          </fieldset>
-
-          <div class="panel-actions">
-            <button type="button" class="btn btn-y" id="snapBtn"><span data-i18n="studio.download">نزّل الموكب</span> ↓</button>
-            <a class="btn btn-ghost-light" id="orderBtn" href="#order" data-i18n="studio.order">اطلب ده</a>
-          </div>
-        </form>
-      </div>
+      <div class="loupes" id="loupes"></div>
     </section>
 
     <!-- ===== 03 Steps ===== -->
@@ -388,26 +304,14 @@
             <label class="field"><span data-i18n="order.qty">الكمية</span><input id="orderQty" name="qty" type="number" inputmode="numeric" min="1" step="1" autocomplete="off" placeholder="50"><small class="err"></small></label>
             <label class="field"><span data-i18n="order.deadline">محتاجه يوم</span><input id="orderDeadline" name="deadline" type="date"><small class="err"></small></label>
           </div>
-          <label class="check"><input type="checkbox" id="orderSizes" name="sizes"> <span data-i18n="order.sizes">ابعتولي لينك أجمع بيه المقاسات من الموظفين</span></label>
         </fieldset>
 
         <fieldset>
           <legend data-i18n="order.design">التصميم</legend>
-          <div class="attach">
-            <label class="attach-logo">
-              <input type="file" id="orderLogoFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="visually-hidden">
-              <img id="orderLogoThumb" alt="" width="64" height="64" hidden>
-              <span id="orderLogoAddText" data-i18n="order.logoAdd">ضيف اللوجو بتاعك</span>
-              <span id="orderLogoChangeText" data-i18n="order.logoChange" hidden>غيّر</span>
-            </label>
-            <button type="button" class="link-btn" id="orderLogoRemove" data-i18n="order.logoRemove" hidden>شيله</button>
-            <div class="attach-mock" id="orderMockup" hidden>
-              <img alt="" width="64" height="64">
-              <span><b data-i18n="order.mockup">موكب من الاستوديو</b><small class="mock-label"></small></span>
-              <button type="button" class="link-btn" id="orderMockupRemove" data-i18n="order.logoRemove">شيله</button>
-            </div>
+          <div class="design-note">
+            <p data-i18n="order.designNote">عندك لوجو أو تصميم، أو حتى صورة لحاجة شبه اللي في دماغك؟ ابعتها على واتساب ومعاها اسمك، وإحنا نربطها بطلبك.</p>
+            <a class="design-wa" href="https://wa.me/201280509299?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B%D8%8C%20%D8%AF%D9%87%20%D8%A7%D9%84%D8%AA%D8%B5%D9%85%D9%8A%D9%85%20%D8%A8%D8%AA%D8%A7%D8%B9%20%D8%B7%D9%84%D8%A8%D9%8A.%20%D8%A7%D9%84%D8%A7%D8%B3%D9%85%3A%20" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a9.9 9.9 0 0 0-8.5 15l-1.4 5 5.2-1.4A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg><span data-i18n="order.designWa">ابعت التصميم على واتساب</span> <span class="mono" dir="ltr">0128 050 9299</span></a>
           </div>
-          <p class="hint" data-i18n="order.logoHint">أحسن حاجة PNG بخلفية شفافة. وممكن تبعته بعدين.</p>
         </fieldset>
 
         <fieldset>
@@ -454,7 +358,7 @@
       </div>
       <nav class="footer-links" data-i18n-attr="aria-label:nav.label" aria-label="الأقسام">
         <a href="#products" data-i18n="nav.products">المنتجات</a>
-        <a href="#studio" data-i18n="nav.studio">الاستوديو</a>
+        <a href="#closeup" data-i18n="nav.closeup">عن قرب</a>
         <a href="#steps" data-i18n="nav.steps">إزاي بنشتغل</a>
         <a href="#machines" data-i18n="nav.machines">طرق التنفيذ</a>
         <a href="#catalogue" data-i18n="nav.catalogue">الكتالوج</a>
@@ -475,14 +379,22 @@
       <span data-i18n="footer.rights">© ٢٠٢٦ EMESE. كل الحقوق محفوظة.</span>
       <a href="#top"><span data-i18n="footer.top">فوق</span> ↑</a>
     </div>
-      <p class="footer-credits"><span data-i18n="footer.credits">موديلات الـ 3D من Sketchfab، برخصة CC BY 4.0 مع تعديل:</span> <a href="https://sketchfab.com/3d-models/5a21282b2e454d1696547148f617d3d0" target="_blank" rel="noopener" translate="no">Tshirt</a> <span translate="no">(Tabbuso)</span>, <a href="https://sketchfab.com/3d-models/e3bf919adaf345348921b0671043340b" target="_blank" rel="noopener" translate="no">Polo Shirt</a> <span translate="no">(muizgian)</span>, <a href="https://sketchfab.com/3d-models/a627549afa71416590085ee4f9285563" target="_blank" rel="noopener" translate="no">T-shirt Polo Lengan Panjang</a> <span translate="no">(Ikal.Ichwan)</span>, <a href="https://sketchfab.com/3d-models/97611a53e3b846f69e0655b210f72b2f" target="_blank" rel="noopener" translate="no">Hoodie</a> <span translate="no">(virtualpandora)</span>, <a href="https://sketchfab.com/3d-models/1c1d34d73fd94e6b9e8f82b1eb7194a0" target="_blank" rel="noopener" translate="no">Baseball Cap</a> <span translate="no">(vanart)</span>.</p>
   </footer>
 
+  <dialog class="lang-pick" id="langPick" aria-labelledby="langPickTitle">
+    <p class="lang-brand" aria-hidden="true">EMESE<span class="brand-dot"></span></p>
+    <h2 id="langPickTitle"><span lang="ar" dir="rtl">اختار اللغة</span><span class="lang-sep" aria-hidden="true"></span><span lang="en" dir="ltr">Choose your language</span></h2>
+    <div class="lang-opts">
+      <button type="button" class="btn btn-ink" data-lang="ar" lang="ar">العربية</button>
+      <button type="button" class="btn btn-ghost" data-lang="en" lang="en">English</button>
+    </div>
+  </dialog>
+
+  <a class="quote-float" href="#order" data-i18n="nav.contact">اطلب عرض سعر</a>
   <a class="wa-float" href="https://wa.me/201280509299?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B%D8%8C%20%D8%B9%D8%A7%D9%8A%D8%B2%20%D8%A3%D8%B7%D9%84%D8%A8%20%D8%B9%D8%B1%D8%B6%20%D8%B3%D8%B9%D8%B1" target="_blank" rel="noopener" data-i18n-attr="aria-label:contact.wa" aria-label="كلّمنا على واتساب"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a9.9 9.9 0 0 0-8.5 15l-1.4 5 5.2-1.4A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg></a>
 
   <script type="module" src="js/main.js"></script>
   <script type="module" src="js/ranges.js"></script>
-  <script type="module" src="js/studio.js"></script>
   <script type="module" src="js/order.js"></script>
 </body>
 </html>

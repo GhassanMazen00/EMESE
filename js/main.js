@@ -11,8 +11,29 @@ if (lang() === 'en') {
 }
 document.getElementById('langToggle')?.addEventListener('click', () => setLang(lang() === 'en' ? 'ar' : 'en'));
 
-/* ---------- the full range: "try it" opens the studio on that product ---------- */
-initEverything({ onTry: (pid) => document.dispatchEvent(new CustomEvent('studio:open', { detail: { pid } })) });
+/* ---------- the full catalogue ---------- */
+initEverything();
+
+/* ---------- first visit: ask which language. The answer is remembered. ---------- */
+(() => {
+  const dlg = document.getElementById('langPick');
+  if (!dlg || typeof dlg.showModal !== 'function') return;
+  let asked = null;
+  try { asked = localStorage.getItem('emese-lang'); } catch (e) { return; /* storage blocked: we could not remember the answer */ }
+  if (asked) return;
+  dlg.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-lang]');
+    if (!b) return;
+    setLang(b.dataset.lang);
+    dlg.close();
+  });
+  // Escape or a tap outside keeps Arabic, and still counts as an answer
+  dlg.addEventListener('cancel', () => { try { localStorage.setItem('emese-lang', lang()); } catch (e) { /* ignore */ } });
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) { setLang(lang()); dlg.close(); } });
+  const open = () => { dlg.showModal(); dlg.querySelector('[data-lang="ar"]').focus(); };
+  if (document.readyState === 'complete') setTimeout(open, 400);
+  else addEventListener('load', () => setTimeout(open, 400), { once: true });
+})();
 
 /* ---------- light / dark toggle ---------- */
 (() => {
@@ -50,7 +71,7 @@ initEverything({ onTry: (pid) => document.dispatchEvent(new CustomEvent('studio:
   matchMedia('(min-width: 861px)').addEventListener('change', (e) => { if (e.matches) set(false); });
 })();
 
-/* ---------- banner details: measuring tapes, the techniques strip, "try it in 360" ---------- */
+/* ---------- banner details: measuring tapes, the techniques strip ---------- */
 (() => {
   // a tailor's tape: centimetre ticks are CSS, the numbers are spans
   document.querySelectorAll('.tape').forEach((t) => {
@@ -69,13 +90,6 @@ initEverything({ onTry: (pid) => document.dispatchEvent(new CustomEvent('studio:
   };
   fill();
   document.addEventListener('langchange', fill);
-  document.addEventListener('click', (e) => {
-    const b = e.target.closest('.tag-try, [data-try]');
-    if (!b) return;
-    e.preventDefault();
-    const pid = b.dataset.pid || b.dataset.try;
-    if (pid) document.dispatchEvent(new CustomEvent('studio:open', { detail: { pid } }));
-  });
 })();
 
 /* ---------- step-by-step visual ---------- */

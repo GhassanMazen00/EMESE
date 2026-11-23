@@ -1,11 +1,11 @@
 /* EMESE: offline support. Pages and code: network first (always fresh), cached copy when offline.
  * Product images: cache first (they only change when re-rendered; bump VERSION then).
  * Order data (Supabase) is never cached. */
-const VERSION = 'emese-v10';
+const VERSION = 'emese-v11';
 const CORE = [
   './', 'index.html', 'track.html', 'sizes.html', 'admin.html', 'bulk.html', 'manifest.webmanifest',
   'css/style.css', 'css/techpack.css', 'css/pages.css', 'assets/favicon.svg', 'assets/logo.png', 'assets/icons/icon-192.png',
-  'js/main.js', 'js/i18n.js', 'js/catalog.js', 'js/everything.js', 'js/hero.js', 'js/studio.js', 'js/mockup.js',
+  'js/main.js', 'js/i18n.js', 'js/catalog.js', 'js/everything.js', 'js/mockup.js',
   'js/ranges.js', 'js/order.js', 'js/logo.js', 'js/api.js', 'js/config.js', 'js/pricing.js', 'js/page.js',
   'js/track.js', 'js/sizes.js', 'js/admin.js', 'js/bulk.js', 'js/zip.js', 'assets/mockups/manifest.json'
 ];

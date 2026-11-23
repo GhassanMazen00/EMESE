@@ -4,41 +4,41 @@ import { RANGES, TECHS, byId } from './catalog.js';
 import { lang } from './i18n.js';
 
 /* Where the logo sits on each display photo (fractions of the square), and how it is made.
- * Sizes are the usual size for that spot; the studio and the quote set the real one. */
+ * Sizes are the usual size for that spot; the quote sets the real one. */
 const SPEC = {
   polo:        { x: .64, y: .28, t: 'stitch', at: ['الصدر الشمال', 'Left chest'], cm: 9 },
   polo_ls:     { x: .63, y: .26, t: 'stitch', at: ['الصدر الشمال', 'Left chest'], cm: 9 },
-  shirt:       { x: .59, y: .30, t: 'stitch', at: ['الصدر الشمال', 'Left chest'], cm: 8 },
+  shirt:       { x: 0.63, y: 0.29, t: 'stitch', at: ['الصدر الشمال', 'Left chest'], cm: 8 },
   tee:         { x: .645, y: .255, t: 'dtf', at: ['الصدر الشمال', 'Left chest'], cm: 9 },
   hoodie:      { x: .65, y: .28, t: 'dtf', at: ['الصدر الشمال', 'Left chest'], cm: 9 },
   chef:        { x: .66, y: .37, t: 'stitch', at: ['على الجيب', 'On the pocket'], cm: 8 },
-  chefhat:     { x: .48, y: .74, t: 'stitch', at: ['على الحزام', 'On the band'], cm: 10 },
+  chefhat:     { x: 0.47, y: 0.76, t: 'stitch', at: ['على الحزام', 'On the band'], cm: 10 },
   apron:       { x: .50, y: .31, t: 'stitch', at: ['الصدر', 'Chest'], cm: 16 },
   mug:         { x: .42, y: .49, t: 'sub', at: ['الواجهة', 'Front'], cm: 8 },
-  coasters:    { x: .61, y: .66, t: 'uv', at: ['الوش', 'Top face'], cm: 6 },
-  giftset:     { x: .44, y: .50, t: 'laser', at: ['على كل قطعة', 'On every piece'], cm: 5 },
+  coasters:    { x: 0.66, y: 0.69, t: 'uv', at: ['الوش', 'Top face'], cm: 6 },
+  giftset:     { x: 0.44, y: 0.52, t: 'laser', at: ['على كل قطعة', 'On every piece'], cm: 5 },
   notebook:    { x: .49, y: .42, t: 'foil', at: ['الغلاف', 'Cover'], cm: 7 },
   pen:         { x: .76, y: .27, t: 'laser', at: ['الغطا', 'Cap'], cm: 4 },
-  cards:       { x: .58, y: .37, t: 'uv', at: ['الوشّين', 'Both sides'], cm: 3 },
+  cards:       { x: 0.59, y: 0.42, t: 'uv', at: ['الوشّين', 'Both sides'], cm: 3 },
   tumbler:     { x: .50, y: .46, t: 'laser', at: ['الواجهة', 'Front'], cm: 6 },
-  keychain:    { x: .42, y: .66, t: 'laser', at: ['الوش', 'Face'], cm: 3 },
-  featherflag: { x: .53, y: .39, t: 'sub', at: ['العلم كله', 'Full flag'], cm: 280 },
-  lanyard:     { x: .29, y: .68, t: 'sub', at: ['الشريط والكارت', 'Strap and badge'], cm: 2 },
-  tote:        { x: .50, y: .62, t: 'screen', at: ['الواجهة', 'Front'], cm: 25 },
+  keychain:    { x: 0.42, y: 0.66, t: 'laser', at: ['الوش', 'Face'], cm: 3 },
+  featherflag: { x: 0.53, y: 0.4, t: 'sub', at: ['العلم كله', 'Full flag'], cm: 280 },
+  lanyard:     { x: 0.3, y: 0.64, t: 'sub', at: ['الشريط والكارت', 'Strap and badge'], cm: 2 },
+  tote:        { x: 0.51, y: 0.62, t: 'screen', at: ['الواجهة', 'Front'], cm: 25 },
   cap:         { x: .47, y: .38, t: 'stitch', at: ['قدّام', 'Front panel'], cm: 10 },
   vest:        { x: .64, y: .32, t: 'screen', at: ['الصدر الشمال', 'Left chest'], cm: 9 },
-  helmet:      { x: .62, y: .42, t: 'uvdtf', at: ['قدّام', 'Front'], cm: 8 },
-  label:       { x: .50, y: .48, t: 'woven', at: ['ورا الرقبة', 'Neck'], cm: 5 },
-  hangtag:     { x: .52, y: .50, t: 'foil', at: ['الوش', 'Face'], cm: 4 },
-  zipper:      { x: .48, y: .63, t: 'laser', at: ['الشدّاد', 'Puller'], cm: 2 }
+  helmet:      { x: 0.7, y: 0.43, t: 'uvdtf', at: ['قدّام', 'Front'], cm: 8 },
+  label:       { x: 0.5, y: 0.48, t: 'woven', at: ['ورا الرقبة', 'Neck'], cm: 5 },
+  hangtag:     { x: 0.53, y: 0.5, t: 'foil', at: ['الوش', 'Face'], cm: 4 },
+  zipper:      { x: 0.47, y: 0.64, t: 'laser', at: ['الشدّاد', 'Puller'], cm: 2 }
 };
 
 const HERO = ['polo', 'chef', 'notebook', 'featherflag', 'cap'];
 
 const STR = {
-  ar: { try: 'جرّبه في الاستوديو', quote: 'اطلبه', items: (n) => `${n.toLocaleString('ar-EG')} منتج`,
+  ar: { quote: 'اطلبه', items: (n) => `${n.toLocaleString('ar-EG')} منتج`,
         num: (n) => n.toLocaleString('ar-EG'), cm: 'سم', show: (p) => `اعرض ${p}` },
-  en: { try: 'Try it in the studio', quote: 'Get a quote', items: (n) => `${n} products`,
+  en: { quote: 'Get a quote', items: (n) => `${n} products`,
         num: (n) => String(n), cm: 'cm', show: (p) => `Show the ${p}` }
 };
 const L = () => (lang() === 'en' ? 1 : 0);
@@ -121,7 +121,6 @@ function initHero() {
     show(+b.dataset.k);
     tick();
   });
-  plate.addEventListener('click', () => document.dispatchEvent(new CustomEvent('studio:open', { detail: { pid: HERO[i] } })));
   const hold = (v) => () => { paused = v; };
   [plate, thumbs].forEach(el => {
     el.addEventListener('pointerenter', hold(true));
@@ -166,7 +165,6 @@ function initRanges() {
                 <h4>${name}</h4>
                 <p class="spec-tech mono">${techs}</p>
                 <div class="spec-act">
-                  <button type="button" class="act-try" data-try="${id}">${s.try}</button>
                   <a class="act-quote" href="#order" data-quote="${id}">${s.quote}</a>
                 </div>
               </div>
@@ -192,5 +190,34 @@ function initRanges() {
   document.addEventListener('langchange', render);
 }
 
+/* ---------------- each technique, up close: the logo spot magnified ---------------- */
+const LOUPES = [
+  { id: 'polo', t: 'stitch' }, { id: 'label', t: 'woven' }, { id: 'keychain', t: 'laser' },
+  { id: 'mug', t: 'sub' }, { id: 'tote', t: 'screen' }, { id: 'helmet', t: 'uvdtf' }
+];
+function initLoupes() {
+  const wrap = document.getElementById('loupes');
+  if (!wrap) return;
+  function render() {
+    const l = L();
+    wrap.innerHTML = LOUPES.map((o, k) => {
+      const p = byId(o.id), T = TECHS[o.t];
+      return `<figure class="loupe${k === 0 ? ' loupe-lead' : ''}">
+        <div class="loupe-img"><img src="assets/closeups/${o.id}.webp" alt="${T[l ? 'en' : 'ar']}: ${p[l ? 'en' : 'ar']}" width="720" height="720" loading="lazy" decoding="async"><i class="crop" aria-hidden="true"></i></div>
+        <figcaption><b>${T[l ? 'en' : 'ar']}</b><span class="mono">${p[l ? 'en' : 'ar']}</span><span class="loupe-note">${T[l ? 'noteEn' : 'noteAr']}</span></figcaption>
+      </figure>`;
+    }).join('');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((es) => es.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      }), { rootMargin: '0px 0px -10% 0px' });
+      wrap.querySelectorAll('.loupe').forEach(f => io.observe(f));
+    } else wrap.querySelectorAll('.loupe').forEach(f => f.classList.add('in'));
+  }
+  render();
+  document.addEventListener('langchange', render);
+}
+
 initHero();
 initRanges();
+initLoupes();

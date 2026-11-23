@@ -2,10 +2,9 @@
  * customer a tracking link; otherwise, or as well, it opens a ready WhatsApp message. */
 import { PRODUCTS, TECHS, COLOR_NAMES, CATS, byId } from './catalog.js';
 import { lang, ui, addStrings } from './i18n.js';
-import { ready, rpc, upload } from './api.js';
+import { ready, rpc } from './api.js';
 import { WHATSAPP_NUMBER, SITE_BASE } from './config.js';
 import { estimate } from './pricing.js';
-import { getLogo, logoBlob, readLogoFile, setLogo, clearLogo } from './logo.js';
 
 addStrings({
   'order.title': 'Get a quote',
@@ -107,14 +106,13 @@ function init() {
   const $ = (id) => document.getElementById(id);
   const f = {
     product: $('orderProduct'), other: $('orderOther'), method: $('orderMethod'), color: $('orderColor'),
-    qty: $('orderQty'), deadline: $('orderDeadline'), sizes: $('orderSizes'), name: $('orderName'),
+    qty: $('orderQty'), deadline: $('orderDeadline'), name: $('orderName'),
     phone: $('orderPhone'), company: $('orderCompany'), email: $('orderEmail'), city: $('orderCity'), notes: $('orderNotes')
   };
   const done = $('orderDone');
   const submit = $('orderSubmit');
   const errBox = $('orderError');
   const est = $('orderEstimate');
-  let mockup = null;          // { blob, url, label } from the studio
 
   const L = () => (lang() === 'en' ? 'en' : 'ar');
   const nameOf = (hex) => (COLOR_NAMES[hex] ? COLOR_NAMES[hex][L() === 'en' ? 1 : 0] : hex);
@@ -144,7 +142,6 @@ function init() {
     f.color.innerHTML = colors.map(c => `<option value="${c}">${nameOf(c)}</option>`).join('') +
       `<option value="other">${ui().otherColor}</option>`;
     f.color.value = colors.includes(keepC) || keepC === 'other' ? keepC : (colors[0] || 'other');
-    f.sizes.closest('.check').hidden = !(def && def.cat === 'apparel');
     updateEstimate();
   }
 
@@ -163,46 +160,13 @@ function init() {
     est.classList.toggle('has', !!e);
   }
 
-  /* ---------------- logo and mockup ---------------- */
-  const logoThumb = $('orderLogoThumb'), logoFile = $('orderLogoFile'), logoRemove = $('orderLogoRemove');
-  const mockBox = $('orderMockup');
-  function showLogo() {
-    const l = getLogo();
-    logoThumb.hidden = !l;
-    logoRemove.hidden = !l;
-    $('orderLogoAddText').hidden = !!l;
-    $('orderLogoChangeText').hidden = !l;
-    if (l) logoThumb.src = l.dataUrl;
-  }
-  logoFile.addEventListener('change', async () => {
-    const file = logoFile.files[0];
-    logoFile.value = '';
-    if (!file) return;
-    try { await setLogo(await readLogoFile(file), file.name); }
-    catch (e) { showError(ui().err.logo); }
-  });
-  logoRemove.addEventListener('click', () => clearLogo());
-  document.addEventListener('logo:change', showLogo);
-
-  function setMockup(m) {
-    if (mockup && mockup.url) URL.revokeObjectURL(mockup.url);
-    mockup = m;
-    mockBox.hidden = !m;
-    if (m) {
-      mockBox.querySelector('img').src = m.url;
-      mockBox.querySelector('.mock-label').textContent = m.label;
-    }
-  }
-  $('orderMockupRemove').addEventListener('click', () => setMockup(null));
-
-  // from the studio: product, method, color and the mockup picture
+  // from a product's "get a quote" link: product, method, color
   document.addEventListener('order:prefill', (e) => {
     const d = e.detail || {};
     resetDone();
     if (d.pid && byId(d.pid)) { f.product.value = d.pid; fillDependents(); }
     if (d.tech) f.method.value = d.tech;
     if (d.color) f.color.value = d.color;
-    if (d.blob) setMockup({ blob: d.blob, url: URL.createObjectURL(d.blob), label: d.label || '' });
     updateEstimate();
     document.getElementById('order').scrollIntoView({ behavior: 'smooth', block: 'start' });
     setTimeout(() => f.qty.focus({ preventScroll: true }), 500);
@@ -250,10 +214,8 @@ function init() {
     lines.push(`${w.name}: ${f.name.value.trim()}`);
     if (f.company.value.trim()) lines.push(`${w.company}: ${f.company.value.trim()}`);
     if (f.city.value.trim()) lines.push(`${w.city}: ${f.city.value.trim()}`);
-    if (!f.sizes.closest('.check').hidden && f.sizes.checked) lines.push(w.sizes);
     if (f.notes.value.trim()) lines.push(`${w.notes}: ${f.notes.value.trim()}`);
     if (link) lines.push(`${w.track}: ${link}`);
-    else if (getLogo()) lines.push(w.logo);
     return lines.join('\n');
   }
   const waUrl = (text) => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
@@ -266,33 +228,20 @@ function init() {
     } catch (e) { /* storage blocked */ }
   }
 
-  function mockupFile() {
-    if (!mockup) return null;
-    const ext = mockup.blob.type === 'image/webp' ? 'webp' : mockup.blob.type === 'image/png' ? 'png' : 'jpg';
-    return { blob: mockup.blob, ext };
-  }
-
   async function send() {
     const s = summary();
-    const folder = crypto.randomUUID();
-    let logo_path = null, mockup_path = null;
-    const lb = await logoBlob();
-    if (lb) { logo_path = `orders/${folder}/logo.png`; await upload(logo_path, lb); }
-    const mf = mockupFile();
-    if (mf) { mockup_path = `orders/${folder}/mockup.${mf.ext}`; await upload(mockup_path, mf.blob); }
     const e = estimate(f.product.value, f.method.value, f.qty.value);
     const item = {
       product: s.def ? s.def.id : 'other', product_name: s.product,
       method: f.method.value, method_name: TECHS[f.method.value] ? TECHS[f.method.value][L()] : ui().unsure,
       color: s.def && s.def.colors.length ? f.color.value : null,
       color_name: s.def && s.def.colors.length && f.color.value !== 'other' ? nameOf(f.color.value) : null,
-      qty: Math.floor(Number(f.qty.value)),
-      collect_sizes: !f.sizes.closest('.check').hidden && f.sizes.checked
+      qty: Math.floor(Number(f.qty.value))
     };
     return rpc('create_order', { payload: {
       customer_name: f.name.value.trim(), phone: f.phone.value.trim(), company: f.company.value.trim(),
       email: f.email.value.trim(), city: f.city.value.trim(), items: [item], deadline: f.deadline.value || null,
-      notes: f.notes.value.trim(), lang: L(), logo_path, mockup_path, estimate: e
+      notes: f.notes.value.trim(), lang: L(), estimate: e
     } });
   }
 
@@ -332,7 +281,6 @@ function init() {
       remember(r.code, r.token);
       showDone(r.code, r.token);
       form.reset();
-      setMockup(null);
       fillDependents();
     } catch (err) {
       const E = ui().err;
@@ -361,5 +309,4 @@ function init() {
   setLabel();
   fillProducts();
   fillDependents();
-  showLogo();
 }

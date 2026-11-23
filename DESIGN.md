@@ -102,7 +102,7 @@ Flat. The hero sheet alone carries a soft offset shadow (0 18px 40px -24px). No 
 Square: 0 to 2px radius everywhere. Crop marks at plate corners. Pins are the only circles.
 
 ## Components
-Plate with callout (`js/ranges.js`): leader drawn with stroke-dashoffset, pin scales in, tag reveals with clip-path; this is the page's one motion moment, also run when the hero changes product every 5 seconds. Studio stays a dark room. Quote form and WhatsApp end every path.
+Plate with callout (`js/ranges.js`): leader drawn with stroke-dashoffset, pin scales in, tag reveals with clip-path; this is the page's one motion moment, also run when the hero changes product every 5 seconds. "Every technique, up close": six magnified logo crops (assets/closeups) with a lens ring, settling from 1.14 scale and a slight blur as they enter. A sticky ink "get a quote" button sits beside the WhatsApp button in the bottom corner. A first-visit dialog asks Arabic or English. Quote form and WhatsApp end every path; designs are sent on WhatsApp.
 
 ## Do's and Don'ts
 - Do show the logo on every product and say how it is made.

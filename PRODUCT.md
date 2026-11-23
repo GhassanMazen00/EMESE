@@ -14,21 +14,21 @@ web
 The job: get branded supplies made, see what they will look like with their own logo, and get a price, without chasing several suppliers.
 
 ## Product Purpose
-EMESE (emese-eg.com) makes custom supplies with the customer's logo: apparel and workwear, headwear, office goods, corporate gifts, and clothing accessories. The site shows the range, lets visitors try their own logo on the products (studio), and collects quote requests that go to WhatsApp. Success: a visitor sends a quote request or a WhatsApp message.
+EMESE (emese-eg.com) makes custom supplies with the customer's logo: apparel and workwear, headwear, office goods, corporate gifts, and clothing accessories. The site shows the range and the techniques up close, and collects quote requests that go to WhatsApp (designs and logos are sent on WhatsApp, not uploaded). Success: a visitor sends a quote request or a WhatsApp message.
 
 ## Positioning
 - **Everything in one place:** clothing, workwear, office goods, gifts and accessories from one supplier, in one order.
 - **All techniques in-house:** embroidery, DTF, screen print, UV, sublimation, laser engraving, hot foil, weaving and sewing.
-- **See it before you pay:** try your logo on the products online; a design is sent for approval before production.
+- **See it before you pay:** a design is sent for approval before production.
 - **Small runs welcome:** from a single piece to a whole company's uniforms.
 
 ## Operating Context
-Visitors arrive from Instagram, Facebook, LinkedIn and WhatsApp, mostly on phones. The order flow: request (form or WhatsApp) → price and design for approval → approval → production → delivery. Optional tools: order tracking, size-list links for employees, a staff dashboard (these need the Supabase backend, not yet connected).
+Visitors arrive from Instagram, Facebook, LinkedIn and WhatsApp, mostly on phones. The order flow: request (form or WhatsApp) → price and design for approval → approval → production → delivery. Optional tools: order tracking and a staff dashboard (these need the Supabase backend, not yet connected).
 
 ## Capabilities and Constraints
 - Static site (HTML, CSS, JS modules) on GitHub Pages, custom domain emese-eg.com. No build step.
 - Arabic (Egyptian, right to left) by default, English toggle; light theme by default, dark theme available.
-- Studio: WebGL mockups; 3D clothing models (T-shirt, long-sleeve polo, hoodie, cap, apron) and photo mockups for the rest; the visitor's logo stays on their device.
+- No online studio (removed by the owner); first visit asks for the language.
 - Quote form sends to WhatsApp +20 128 050 9299 until the Supabase backend is connected.
 - Socials: Instagram @emese.eg, Facebook page id 61595520390777.
 - Never use an em dash anywhere on the site.
@@ -46,4 +46,4 @@ Visitors arrive from Instagram, Facebook, LinkedIn and WhatsApp, mostly on phone
 1. Show the product with a logo on it on every screen; the range is the argument.
 2. Every path ends at a quote request or WhatsApp in one tap.
 3. Arabic first, phone first.
-4. Claim only what is true; let the studio and the photos do the persuading.
+4. Claim only what is true; let the photos do the persuading.
