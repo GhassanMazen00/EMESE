@@ -206,3 +206,11 @@ initEverything();
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { /* not critical */ }));
 }
+
+/* ---------- the EMESE logo: back to the top, or a fresh reload when already there ---------- */
+document.querySelectorAll('a.brand').forEach((a) => a.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (window.scrollY < 4) { location.reload(); return; }
+  history.replaceState(null, '', location.pathname + location.search);   // drop any #section from the address
+  window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+}));
