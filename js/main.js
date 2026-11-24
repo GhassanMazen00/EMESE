@@ -14,25 +14,32 @@ document.getElementById('langToggle')?.addEventListener('click', () => setLang(l
 /* ---------- the full catalogue ---------- */
 initEverything();
 
-/* ---------- first visit: ask which language. The answer is remembered. ---------- */
+/* ---------- first visit: ask which language. The answer is remembered. ----------
+ * Shown as soon as the page is parsed (not after every image has loaded), and the
+ * dialog closes before the page re-renders so the tap answers instantly. */
 (() => {
   const dlg = document.getElementById('langPick');
   if (!dlg || typeof dlg.showModal !== 'function') return;
   let asked = null;
   try { asked = localStorage.getItem('emese-lang'); } catch (e) { return; /* storage blocked: we could not remember the answer */ }
   if (asked) return;
+  let done = false;
+  const choose = (l) => {
+    if (done) return;
+    done = true;
+    try { localStorage.setItem('emese-lang', l); } catch (e) { /* ignore */ }
+    if (dlg.open) dlg.close();
+    // let the dialog disappear first, then switch the page
+    if (l !== lang()) requestAnimationFrame(() => requestAnimationFrame(() => setLang(l)));
+  };
   dlg.addEventListener('click', (e) => {
     const b = e.target.closest('button[data-lang]');
-    if (!b) return;
-    setLang(b.dataset.lang);
-    dlg.close();
+    if (b) { e.preventDefault(); choose(b.dataset.lang); }
+    else if (e.target === dlg) choose(lang());      // a tap outside keeps Arabic
   });
-  // Escape or a tap outside keeps Arabic, and still counts as an answer
-  dlg.addEventListener('cancel', () => { try { localStorage.setItem('emese-lang', lang()); } catch (e) { /* ignore */ } });
-  dlg.addEventListener('click', (e) => { if (e.target === dlg) { setLang(lang()); dlg.close(); } });
-  const open = () => { dlg.showModal(); dlg.querySelector('[data-lang="ar"]').focus(); };
-  if (document.readyState === 'complete') setTimeout(open, 400);
-  else addEventListener('load', () => setTimeout(open, 400), { once: true });
+  dlg.addEventListener('cancel', (e) => { e.preventDefault(); choose(lang()); });   // Escape or the phone's back button
+  dlg.showModal();
+  dlg.querySelector('[data-lang="ar"]').focus({ preventScroll: true });
 })();
 
 /* ---------- light / dark toggle ---------- */

@@ -415,9 +415,10 @@ a { text-underline-offset: .22em; text-decoration-thickness: 1px; }
   background: var(--sheet); color: var(--fg); text-align: center;
   box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .45);
 }
-.lang-pick::backdrop { background: rgba(17, 18, 18, .55); backdrop-filter: blur(3px); }
-.lang-pick[open] { animation: lang-in .45s var(--ease-out); }
-@keyframes lang-in { from { opacity: 0; translate: 0 14px; } }
+.lang-pick::backdrop { background: rgba(17, 18, 18, .62); }
+.lang-pick[open] { animation: lang-in .3s var(--ease-out); }
+.lang-opts .btn { touch-action: manipulation; }
+@keyframes lang-in { from { opacity: 0; transform: translateY(10px); } }
 .lang-brand { font: 400 30px/1 var(--f-brand); direction: ltr; display: inline-flex; align-items: baseline; gap: 3px; }
 .lang-pick h2 { margin-top: 18px; font-size: 20px; font-weight: 700; line-height: 1.5; display: grid; gap: 2px; }
 .lang-pick h2 [lang="en"] { font-size: 16px; font-weight: 500; color: var(--fg-soft); }
@@ -450,3 +451,19 @@ a { text-underline-offset: .22em; text-decoration-thickness: 1px; }
 .design-wa .mono { font-weight: 400; font-size: 14px; text-decoration: none; color: var(--fg-soft); }
 .design-wa { flex-wrap: wrap; row-gap: 2px; }
 .design-wa .mono { flex-basis: 100%; padding-inline-start: 32px; }
+
+/* ---------- the groups bar: one row on wide screens, an endless slide on phones ---------- */
+.rb-track { display: flex; flex: none; }
+.rb-set { display: flex; flex: none; }
+.rb-copy { display: none; }
+@media (max-width: 760px) {
+  .range-bar { overflow: hidden; direction: ltr; padding: 0; margin: 0 calc(-1 * var(--gutter)); }
+  .rb-track { width: max-content; animation: rb-slide 28s linear infinite; will-change: transform; }
+  .rb-copy { display: flex; }
+  .rb-set { direction: rtl; }
+  [dir="ltr"] .rb-set { direction: ltr; }
+  .range-bar a:first-child { border-inline-start: 0; }
+  .rb-set a { border-inline-end: 1px solid var(--line); }
+  .range-bar.hold .rb-track { animation-play-state: paused; }
+}
+@keyframes rb-slide { to { transform: translateX(-50%); } }

@@ -142,8 +142,9 @@ function initRanges() {
 
   function render() {
     const l = L(), s = S();
-    bar.innerHTML = RANGES.map(r =>
-      `<a href="#r-${r.id}">${l ? r.en : r.ar}<small>${s.num(r.items.length)}</small></a>`).join('');
+    const links = (copy) => RANGES.map(r =>
+      `<a href="#r-${r.id}"${copy ? ' tabindex="-1" aria-hidden="true"' : ''}>${l ? r.en : r.ar}<small>${s.num(r.items.length)}</small></a>`).join('');
+    bar.innerHTML = `<div class="rb-track"><div class="rb-set">${links(false)}</div><div class="rb-set rb-copy">${links(true)}</div></div>`;
     wrap.innerHTML = RANGES.map((r, ri) => `
       <section class="rset" id="r-${r.id}" aria-labelledby="rh-${r.id}">
         <header class="range-head">
@@ -188,6 +189,16 @@ function initRanges() {
   });
   render();
   document.addEventListener('langchange', render);
+
+  // phones: the bar slides on its own; a touch holds it for a few seconds so a link can be tapped
+  let t = 0;
+  const hold = () => { clearTimeout(t); bar.classList.add('hold'); };
+  const release = () => { clearTimeout(t); t = setTimeout(() => bar.classList.remove('hold'), 3500); };
+  bar.addEventListener('touchstart', hold, { passive: true });
+  bar.addEventListener('touchend', release, { passive: true });
+  bar.addEventListener('touchcancel', release, { passive: true });
+  bar.addEventListener('focusin', hold);
+  bar.addEventListener('focusout', release);
 }
 
 /* ---------------- machines: each strip plays once as it scrolls in ---------------- */
