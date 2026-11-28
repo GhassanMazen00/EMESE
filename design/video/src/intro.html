@@ -37,6 +37,15 @@ svg.ld path{fill:none;stroke:#141414;stroke-width:.35vw;filter:drop-shadow(0 0 .
 .approve svg{width:5vw;height:5vw}
 .tiles{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:1vw}
 .tiles .photo{position:relative}
+.g4{position:absolute;left:5vw;right:5vw;top:var(--gt,14vh);display:grid;grid-template-columns:1fr 1fr;gap:2.4vw}
+.cell{position:relative;aspect-ratio:1;overflow:hidden;opacity:0;outline:.5vw solid transparent;transition:outline-color .3s}
+.cell .photo{position:absolute;inset:0}
+.cell.on{outline-color:#fff}
+.cell:not(.on) img{filter:brightness(.7) saturate(.85)}
+.cell img{transition:filter .5s}
+.clab{position:absolute;right:2vw;bottom:2vw;display:inline-flex;align-items:center;gap:1.4vw;background:rgba(18,19,19,.82);padding:1vw 1.6vw;font:700 3.2vw/1.2 Alexandria}
+.clab b{font-weight:500;font-size:2.6vw;background:var(--m);color:#141414;padding:.4vw 1vw}
+.gtxt{bottom:var(--gtb,13vh)}
 </style></head><body><div id="stage"><div class="grid"></div></div>
 <script>
 const W = innerWidth, H = innerHeight, tall = H / W > 1.5;
@@ -54,67 +63,64 @@ const rise = (node, t, delay = 0, dist = 3) => { if (!node) return; const k = ea
 const wipe = (node, t, delay = 0) => { if (!node) return; const k = ease((t - delay) / .6); node.style.clipPath = `inset(0 0 0 ${(1 - k) * 100}%)`; node.style.opacity = k > 0 ? 1 : 0; };
 const tb = tall ? '14vh' : '9vh';
 S.style.setProperty('--tb', tb);
-if (!tall) { S.style.setProperty('--hs', '6.6vw'); S.style.setProperty('--ss', '3.4vw'); S.style.setProperty('--ls', '15vw'); }
+if (!tall) { S.style.setProperty('--gt', '4vh'); S.style.setProperty('--gtb', '4vh'); S.style.setProperty('--hs', '6.6vw'); S.style.setProperty('--ss', '3.4vw'); S.style.setProperty('--ls', '15vw'); }
 
-// 1. hook 0 - 2.2
-scene(0, 2.25, `<div class="center"><div class="logo l1">EMESE<i></i></div><div class="h q1" style="margin-top:5vh;font-size:${tall ? 8 : 6}vw">عندك شركة، مطعم،<br>أو براند؟</div></div>`,
-  (t, n) => { const l = n.querySelector('.l1'); const k = ease(t / .7); l.style.opacity = k; l.style.transform = `scale(${1.15 - .15 * k})`; rise(n.querySelector('.q1'), t, .35); });
-// 2. quick cuts with "YOUR LOGO" 2.2 - 5.0
-const cuts = [['products/polo.webp'], ['products/cap.webp'], ['products/mug.webp'], ['products/notebook.webp']];
-cuts.forEach((c, i) => { const a = 2.2 + i * .42; scene(a, i === 3 ? 5.05 : a + .48, photo(c[0]), (t, n, d) => kb(n, t, d, 1.18, 1.05)); });
-scene(2.2, 5.05, `<div class="txt"><div class="h a1">كل حاجة محتاجها…</div><div class="h a2">باللوجو بتاعك<span class="dot">.</span></div></div>`,
-  (t, n) => { rise(n.querySelector('.a1'), t, 0); rise(n.querySelector('.a2'), t, 1.45); });
-// 3. the four groups 5.05 - 11.35
-const groups = [
-  [5.05, 6.5, 'products/polo.webp', 'يونيفورم لفريقك', 'تطريز', 'الصدر الشمال · 9 سم', .64, .28, 'var(--m)'],
-  [6.5, 8.1, 'products/chef.webp', 'لبس للمطبخ والصالة', 'تطريز', 'على الجيب · 8 سم', .66, .37, 'var(--c)'],
-  [8.1, 9.5, 'products/giftset.webp', 'هدايا لعملائك', 'ليزر', 'على كل قطعة', .44, .52, 'var(--y)'],
-  [9.5, 11.4, 'products/featherflag.webp', 'وكل اللي تحتاجه<br>للإيفنتات', 'سبلميشن', 'العلم كله', .53, .40, 'var(--m)']];
-groups.forEach(([a, b, src, head, tech, where, px, py, acc]) => {
-  // photo is a centred square; map the logo point into the frame
-  scene(a, b, `${photo(src)}<svg class="ld"><path d=""/></svg><span class="pin"></span><div class="tag"><b>${tech}</b><span>${where}</span></div>
-    <div class="txt"><span class="chip" style="background:${acc}">${tech}</span><div class="h g1">${head}</div></div>`,
-    (t, n, d) => {
-      const z = 1.1 - .08 * ease(t / d);
-      kb(n, t, d, 1.1, 1.02);
-      const side = Math.max(W, H);          // object-fit cover on a square
-      const ox = (W - side * z) / 2, oy = (H - side * z) / 2;
-      const x = ox + px * side * z, y = oy + py * side * z;
-      const pin = n.querySelector('.pin'); pin.style.left = x + 'px'; pin.style.top = y + 'px';
-      const tg = n.querySelector('.tag'); const tx = x > W / 2 ? W * .06 : W * .5; const ty = Math.max(H * .08, y - H * .16);
-      tg.style.right = (x > W / 2 ? tx : W - tx - W * .44) + 'px'; tg.style.top = ty + 'px';
-      const ex = x > W / 2 ? W - tx - 2 : W - (W - tx - W * .44) - 2;
-      const path = n.querySelector('path'); const kL = ease((t - .25) / .5);
-      const ky = ty + tg.offsetHeight;
-      path.setAttribute('d', `M${x} ${y} L${x + (ex - x) * .25} ${ky} L${ex} ${ky}`);
-      const len = path.getTotalLength(); path.style.strokeDasharray = len; path.style.strokeDashoffset = len * (1 - kL);
-      pin.style.opacity = ease(t / .3); wipe(tg, t, .55); rise(n.querySelector('.g1'), t, .1); rise(n.querySelector('.chip'), t, 0);
-    });
-});
-// 4. machines 11.4 - 17.0
-scene(11.4, 13.55, `${photo('machines/stitch-1.webp')}<div class="txt"><div class="h m1">وكل ده بيتعمل<br>عندنا<span class="dot">.</span></div></div>`,
-  (t, n, d) => { kb(n, t, d, 1.15, 1.0, -2); rise(n.querySelector('.m1'), t, .1); });
-const tech = [[13.55, 14.3, 'machines/stitch-2.webp', 'تطريز', 'var(--m)'], [14.3, 15.4, 'machines/dtf-2.webp', 'طباعة', 'var(--c)'],
-  [15.4, 16.1, 'machines/laser-2.webp', 'حفر بالليزر', 'var(--y)'], [16.1, 17.05, 'machines/sewing-2.webp', 'تصنيع يونيفورم', 'var(--m)']];
-tech.forEach(([a, b, src, word, acc]) => scene(a, b, `${photo(src)}<div class="txt"><span class="chip" style="background:${acc}">${word === 'طباعة' ? 'DTF' : word === 'تطريز' ? 'STITCH' : word === 'حفر بالليزر' ? 'LASER' : 'SEWING'}</span><div class="h w1" style="font-size:${tall ? 11 : 8}vw">${word}</div></div>`,
-  (t, n, d) => { kb(n, t, d, 1.22, 1.06); rise(n.querySelector('.w1'), t, 0, 2); rise(n.querySelector('.chip'), t, 0, 1); }));
-// 5. one piece to a whole company + approval 17.05 - 22.25
-scene(17.05, 19.1, `${photo('machines/sewing-3.webp')}<div class="txt"><div class="h p1">من قطعة واحدة…</div><div class="h p2">لشركة كاملة<span class="dot">.</span></div></div>`,
-  (t, n, d) => { kb(n, t, d, 1.04, 1.16); rise(n.querySelector('.p1'), t, 0); rise(n.querySelector('.p2'), t, 1.0); });
-scene(19.1, 22.3, `${photo('products/hoodie.webp')}<div class="approve"><svg viewBox="0 0 24 24" fill="none" stroke="#0a7a43" stroke-width="3"><path d="M4 12.5l5 5L20 6.5"/></svg>موافق</div>
+// voice timings (original recording) shifted by the pauses added between sections
+const GAPS = [[2.00, .3], [5.00, .6], [11.25, .6], [16.92, .5], [22.05, .7]];
+const sh = (t) => t + GAPS.reduce((s, [p, g]) => s + (t > p ? g : 0), 0);
+const grid = (cells) => `<div class="g4">${cells.map((c, i) => `<div class="cell" data-i="${i}"><div class="photo"><img src="${A}${c[0]}"></div><span class="clab"><b class="mono">0${i + 1}</b>${c[1]}</span></div>`).join('')}</div>`;
+function gridFx(n, t, times, d) {
+  const cells = n.querySelectorAll('.cell');
+  cells.forEach((c, i) => {
+    const k = ease((t - times[i]) / .7);
+    c.style.opacity = k; c.style.transform = `scale(${.92 + .08 * k})`;
+    const active = t >= times[i] && (i === cells.length - 1 || t < times[i + 1]);
+    c.classList.toggle('on', active);
+    const img = c.querySelector('img'); img.style.transform = `scale(${1.12 - .1 * ease((t - times[i]) / 3)})`;
+  });
+}
+// 1. hook
+scene(0, sh(2.0), `<div class="center"><div class="logo l1">EMESE<i></i></div><div class="h q1" style="margin-top:5vh;font-size:${tall ? 8 : 6}vw">عندك شركة، مطعم،<br>أو براند؟</div></div>`,
+  (t, n) => { const l = n.querySelector('.l1'); const k = ease(t / 1.0); l.style.opacity = k; l.style.transform = `scale(${1.12 - .12 * k})`; rise(n.querySelector('.q1'), t, .45); });
+// 2. "everything you need, with your logo": one slow push-in, a long dissolve to a second product
+scene(sh(2.0), sh(3.55), photo('products/polo.webp'), (t, n, d) => kb(n, t, d + .6, 1.16, 1.04));
+scene(sh(3.55), sh(5.0), photo('products/notebook.webp'), (t, n, d) => kb(n, t, d + .6, 1.14, 1.02));
+scene(sh(2.0), sh(5.0), `<div class="txt"><div class="h a1">كل حاجة محتاجها…</div><div class="h a2">باللوجو بتاعك<span class="dot">.</span></div></div>`,
+  (t, n) => { rise(n.querySelector('.a1'), t, .15); rise(n.querySelector('.a2'), t, sh(3.68) - sh(2.0)); });
+// 3. the four groups build up in one grid, the spoken one lit
+const G = [['products/polo.webp', 'يونيفورم لفريقك'], ['products/chef.webp', 'لبس للمطبخ والصالة'], ['products/giftset.webp', 'هدايا لعملائك'], ['products/featherflag.webp', 'للإيفنتات']];
+const gT = [5.20, 6.58, 8.26, 9.55].map(x => sh(x) - sh(5.0));
+scene(sh(5.0), sh(11.25), `${grid(G)}<div class="txt gtxt"><div class="h gh"></div></div>`,
+  (t, n, d) => { gridFx(n, t, gT, d); const heads = ['يونيفورم لفريقك،', 'لبس للمطبخ والصالة،', 'هدايا لعملائك،', 'وكل اللي تحتاجه للإيفنتات.'];
+    let i = gT.filter(x => t >= x - .05).length - 1; i = Math.max(0, i); const h = n.querySelector('.gh'); if (h.dataset.i != i) { h.dataset.i = i; h.textContent = heads[i]; h.dataset.t0 = t; }
+    rise(h, t - (+h.dataset.t0 || 0), 0, 1.5); });
+// 4. machines: the embroidery floor, then the four techniques build in a grid
+scene(sh(11.25), sh(13.5), `${photo('machines/stitch-1.webp')}<div class="txt"><div class="h m1">وكل ده بيتعمل<br>عندنا<span class="dot">.</span></div></div>`,
+  (t, n, d) => { kb(n, t, d + .8, 1.16, 1.0, -2); rise(n.querySelector('.m1'), t, .3); });
+const M = [['machines/stitch-2.webp', 'تطريز'], ['machines/dtf-2.webp', 'طباعة'], ['machines/laser-2.webp', 'حفر بالليزر'], ['machines/sewing-2.webp', 'تصنيع يونيفورم']];
+const mT = [13.60, 14.30, 15.43, 16.05].map(x => sh(x) - sh(13.5));
+scene(sh(13.5), sh(16.92), `${grid(M)}<div class="txt gtxt"><div class="h gh"></div></div>`,
+  (t, n, d) => { gridFx(n, t, mT, d); const heads = ['تطريز،', 'طباعة،', 'حفر بالليزر،', 'وتصنيع يونيفورم كامل.'];
+    let i = Math.max(0, mT.filter(x => t >= x - .05).length - 1); const h = n.querySelector('.gh'); if (h.dataset.i != i) { h.dataset.i = i; h.textContent = heads[i]; h.dataset.t0 = t; }
+    rise(h, t - (+h.dataset.t0 || 0), 0, 1.5); });
+// 5. one piece to a whole company, then approval
+scene(sh(16.92), sh(18.9), `${photo('machines/sewing-3.webp')}<div class="txt"><div class="h p1">من قطعة واحدة…</div><div class="h p2">لشركة كاملة<span class="dot">.</span></div></div>`,
+  (t, n, d) => { kb(n, t, d + .6, 1.02, 1.14); rise(n.querySelector('.p1'), t, .2); rise(n.querySelector('.p2'), t, sh(18.25) - sh(16.92)); });
+scene(sh(18.9), sh(22.05), `${photo('products/hoodie.webp')}<div class="approve"><svg viewBox="0 0 24 24" fill="none" stroke="#0a7a43" stroke-width="3"><path d="M4 12.5l5 5L20 6.5"/></svg>موافق</div>
   <div class="txt"><div class="h r1" style="font-size:${tall ? 6.6 : 5.2}vw">وبنبعتلك التصميم<br>توافق عليه قبل ما نبدأ<span class="dot">.</span></div></div>`,
-  (t, n, d) => { kb(n, t, d, 1.12, 1.0); rise(n.querySelector('.r1'), t, .05); const ap = n.querySelector('.approve'); const k = ease((t - 1.3) / .45); ap.style.opacity = k; ap.style.transform = `scale(${.7 + .3 * k}) rotate(${-6 * (1 - k)}deg)`; });
-// 6. outro 22.3 - end
-scene(22.3, 99, `<div class="center"><div class="logo o1">EMESE<i></i></div>
+  (t, n, d) => { kb(n, t, d + .6, 1.12, 1.0); rise(n.querySelector('.r1'), t, .1); const ap = n.querySelector('.approve'); const k = ease((t - 1.6) / .5); ap.style.opacity = k; ap.style.transform = `scale(${.7 + .3 * k}) rotate(${-6 * (1 - k)}deg)`; });
+// 6. outro
+const o0 = sh(22.05);
+scene(o0, 99, `<div class="center"><div class="logo o1">EMESE<i></i></div>
   <div class="h o2" style="margin-top:3vh;font-size:${tall ? 7.6 : 5.8}vw">إنت تتخيّل،<br>وإحنا ننفّذ<span class="dot">.</span></div>
   <div class="o5" style="margin-top:3vh"><i class="reg" style="--rc:var(--c)"></i><i class="reg" style="--rc:var(--m)"></i><i class="reg" style="--rc:#e3c900"></i></div>
   <div class="wa o3"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a9.9 9.9 0 0 0-8.5 15l-1.4 5 5.2-1.4A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>0128 050 9299</div>
   <div class="url o4">emese-eg.com</div></div>`,
-  (t, n) => { const l = n.querySelector('.o1'); const k = ease(t / .6); l.style.opacity = k; l.style.transform = `scale(${1.2 - .2 * k})`;
-    rise(n.querySelector('.o2'), t, 1.0); rise(n.querySelector('.o5'), t, 1.5, 1); rise(n.querySelector('.o3'), t, 2.75); rise(n.querySelector('.o4'), t, 3.7); });
+  (t, n) => { const l = n.querySelector('.o1'); const k = ease((t - .15) / .9); l.style.opacity = k; l.style.transform = `scale(${1.15 - .15 * k})`;
+    rise(n.querySelector('.o2'), t, sh(23.37) - o0); rise(n.querySelector('.o5'), t, sh(23.37) - o0 + .6, 1); rise(n.querySelector('.o3'), t, sh(25.10) - o0); rise(n.querySelector('.o4'), t, sh(26.04) - o0); });
 // CMY progress bar
 const bar = el(`<div class="bar"><i style="background:var(--c)"></i><i style="background:var(--m)"></i><i style="background:var(--y)"></i></div>`);
-const FADE = .22, END = 29;
+const FADE = .45, END = 33.5;
 window.render = (T) => {
   for (const s of scenes) {
     const on = T >= s.a - FADE && T < s.b + FADE;
